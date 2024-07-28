@@ -1,3 +1,1 @@
-spring:
-    application:
-        name: OptiMart
+spring.application.name: OptiMart

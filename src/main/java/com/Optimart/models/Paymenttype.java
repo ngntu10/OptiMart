@@ -1,10 +1,9 @@
 package com.Optimart.models;
-import java.util.List;
 import java.util.UUID;
 
+import com.Optimart.enums.PaymentType;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.Type;
 
 @Getter
 @Setter
@@ -12,18 +11,21 @@ import org.hibernate.annotations.Type;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "product_types")
-public class ProductType {
+@Table(name = "payment_types")
+public class Paymenttype {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id")
     private UUID id;
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "name", nullable = false, unique = true)
     private String name;
 
-    @Column(name = "slug", nullable = false, unique = true)
-    private String slug;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "type", nullable = false)
+    private PaymentType paymentType ;
+
+
 
 
 }
