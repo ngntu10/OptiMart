@@ -20,5 +20,20 @@ public class OrderItem {
     @Column(name = "amount", nullable = false)
     private int amount;
 
+    @Column(name = "image", nullable = false)
+    private String image;
 
+    @Column(name = "discount", nullable = false)
+    private int discount;
+
+    @Column(name = "price", nullable = false)
+    private Long price;
+
+    @ManyToOne
+    @JoinColumn(name = "order_id", nullable = false)
+    private Order order;
+
+    @ManyToOne
+    @JoinColumn(name = "product_id", nullable = false)
+    private Product product;
 }

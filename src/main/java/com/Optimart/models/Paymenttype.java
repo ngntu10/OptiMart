@@ -1,4 +1,6 @@
 package com.Optimart.models;
+import java.util.List;
+import java.util.ListIterator;
 import java.util.UUID;
 
 import com.Optimart.enums.PaymentType;
@@ -21,9 +23,12 @@ public class Paymenttype {
     @Column(name = "name", nullable = false, unique = true)
     private String name;
 
+    @OneToMany(mappedBy = "paymentMethod")
+    List<Order> orders;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = false)
-    private PaymentType paymentType ;
+    private PaymentType paymentType;
 
 
 

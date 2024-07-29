@@ -28,7 +28,8 @@ public class DeliveryType {
     @Column(name = "name", nullable = false)
     private int price;
 
-
+    @OneToMany(mappedBy = "deliveryMethod")
+    List<Order> orders;
 
 
 }

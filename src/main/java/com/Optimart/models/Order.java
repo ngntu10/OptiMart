@@ -1,8 +1,11 @@
 package com.Optimart.models;
 
+import com.Optimart.enums.OrderStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -18,5 +21,47 @@ public class Order {
     @Column(name = "id")
     private UUID id;
 
+    @OneToMany(mappedBy = "orderItem_id")
+    private List<OrderItem> orderItemList;
 
+    @ManyToOne
+    @JoinColumn(name = "paymentType_id", nullable = false)
+    private Paymenttype paymentMethod;
+
+    @ManyToOne
+    @JoinColumn(name = "deliveryType_id", nullable = false)
+    private Paymenttype deliveryMethod;
+
+    @Column(name = "itemsPrice" , nullable = false)
+    private Long itemsPrice;
+
+    @Column(name = "shippingPrice", nullable = false)
+    private Long shippingPrice;
+
+    @Column(name = "totalPrice", nullable = false)
+    private Long totalPrice;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    @Column(name = "isPaid", nullable = false)
+    private Boolean isPaid;
+
+    @Column(name = "isDelivered", nullable = false)
+    private Boolean isDelivered;
+
+    @Column(name = "paidAt", nullable = false)
+    private Date paidAt;
+
+    @Column(name = "deliveryAt", nullable = false)
+    private Date deliveryAt;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private OrderStatus orderStatus = OrderStatus.WAIT_DELIVERY;
+
+    @ManyToOne
+    @JoinColumn(name = "shippingAddress_id")
+    private ShippingAddress shippingAddress;
 }

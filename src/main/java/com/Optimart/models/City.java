@@ -28,5 +28,7 @@ public class City {
     @Column(name = "name", nullable = false, unique = true)
     private String name;
 
+    @OneToMany(mappedBy = "city")
+    List<ShippingAddress> shippingAddresses;
 
 }
