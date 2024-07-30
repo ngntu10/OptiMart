@@ -4,7 +4,7 @@ import java.util.UUID;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.Type;
+
 
 @Getter
 @Setter
@@ -12,7 +12,7 @@ import org.hibernate.annotations.Type;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "product_types")
+@Table(name = "ProductType")
 public class ProductType {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

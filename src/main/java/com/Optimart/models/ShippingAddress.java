@@ -32,6 +32,6 @@ public class ShippingAddress {
     @JoinColumn(name = "city_id", nullable = false)
     private City city;
 
-    @OneToMany(mappedBy = "shippingAddress_id")
+    @OneToMany(mappedBy = "shippingAddress")
     private List<Order> orderList;
 }

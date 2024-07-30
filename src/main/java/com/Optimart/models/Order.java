@@ -21,7 +21,7 @@ public class Order {
     @Column(name = "id")
     private UUID id;
 
-    @OneToMany(mappedBy = "orderItem_id")
+    @OneToMany(mappedBy = "order")
     private List<OrderItem> orderItemList;
 
     @ManyToOne
@@ -30,7 +30,7 @@ public class Order {
 
     @ManyToOne
     @JoinColumn(name = "deliveryType_id", nullable = false)
-    private Paymenttype deliveryMethod;
+    private DeliveryType deliveryMethod;
 
     @Column(name = "itemsPrice" , nullable = false)
     private Long itemsPrice;
