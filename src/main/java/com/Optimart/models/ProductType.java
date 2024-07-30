@@ -25,5 +25,6 @@ public class ProductType {
     @Column(name = "slug", nullable = false, unique = true)
     private String slug;
 
-
+    @ManyToMany(mappedBy = "productTypeList")
+    private List<Product> productList;
 }

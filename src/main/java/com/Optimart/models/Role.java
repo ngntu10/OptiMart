@@ -25,5 +25,6 @@ public class Role {
     @Column(name = "permission")
     private String permission;
 
-
+    @ManyToMany(mappedBy = "roleList")
+    private List<User> userList;
 }

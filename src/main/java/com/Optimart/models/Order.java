@@ -46,10 +46,10 @@ public class Order {
     private User user;
 
     @Column(name = "isPaid", nullable = false)
-    private Boolean isPaid;
+    private int isPaid = 0;
 
     @Column(name = "isDelivered", nullable = false)
-    private Boolean isDelivered;
+    private int isDelivered = 0;
 
     @Column(name = "paidAt", nullable = false)
     private Date paidAt;

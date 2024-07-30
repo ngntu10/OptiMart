@@ -31,4 +31,10 @@ public class City {
     @OneToMany(mappedBy = "city")
     List<ShippingAddress> shippingAddresses;
 
+    @OneToMany(mappedBy = "city")
+    List<User> userList;
+
+    @ManyToMany(mappedBy = "cityList")
+    List<Product> productList;
+
 }
