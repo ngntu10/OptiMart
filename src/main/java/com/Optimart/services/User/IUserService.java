@@ -1,6 +1,6 @@
 package com.Optimart.services.User;
 
-import com.Optimart.DTO.UserDTO;
+import com.Optimart.dto.UserDTO;
 import com.Optimart.models.User;
 
 public interface IUserService {

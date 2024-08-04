@@ -1,13 +1,10 @@
 package com.Optimart.controllers;
 
-import com.Optimart.DTO.UserDTO;
+import com.Optimart.dto.UserDTO;
 import com.Optimart.constants.Endpoint;
-import com.Optimart.models.User;
-import com.Optimart.repositories.RoleRepository;
 import com.Optimart.services.User.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
