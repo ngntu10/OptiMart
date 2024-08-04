@@ -4,7 +4,6 @@ import java.util.UUID;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.Type;
 
 @Getter
 @Setter
@@ -16,7 +15,6 @@ import org.hibernate.annotations.Type;
 public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "id")
     private UUID id;
 
     @Column(name = "name", nullable = false, unique = true)
@@ -25,6 +23,6 @@ public class Role {
     @Column(name = "permission")
     private String permission;
 
-    @ManyToMany(mappedBy = "roleList")
-    private List<User> userList;
+//    @ManyToMany(mappedBy = "roleList")
+//    private List<User> userList;
 }

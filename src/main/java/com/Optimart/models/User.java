@@ -2,6 +2,7 @@ package com.Optimart.models;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.GenericGenerator;
 
 import java.util.Date;
 import java.util.List;
@@ -16,7 +17,7 @@ import java.util.UUID;
 @Table(name = "users")
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
     private UUID id;
 
@@ -26,8 +27,8 @@ public class User {
     @Column(name = "lastName")
     private String lastName;
 
-    @Column(name = "middleName")
-    private String middleName;
+    @Column(name = "fullName")
+    private String fullName;
 
     @Column(name = "email", nullable = false, unique = true)
     private String email;
