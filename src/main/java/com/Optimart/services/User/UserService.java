@@ -20,7 +20,7 @@ public class UserService implements IUserService {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
-//    private final PasswordEncoder;
+    private final PasswordEncoder passwordEncoder;
     @Override
     public User createUser(UserDTO userDTO) throws Exception {
         String email = userDTO.getMail();
@@ -35,6 +35,8 @@ public class UserService implements IUserService {
                 .password(userDTO.getPassword())
                 .phoneNumber(userDTO.getPhoneNumber())
                 .address(userDTO.getAddress())
+                .facebookAccountId(userDTO.getFacebookAccountId())
+                .googleAccountId(userDTO.getGoogleAccountId())
                 .status(1)
                 .build();
 
@@ -43,13 +45,12 @@ public class UserService implements IUserService {
         newUser.setRoleList(roles);
 
         // Kiểm tra nếu có accountId, không yêu cầu password
-//        if (userDTO.getFacebookAccountId() == 0 && userDTO.getGoogleAccountId() == 0) {
-//            String password = userDTO.getPassword();
-//            String encodedPassword = passwordEncoder.encode(password);
-//            newUser.setPassword(encodedPassword);
-//        }
-
-        return null;
+        if (userDTO.getFacebookAccountId() == 0 && userDTO.getGoogleAccountId() == 0) {
+            String password = userDTO.getPassword();
+            String encodedPassword = passwordEncoder.encode(password);
+            newUser.setPassword(encodedPassword);
+        }
+        return userRepository.save(newUser);
     }
 
     @Override

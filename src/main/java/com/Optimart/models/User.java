@@ -60,11 +60,11 @@ public class User extends BaseEntity {
     @Column(name = "deviceToken")
     private String deviceToken;
 
-//    @Column(name = "facebook_account_id")
-//    private int facebookAccountId;
-//
-//    @Column(name = "google_account_id")
-//    private int googleAccountId;
+    @Column(name = "facebook_account_id")
+    private int facebookAccountId;
+
+    @Column(name = "google_account_id")
+    private int googleAccountId;
 
     @ManyToOne
     @JoinColumn(name = "city_id")
