@@ -13,7 +13,7 @@ package com.Optimart.models;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "notifications")
-public class Notification {
+public class Notification extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id")
