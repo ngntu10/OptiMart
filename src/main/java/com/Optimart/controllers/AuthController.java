@@ -2,6 +2,8 @@ package com.Optimart.controllers;
 
 import com.Optimart.dto.UserDTO;
 import com.Optimart.constants.Endpoint;
+import com.Optimart.dto.UserLoginDTO;
+import com.Optimart.responses.LoginResponse;
 import com.Optimart.responses.RegisterResponse;
 import com.Optimart.services.User.UserService;
 import jakarta.validation.Valid;
@@ -41,10 +43,18 @@ public class AuthController {
                 return ResponseEntity.badRequest().body("Password does not match");
             }
             userService.createUser(userDTO);
-            return ResponseEntity.ok("");
+            return ResponseEntity.ok(registerResponse);
         }catch (Exception ex) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+            registerResponse.setMessage(ex.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(registerResponse);
         }
     }
-    
+
+    @PostMapping(Endpoint.Auth.LOGIN)
+    public ResponseEntity<LoginResponse> login(
+            @Valid @RequestBody UserLoginDTO userLoginDTO, BindingResult bindingResult){
+          return null;
+    }
+
+
 }
