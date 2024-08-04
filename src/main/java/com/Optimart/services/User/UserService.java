@@ -8,6 +8,7 @@ import com.Optimart.repositories.RoleRepository;
 import com.Optimart.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -19,6 +20,7 @@ public class UserService implements IUserService {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+//    private final PasswordEncoder;
     @Override
     public User createUser(UserDTO userDTO) throws Exception {
         String email = userDTO.getMail();
@@ -33,11 +35,20 @@ public class UserService implements IUserService {
                 .password(userDTO.getPassword())
                 .phoneNumber(userDTO.getPhoneNumber())
                 .address(userDTO.getAddress())
+                .status(1)
                 .build();
 
         List<Role> roles = new ArrayList<>() ;
         roles.add(roleRepository.findByName(RoleNameEnum.ADMIN.getValue()));
         newUser.setRoleList(roles);
+
+        // Kiểm tra nếu có accountId, không yêu cầu password
+//        if (userDTO.getFacebookAccountId() == 0 && userDTO.getGoogleAccountId() == 0) {
+//            String password = userDTO.getPassword();
+//            String encodedPassword = passwordEncoder.encode(password);
+//            newUser.setPassword(encodedPassword);
+//        }
+
         return null;
     }
 
