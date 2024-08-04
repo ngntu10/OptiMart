@@ -9,6 +9,7 @@ import com.Optimart.repositories.RoleRepository;
 import com.Optimart.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -25,6 +26,7 @@ public class UserService implements IUserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
     @Override
     public User createUser(UserDTO userDTO) throws Exception {
         String email = userDTO.getMail();
@@ -80,6 +82,8 @@ public class UserService implements IUserService {
                 email, password,
                 existingUser.getAuthorities()
         );
+        //authenticate with Java Spring security
+        authenticationManager.authenticate(authenticationToken);
         return null;
     }
 }
