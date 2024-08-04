@@ -23,7 +23,14 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
-        
+        try {
+            if(isByPassToken(request)){
+                filterChain.doFilter(request,response);  //enable bypass
+                return;
+            }
+        }catch (Exception ex) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+        }
     }
 
     @Value("${server.servlet.contextPath}")

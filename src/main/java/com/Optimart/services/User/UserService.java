@@ -2,6 +2,7 @@ package com.Optimart.services.User;
 
 import com.Optimart.dto.UserDTO;
 import com.Optimart.enums.RoleNameEnum;
+import com.Optimart.exceptions.DataNotFoundException;
 import com.Optimart.models.Role;
 import com.Optimart.models.User;
 import com.Optimart.repositories.RoleRepository;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -55,6 +57,10 @@ public class UserService implements IUserService {
 
     @Override
     public String login(String email, String password) throws Exception {
+        Optional<User> user = userRepository.findByEmail(email);
+        if(user.isEmpty()){
+            throw new DataNotFoundException("Email does not exists");
+        }
         return null;
     }
 }
