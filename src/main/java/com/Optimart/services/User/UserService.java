@@ -9,6 +9,8 @@ import com.Optimart.repositories.RoleRepository;
 import com.Optimart.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -61,6 +63,23 @@ public class UserService implements IUserService {
         if(user.isEmpty()){
             throw new DataNotFoundException("Email does not exists");
         }
+        User existingUser = user.get();
+
+        // Check password
+        if(existingUser.getFacebookAccountId() == 0 &&
+              existingUser.getGoogleAccountId() == 0 ) {
+            if(!passwordEncoder.matches(password, existingUser.getPassword())){
+                throw new BadCredentialsException("Wrong email or password");
+            }
+        }
+        if(existingUser.getStatus() == 0) {
+            throw new DataNotFoundException("This account has been locked");
+        }
+
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                email, password,
+                existingUser.getAuthorities()
+        );
         return null;
     }
 }
