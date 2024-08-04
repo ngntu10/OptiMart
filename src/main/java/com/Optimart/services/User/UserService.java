@@ -1,6 +1,7 @@
 package com.Optimart.services.User;
 
 import com.Optimart.dto.UserDTO;
+import com.Optimart.enums.RoleNameEnum;
 import com.Optimart.models.Role;
 import com.Optimart.models.User;
 import com.Optimart.repositories.RoleRepository;
@@ -24,6 +25,8 @@ public class UserService implements IUserService {
         if (userRepository.existsByEmail(email)){
             throw new DataIntegrityViolationException("Email already exists");
         }
+
+        // CONVERT DTO => ENTITY
         User newUser = User.builder()
                 .fullName(userDTO.getFullName())
                 .email(userDTO.getMail())
@@ -33,7 +36,7 @@ public class UserService implements IUserService {
                 .build();
 
         List<Role> roles = new ArrayList<>() ;
-        roles.add(roleRepository.findByName("USER"));
+        roles.add(roleRepository.findByName(RoleNameEnum.ADMIN.getValue()));
         newUser.setRoleList(roles);
         return null;
     }

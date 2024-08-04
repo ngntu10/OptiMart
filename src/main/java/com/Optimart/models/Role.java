@@ -1,7 +1,7 @@
 package com.Optimart.models;
-import java.util.List;
 import java.util.UUID;
 
+import com.Optimart.enums.RoleNameEnum;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -17,8 +17,9 @@ public class Role extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "name", nullable = false, unique = true)
-    private String name;
+    private RoleNameEnum name;
 
     @Column(name = "permission")
     private String permission;
