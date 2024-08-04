@@ -2,6 +2,7 @@ package com.Optimart.controllers;
 
 import com.Optimart.dto.UserDTO;
 import com.Optimart.constants.Endpoint;
+import com.Optimart.responses.RegisterResponse;
 import com.Optimart.services.User.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -26,13 +27,15 @@ public class AuthController {
     @PostMapping(Endpoint.Auth.REGISTER)
     public ResponseEntity<?> createUser(@Valid @RequestBody UserDTO userDTO,
                                         BindingResult result) {
+        RegisterResponse registerResponse = new RegisterResponse();
         try {
             if(result.hasErrors()){
                 List<String> errorMessages = result.getFieldErrors()
                         .stream()
                         .map(FieldError::getDefaultMessage)
                         .toList();
-                return ResponseEntity.badRequest().body(errorMessages);
+                registerResponse.setMessage(errorMessages.toString());
+                return ResponseEntity.badRequest().body(registerResponse);
             }
             if(!userDTO.getPassword().equals(userDTO.getRetypePassword())){
                 return ResponseEntity.badRequest().body("Password does not match");
