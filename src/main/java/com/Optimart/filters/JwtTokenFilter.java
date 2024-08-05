@@ -10,8 +10,10 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.util.Pair;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -46,8 +48,18 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             final String email = jwtTokenUtil.extractEmail(token);
             if(email != null && SecurityContextHolder.getContext().getAuthentication() == null){
                 User userDetail = (User)userDetailsService.loadUserByUsername(email);
-                if ()
+                if (!jwtTokenUtil.isTokenExpired(token)){
+                    UsernamePasswordAuthenticationToken authenticationToken =
+                            new UsernamePasswordAuthenticationToken(
+                                    userDetail,
+                                    null,
+                                    userDetail.getAuthorities()
+                            );
+                    authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                }
             }
+            filterChain.doFilter(request, response); //enable bypass
         }catch (Exception ex) {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, ex.getMessage());
         }
