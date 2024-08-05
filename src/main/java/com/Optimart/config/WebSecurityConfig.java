@@ -1,5 +1,6 @@
     package com.Optimart.config;
 
+    import com.Optimart.enums.RoleNameEnum;
     import com.Optimart.filters.JwtTokenFilter;
     import lombok.RequiredArgsConstructor;
     import org.jetbrains.annotations.NotNull;
@@ -44,6 +45,8 @@
                                         "/auth/login"
                                 )
                                 .permitAll()
+                                .requestMatchers(POST,
+                                        "/categories/**").hasAnyRole(RoleNameEnum.USER.getValue())
                                 .anyRequest().authenticated();
                         //.anyRequest().permitAll();
                     });
