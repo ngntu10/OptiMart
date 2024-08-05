@@ -10,6 +10,7 @@ import com.Optimart.repositories.UserRepository;
 import com.Optimart.utils.JwtTokenUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -30,10 +31,11 @@ public class UserService implements IUserService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtTokenUtil jwtTokenUtil;
-
     @Override
     @Transactional
     public User createUser(UserDTO userDTO) throws Exception {
+
+
         String email = userDTO.getMail();
         if (userRepository.existsByEmail(email)){
             throw new DataIntegrityViolationException("Email already exists");
