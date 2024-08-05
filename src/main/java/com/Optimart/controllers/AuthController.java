@@ -26,7 +26,7 @@ public class AuthController {
 
     private final UserService userService;
 
-    @PostMapping("/register")
+    @PostMapping(Endpoint.Auth.REGISTER)
     public ResponseEntity<?> createUser(@Valid @RequestBody UserDTO userDTO,
                                         BindingResult result) {
         RegisterResponse registerResponse = new RegisterResponse();
@@ -52,7 +52,7 @@ public class AuthController {
 
     @PostMapping(Endpoint.Auth.LOGIN)
     public ResponseEntity<LoginResponse> login(
-            @Valid @RequestBody UserLoginDTO userLoginDTO, BindingResult bindingResult){
+            @Valid @RequestBody UserLoginDTO userLoginDTO){
         try {
             String token = userService.login(
                     userLoginDTO.getMail(),

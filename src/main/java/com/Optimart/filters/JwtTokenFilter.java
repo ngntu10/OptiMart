@@ -22,9 +22,9 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     @Value("${server.servlet.contextPath}")
     private String apiPrefix;
     @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(@NonNull HttpServletRequest request,
+                                    @NonNull HttpServletResponse response,
+                                    @NonNull FilterChain filterChain) throws ServletException, IOException {
         try {
             if(isByPassToken(request)){
                 filterChain.doFilter(request,response);  //enable bypass
@@ -43,7 +43,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         );
         for(Pair<String,String> bypasstoken: byPassToken) {
            if (request.getRequestURI().contains(bypasstoken.getFirst()) &&
-                   request.getServletPath().contains(bypasstoken.getSecond())){
+                   request.getMethod().contains(bypasstoken.getSecond())){
                return true;
            }
         }
