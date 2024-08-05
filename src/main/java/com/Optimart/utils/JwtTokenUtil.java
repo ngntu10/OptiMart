@@ -26,14 +26,14 @@ public class JwtTokenUtil {
 
     public String generateToken(User user) throws Exception{
         Map<String,Object> claims =new HashMap<>();
-        String SEcretKey = this.generateSecretKey();
+//        String SecretKey = this.generateSecretKey();
         claims.put("email", user.getEmail());
         try {
             String token = Jwts.builder()
                     .setClaims(claims)
                     .setSubject(user.getEmail())
                     .setExpiration(new Date(System.currentTimeMillis()+expiration*1000L))
-                    .signWith(getSignInKey(), SignatureAlgorithm.ES256)
+                    .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                     .compact();
             return token;
         }catch (Exception ex){

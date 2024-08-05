@@ -7,6 +7,7 @@ import com.Optimart.models.Role;
 import com.Optimart.models.User;
 import com.Optimart.repositories.RoleRepository;
 import com.Optimart.repositories.UserRepository;
+import com.Optimart.utils.JwtTokenUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -28,6 +29,8 @@ public class UserService implements IUserService {
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
+    private final JwtTokenUtil jwtTokenUtil;
+
     @Override
     @Transactional
     public User createUser(UserDTO userDTO) throws Exception {
@@ -50,7 +53,7 @@ public class UserService implements IUserService {
                 .build();
 
         List<Role> roles = new ArrayList<>() ;
-        roles.add(roleRepository.findByName(RoleNameEnum.ADMIN));
+        roles.add(roleRepository.findByName(RoleNameEnum.USER));
         newUser.setRoleList(roles);
 
         // Kiểm tra nếu có accountId, không yêu cầu password
@@ -87,6 +90,6 @@ public class UserService implements IUserService {
         );
         //authenticate with Java Spring security
         authenticationManager.authenticate(authenticationToken);
-        return null;
+        return jwtTokenUtil.generateToken(existingUser);
     }
 }
