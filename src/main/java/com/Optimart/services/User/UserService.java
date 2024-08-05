@@ -7,6 +7,7 @@ import com.Optimart.models.Role;
 import com.Optimart.models.User;
 import com.Optimart.repositories.RoleRepository;
 import com.Optimart.repositories.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -28,6 +29,7 @@ public class UserService implements IUserService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     @Override
+    @Transactional
     public User createUser(UserDTO userDTO) throws Exception {
         String email = userDTO.getMail();
         if (userRepository.existsByEmail(email)){
@@ -47,7 +49,7 @@ public class UserService implements IUserService {
                 .build();
 
         List<Role> roles = new ArrayList<>() ;
-        roles.add(roleRepository.findByName(RoleNameEnum.ADMIN.getValue()));
+        roles.add(roleRepository.findByName(RoleNameEnum.ADMIN));
         newUser.setRoleList(roles);
 
         // Kiểm tra nếu có accountId, không yêu cầu password

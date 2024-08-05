@@ -19,7 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class JwtTokenFilter extends OncePerRequestFilter {
 
-    @Value("${server.servlet.contextPath}")
+    @Value("${server.servlet.context-path}")
     private String apiPrefix;
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
@@ -32,7 +32,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             }
 
         }catch (Exception ex) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, ex.getMessage());
         }
     }
 
