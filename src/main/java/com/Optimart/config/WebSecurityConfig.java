@@ -32,8 +32,6 @@
         private final JwtTokenFilter jwtTokenFilter;
         @Value("${server.servlet.context-path}")
         private String apiPrefix;
-
-
         @Bean
         public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
             http
@@ -41,9 +39,9 @@
                     .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
                     .authorizeHttpRequests(requests -> {
                         requests
-                                .requestMatchers(
-                                        String.format("%s/auth/register", apiPrefix),
-                                        String.format("%s/auth/login", apiPrefix)
+                                .requestMatchers(POST,
+                                        "/auth/register",
+                                        "/auth/login"
                                 )
                                 .permitAll()
                                 .anyRequest().authenticated();

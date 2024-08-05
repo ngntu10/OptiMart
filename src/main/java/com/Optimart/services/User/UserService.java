@@ -34,8 +34,6 @@ public class UserService implements IUserService {
     @Override
     @Transactional
     public User createUser(UserDTO userDTO) throws Exception {
-
-
         String email = userDTO.getMail();
         if (userRepository.existsByEmail(email)){
             throw new DataIntegrityViolationException("Email already exists");
