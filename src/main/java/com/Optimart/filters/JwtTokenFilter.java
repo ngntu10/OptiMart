@@ -19,6 +19,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class JwtTokenFilter extends OncePerRequestFilter {
 
+    @Value("${api.prefix}")
+    private String apiPrefix;
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
@@ -28,6 +30,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 filterChain.doFilter(request,response);  //enable bypass
                 return;
             }
+
         }catch (Exception ex) {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
         }

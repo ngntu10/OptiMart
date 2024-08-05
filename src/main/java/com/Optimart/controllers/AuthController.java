@@ -53,7 +53,23 @@ public class AuthController {
     @PostMapping(Endpoint.Auth.LOGIN)
     public ResponseEntity<LoginResponse> login(
             @Valid @RequestBody UserLoginDTO userLoginDTO, BindingResult bindingResult){
-          return null;
+        try {
+            String token = userService.login(
+                    userLoginDTO.getMail(),
+                    userLoginDTO.getPassword()
+            );
+            return ResponseEntity.ok(LoginResponse.builder()
+                    .message("Login successfully")
+                    .token(token)
+                    .build()
+            );
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(
+                LoginResponse.builder()
+                        .message("Login failed")
+                        .build()
+            );
+        }
     }
 
 
