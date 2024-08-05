@@ -19,7 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class JwtTokenFilter extends OncePerRequestFilter {
 
-    @Value("${api.prefix}")
+    @Value("${server.servlet.contextPath}")
     private String apiPrefix;
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -36,8 +36,6 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         }
     }
 
-    @Value("${server.servlet.contextPath}")
-    private String apiPrefix;
     private boolean isByPassToken(@NonNull HttpServletRequest request){
         final List<Pair<String,String>> byPassToken = Arrays.asList(
                 Pair.of(String.format("%s/auth/register", apiPrefix), "POST"),

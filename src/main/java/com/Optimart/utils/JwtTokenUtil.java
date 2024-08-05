@@ -5,11 +5,13 @@ import com.Optimart.models.User;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.io.Encoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
+import java.security.SecureRandom;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,6 +26,7 @@ public class JwtTokenUtil {
 
     public String generateToken(User user) throws Exception{
         Map<String,Object> claims =new HashMap<>();
+        String SEcretKey = this.generateSecretKey();
         claims.put("email", user.getEmail());
         try {
             String token = Jwts.builder()
@@ -44,12 +47,11 @@ public class JwtTokenUtil {
         return Keys.hmacShaKeyFor(bytes);
     }
 
-    //    private String generateSecretKey() {
-//        SecureRandom random = new SecureRandom();
-//        byte[] keyBytes = new byte[32]; // 256-bit key
-//        random.nextBytes(keyBytes);
-//        String secretKey = Encoders.BASE64.encode(keyBytes);
-//        return secretKey;
-//    }
+        private String generateSecretKey() {
+        SecureRandom random = new SecureRandom();
+        byte[] keyBytes = new byte[32]; // 256-bit key
+        random.nextBytes(keyBytes);
+        return Encoders.BASE64.encode(keyBytes);
+    }
 
 }
