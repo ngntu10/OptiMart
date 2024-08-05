@@ -46,6 +46,7 @@ public class UserService implements IUserService {
                 .facebookAccountId(userDTO.getFacebookAccountId())
                 .googleAccountId(userDTO.getGoogleAccountId())
                 .status(1)
+                .userType(3)
                 .build();
 
         List<Role> roles = new ArrayList<>() ;

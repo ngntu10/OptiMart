@@ -3,6 +3,7 @@ package com.Optimart.controllers;
 import com.Optimart.dto.UserDTO;
 import com.Optimart.constants.Endpoint;
 import com.Optimart.dto.UserLoginDTO;
+import com.Optimart.models.User;
 import com.Optimart.responses.LoginResponse;
 import com.Optimart.responses.RegisterResponse;
 import com.Optimart.services.User.UserService;
@@ -42,7 +43,9 @@ public class AuthController {
             if(!userDTO.getPassword().equals(userDTO.getRetypePassword())){
                 return ResponseEntity.badRequest().body("Password does not match");
             }
-            userService.createUser(userDTO);
+            User registerUser = userService.createUser(userDTO);
+            registerResponse.setMessage("Register Successfully");
+            registerResponse.setUser(registerUser);
             return ResponseEntity.ok(registerResponse);
         }catch (Exception ex) {
             registerResponse.setMessage(ex.getMessage());
