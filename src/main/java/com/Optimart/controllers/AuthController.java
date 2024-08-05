@@ -26,7 +26,7 @@ public class AuthController {
 
     private final UserService userService;
 
-    @PostMapping(Endpoint.Auth.REGISTER)
+    @PostMapping("/register")
     public ResponseEntity<?> createUser(@Valid @RequestBody UserDTO userDTO,
                                         BindingResult result) {
         RegisterResponse registerResponse = new RegisterResponse();
