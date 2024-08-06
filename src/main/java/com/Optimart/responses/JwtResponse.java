@@ -1,5 +1,6 @@
 package com.Optimart.responses;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 import java.util.List;
@@ -10,7 +11,9 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class JwtResponse {
+    @JsonProperty("token")
     private String token;
-    private String type = "Bearer";
+
+    @JsonProperty("refreshToken")
     private String refreshToken;
 }

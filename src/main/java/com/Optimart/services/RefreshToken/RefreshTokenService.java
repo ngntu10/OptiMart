@@ -27,18 +27,18 @@ public class RefreshTokenService implements IRefreshTokenService {
     private final JwtTokenUtil jwtTokenUtil;
     @Override
     public Optional<RefreshToken> findByToken(String token) {
-        return refreshTokenRepository.findByToken(token);
+        return refreshTokenRepository.findByRefreshtoken(token);
     }
 
     @Override
-    public RefreshToken createRefreshToken(UUID userId) {
+    public RefreshToken createRefreshToken(String userEmail) {
         try {
-            User user = userRepository.findById(userId)
+            User user = userRepository.findByEmail(userEmail)
                     .orElseThrow(() -> new RuntimeException("User not found"));
             RefreshToken refreshToken = RefreshToken.builder()
                     .user(user)
                     .expiryDate(new Date(System.currentTimeMillis()+jwtRefreshExpiration*1000L))
-                    .token(jwtTokenUtil.generateToken(userRepository.findById(userId).get()))
+                    .refreshtoken(jwtTokenUtil.generateToken(userRepository.findByEmail(userEmail).get()))
                     .build();
             return refreshTokenRepository.save(refreshToken);
         }catch (Exception ex){
@@ -47,12 +47,8 @@ public class RefreshTokenService implements IRefreshTokenService {
     }
 
     @Override
-    public RefreshToken verifyExpiration(RefreshToken token) {
-        if (token.getExpiryDate().before(new Date())) {
-            refreshTokenRepository.delete(token);
-            throw new TokenRefreshException(token.getToken(), "Refresh token was expired. Please make a new signin request");
-        }
-        return token;
+    public boolean verifyExpiration(RefreshToken token) {
+        return token.getExpiryDate().before(new Date());
     }
 
     @Override
@@ -60,11 +56,4 @@ public class RefreshTokenService implements IRefreshTokenService {
     public int deleteByUserId(UUID userId) {
         return refreshTokenRepository.deleteByUser(userRepository.findById(userId).get());
     }
-
-    @Override
-    public boolean isRefreshTokenExpired(RefreshToken token) {
-        return false;
-    }
-
-
 }

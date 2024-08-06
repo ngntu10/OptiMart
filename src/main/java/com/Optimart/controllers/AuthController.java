@@ -19,7 +19,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -64,20 +63,24 @@ public class AuthController {
             @Valid @RequestBody UserLoginDTO userLoginDTO){
 
         try {
-            String token = userService.login(
+            String access_token = userService.login(
                     userLoginDTO.getMail(),
                     userLoginDTO.getPassword()
             );
+            RefreshToken refreshToken = refreshTokenService.createRefreshToken(userLoginDTO.getMail());
+            String refresh_token = refreshToken.getRefreshtoken();
             return ResponseEntity.ok(LoginResponse.builder()
                     .message("Login successfully")
-                    .accessToken(token)
+                    .accessToken(access_token)
+                    .refreshToken(refresh_token)
 //                    .user()
                     .build()
             );
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(
                 LoginResponse.builder()
-                        .message("Login failed")
+//                        .message("Login failed")
+                        .message(e.getMessage())
                         .build()
             );
         }
@@ -86,27 +89,24 @@ public class AuthController {
     public ResponseEntity<TokenRefreshResponse> refreshtoken(@Valid @RequestBody TokenRefreshRequest request) {
         String requestRefreshToken = request.getRefreshToken();
         try {
-            // Tìm RefreshToken từ cơ sở dữ liệu
             RefreshToken refreshToken = refreshTokenService.findByToken(requestRefreshToken)
-                    .orElseThrow(() -> new TokenRefreshException(requestRefreshToken, "Refresh token is not in database!"));
-
+                    .orElseThrow(() -> new TokenRefreshException(requestRefreshToken, "Refresh token not existed"));
             // Xác thực thời gian hết hạn
             if (refreshTokenService.verifyExpiration(refreshToken)) {
                 User user = refreshToken.getUser();
                 // Tạo token mới
                 String token = jwtTokenUtil.generateToken(user);
-
-                // Trả về phản hồi thành công
-                return ResponseEntity.ok(new TokenRefreshResponse(token, requestRefreshToken));
+                return ResponseEntity.ok(new TokenRefreshResponse(token, requestRefreshToken,"Get access token success"));
             } else {
                 throw new TokenRefreshException(requestRefreshToken, "Refresh token has expired!");
             }
-        } catch (TokenRefreshException ex) {
-            // Trả về phản hồi lỗi với mã 400 (Bad Request)
-            return ResponseEntity.badRequest().body(new ErrorResponse(ex.getMessage()));
         } catch (Exception ex) {
             // Xử lý các lỗi khác
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("An error occurred"));
+            return ResponseEntity.badRequest().body(
+                    TokenRefreshResponse.builder()
+                            .message(ex.getMessage())
+                            .build()
+            );
         }
     }
 

@@ -8,9 +8,10 @@ import java.util.Date;
 @Getter
 @Setter
 @Builder
+@Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity(name = "refreshToken")
+@Table(name = "refresh_token")
 public class RefreshToken {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -21,7 +22,7 @@ public class RefreshToken {
     private User user;
 
     @Column(nullable = false, unique = true)
-    private String token;
+    private String refreshtoken;
 
     @Column(nullable = false)
     private Date expiryDate;
