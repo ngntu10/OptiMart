@@ -63,7 +63,8 @@ public class AuthController {
             );
             return ResponseEntity.ok(LoginResponse.builder()
                     .message("Login successfully")
-                    .token(token)
+                    .accessToken(token)
+//                    .user()
                     .build()
             );
         } catch (Exception e) {

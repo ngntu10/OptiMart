@@ -1,4 +1,4 @@
-package com.Optimart.responses;
+package com.Optimart.response;
 
 import com.Optimart.models.User;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -10,9 +10,18 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 public class LoginResponse {
+    @JsonProperty("access_token")
+    private String accessToken;
+
+    @JsonProperty("refresh_token")
+    private String refreshToken;
+
+    @JsonProperty("user")
+    private User user;
+
     @JsonProperty("message")
     private String message;
 
-    @JsonProperty("token")
-    private String token;
+    @JsonProperty("status")
+    private String status;
 }
