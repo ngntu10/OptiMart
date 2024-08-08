@@ -47,13 +47,21 @@ public class RefreshTokenService implements IRefreshTokenService {
     }
 
     @Override
-    public boolean verifyExpiration(RefreshToken token) {
+    public boolean isExpired(RefreshToken token) {
         return token.getExpiryDate().before(new Date());
     }
-
+    @Override
+    public RefreshToken verifyExpiration(RefreshToken token) {
+        if (token.getExpiryDate().before(new Date())) {
+            refreshTokenRepository.delete(token);
+            throw new TokenRefreshException(token.getRefreshtoken(), "Refresh token was expired. Please make a new signin request");
+        }
+        return token;
+    }
     @Override
     @Transactional
-    public int deleteByUserId(UUID userId) {
-        return refreshTokenRepository.deleteByUser(userRepository.findById(userId).get());
+    public int deleteByUserId(String userEmail) {
+        return refreshTokenRepository.deleteByUser(userRepository.findByEmail(userEmail).get());
     }
+
 }

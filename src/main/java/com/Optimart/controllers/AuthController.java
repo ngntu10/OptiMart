@@ -63,6 +63,7 @@ public class AuthController {
             @Valid @RequestBody UserLoginDTO userLoginDTO){
 
         try {
+            refreshTokenService.deleteByUserId(userLoginDTO.getMail());
             String access_token = userService.login(
                     userLoginDTO.getMail(),
                     userLoginDTO.getPassword()
@@ -91,8 +92,10 @@ public class AuthController {
         try {
             RefreshToken refreshToken = refreshTokenService.findByToken(requestRefreshToken)
                     .orElseThrow(() -> new TokenRefreshException(requestRefreshToken, "Refresh token not existed"));
+            // Kiểm tra và xóa refreshToken còn tồn tại trong hệ thống
+            RefreshToken verifiedRefreshToken = refreshTokenService.verifyExpiration(refreshToken);
             // Xác thực thời gian hết hạn
-            if (refreshTokenService.verifyExpiration(refreshToken)) {
+            if (refreshTokenService.isExpired(verifiedRefreshToken)) {
                 User user = refreshToken.getUser();
                 // Tạo token mới
                 String token = jwtTokenUtil.generateToken(user);
@@ -101,7 +104,6 @@ public class AuthController {
                 throw new TokenRefreshException(requestRefreshToken, "Refresh token has expired!");
             }
         } catch (Exception ex) {
-            // Xử lý các lỗi khác
             return ResponseEntity.badRequest().body(
                     TokenRefreshResponse.builder()
                             .message(ex.getMessage())
