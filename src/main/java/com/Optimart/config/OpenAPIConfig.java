@@ -1,48 +1,19 @@
 package com.Optimart.config;
 
-import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import java.util.List;
+
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
-import io.swagger.v3.oas.annotations.info.Info;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
-import io.swagger.v3.oas.annotations.servers.Server;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-//
-//@Configuration
-//public class SwaggerConfig {
-//
-//    @Bean
-//    public GroupedOpenApi publicApi() {
-//        return GroupedOpenApi.builder()
-//                .group("public-apis")
-//                .pathsToMatch("/**")
-//                .build();
-//    }
-//
-//    @Bean
-//    public OpenAPI customOpenAPI() {
-//        return new OpenAPI()
-//                .info(new Info().title("API title").version("API version"))
-//                .addSecurityItem(new SecurityRequirement().addList("bearerAuth"))
-//                .components(new Components()
-//                        .addSecuritySchemes("bearerAuth", new SecurityScheme()
-//                                .type(SecurityScheme.Type.HTTP)
-//                                .scheme("bearer")
-//                                .bearerFormat("JWT")));
-//    }
-//}
-
-@OpenAPIDefinition(
-        info = @Info(
-                title = "Optimart API",
-                version = "1.0.0",
-                description = "Optimart"
-        ),
-        servers = {
-                @Server(url = "http://localhost:8080", description = "Local development Server"),
-        }
-)
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Contact;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.info.License;
+import io.swagger.v3.oas.models.servers.Server;
 
 @SecurityScheme(
         name = "bearer-key",
@@ -51,8 +22,41 @@ import org.springframework.context.annotation.Configuration;
         bearerFormat = "JWT",
         in = SecuritySchemeIn.HEADER
 )
-
 @Configuration
 public class OpenAPIConfig {
+
+//        @Value("${optimart.openapi.dev-url}")
+//        private String devUrl;
+//
+//        @Value("${optimart.openapi.prod-url}")
+//        private String prodUrl;
+
+        @Bean
+        public OpenAPI myOpenAPI() {
+                Server devServer = new Server();
+                devServer.setUrl("http://localhost:8080");
+                devServer.setDescription("Server URL in Development environment");
+
+//                Server prodServer = new Server();
+//                prodServer.setUrl(prodUrl);
+//                prodServer.setDescription("Server URL in Production environment");
+
+                Contact contact = new Contact();
+                contact.setEmail("phamnguyentu04@gmail.com");
+                contact.setName("Pham Nguyen Tu");
+                contact.setUrl("https://www.linkedin.com/in/ngntu10/");
+
+                License mitLicense = new License().name("MIT License").url("https://choosealicense.com/licenses/mit/");
+
+                Info info = new Info()
+                        .title("OPTIMART API")
+                        .version("1.0.1")
+                        .contact(contact)
+                        .description("This API exposes endpoints to manage optimart.").termsOfService("https://www.linkedin.com/in/ngntu10/")
+                        .license(mitLicense);
+
+                return new OpenAPI().info(info).servers(List.of(devServer));
+        }
 }
+
 
