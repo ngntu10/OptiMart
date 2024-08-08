@@ -27,13 +27,14 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
     private final JwtTokenUtil jwtTokenUtil;
     private final UserDetailsService userDetailsService;
-    @Value("${server.servlet.context-path}")
+    @Value("${api.prefix}")
     private String apiPrefix;
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
                                     @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain) throws ServletException, IOException {
         try {
+            System.out.println(request.getRequestURI());
             if(isByPassToken(request)){
                 filterChain.doFilter(request,response);  //enable bypass
                 return;
@@ -68,7 +69,21 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     private boolean isByPassToken(@NonNull HttpServletRequest request){
         final List<Pair<String,String>> byPassToken = Arrays.asList(
                 Pair.of(String.format("%s/auth/register", apiPrefix), "POST"),
-                Pair.of(String.format("%s/auth/login", apiPrefix), "POST")
+                Pair.of(String.format("%s/auth/login", apiPrefix), "POST"),
+
+                Pair.of("/swagger-ui/**", "GET"),
+                Pair.of("/swagger-ui", "GET"),
+                Pair.of("/swagger-ui.html", "GET"),
+                Pair.of("/swagger-ui/index.html", "GET"),
+                Pair.of("/swagger/**", "GET"),
+                Pair.of("/v3/api-docs/**", "GET"),
+                Pair.of("/api-docs/**", "GET"),
+                Pair.of("/api-docs", "GET"),
+                Pair.of("/swagger-resources/**", "GET"),
+                Pair.of("/swagger-resources/", "GET"),
+                Pair.of("/configuration/ui", "GET"),
+                Pair.of("/configuration/security", "GET")
+
         );
         for(Pair<String,String> bypasstoken: byPassToken) {
            if (request.getRequestURI().contains(bypasstoken.getFirst()) &&
