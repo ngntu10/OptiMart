@@ -13,6 +13,7 @@ import com.Optimart.responses.TokenRefreshResponse;
 import com.Optimart.services.RefreshToken.RefreshTokenService;
 import com.Optimart.services.User.UserService;
 import com.Optimart.utils.JwtTokenUtil;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -27,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 @RequiredArgsConstructor
 @RestController
+@Tag(name = "Auth", description = "Everything about auth")
 @RequestMapping(Endpoint.Auth.BASE)
 public class AuthController {
     private final UserService userService;
