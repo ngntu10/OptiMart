@@ -33,10 +33,7 @@ import java.lang.annotation.Target;
                 ),
                 @ApiResponse(
                         responseCode = "403",
-                        description = "FORBIDDEN",
-                        content = @Content(
-                                schema = @Schema(implementation = Object.class)
-                        )
+                        description = "FORBIDDEN"
                 ),
                 @ApiResponse(
                         responseCode = "404",
@@ -54,10 +51,7 @@ import java.lang.annotation.Target;
                 ),
                 @ApiResponse(
                         responseCode = "500",
-                        description = "INTERNAL_SERVER_ERROR",
-                        content = @Content(
-                                schema = @Schema(implementation = ErrorResponse.class)
-                        )
+                        description = "INTERNAL_SERVER_ERROR"
                 )}
 
 )
