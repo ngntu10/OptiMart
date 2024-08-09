@@ -29,36 +29,44 @@ import java.lang.annotation.Target;
         ),
                 @ApiResponse(
                         responseCode = "400",
-                        description = "INVALID"
+                        description = "BAD_REQUEST",
+                        content = @Content(
+                                schema = @Schema()
+                        )
                 ),
                 @ApiResponse(
-                        responseCode = "403",
-                        description = "FORBIDDEN"
+                        responseCode = "401",
+                        description = "UNAUTHORIZED",
+                        content = @Content(
+                                schema = @Schema()
+                        )
                 ),
                 @ApiResponse(
                         responseCode = "404",
                         description = "NOT_FOUND",
                         content = @Content(
-                                schema = @Schema(implementation = Object.class)
-                        )
+                        schema = @Schema()
+                )
                 ),
                 @ApiResponse(
                         responseCode = "409",
                         description = "ALREADY_EXIST",
                         content = @Content(
-                                schema = @Schema(implementation = ErrorResponse.class)
-                        )
+                        schema = @Schema()
+                )
                 ),
                 @ApiResponse(
                         responseCode = "500",
-                        description = "INTERNAL_SERVER_ERROR"
+                        description = "INTERNAL_SERVER_ERROR",
+                        content = @Content(
+                                schema = @Schema()
+                        )
                 )}
 
 )
-public @interface SwaggerDescriptionAnnotation {
+public @interface SwaggerOperation {
     String summary() default "";
     String description() default "";
     String[] tags() default {};
     Class<?> implementation() default Object.class;
-    Class<?> response200() default Object.class;
 }

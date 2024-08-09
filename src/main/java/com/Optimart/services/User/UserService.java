@@ -1,6 +1,6 @@
 package com.Optimart.services.User;
 
-import com.Optimart.dto.UserDTO;
+import com.Optimart.dto.Auth.UserRegisterDTO;
 import com.Optimart.enums.RoleNameEnum;
 import com.Optimart.exceptions.DataNotFoundException;
 import com.Optimart.models.Role;
@@ -10,7 +10,6 @@ import com.Optimart.repositories.UserRepository;
 import com.Optimart.utils.JwtTokenUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -31,20 +30,22 @@ public class UserService implements IUserService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtTokenUtil jwtTokenUtil;
+
+
     @Override
     @Transactional
-    public User createUser(UserDTO userDTO) throws Exception {
-        String email = userDTO.getMail();
+    public User createUser(UserRegisterDTO userRegisterDTO) throws Exception {
+        String email = userRegisterDTO.getMail();
         if (userRepository.existsByEmail(email)){
             throw new DataIntegrityViolationException("Email already exists");
         }
 
         // CONVERT DTO => ENTITY
         User newUser = User.builder()
-                .email(userDTO.getMail())
-                .password(userDTO.getPassword())
-                .facebookAccountId(userDTO.getFacebookAccountId())
-                .googleAccountId(userDTO.getGoogleAccountId())
+                .email(userRegisterDTO.getMail())
+                .password(userRegisterDTO.getPassword())
+                .facebookAccountId(userRegisterDTO.getFacebookAccountId())
+                .googleAccountId(userRegisterDTO.getGoogleAccountId())
                 .status(1)
                 .userType(3)
                 .build();
@@ -54,8 +55,8 @@ public class UserService implements IUserService {
         newUser.setRoleList(roles);
 
         // Kiểm tra nếu có accountId, không yêu cầu password
-        if (userDTO.getFacebookAccountId() == 0 && userDTO.getGoogleAccountId() == 0) {
-            String password = userDTO.getPassword();
+        if (userRegisterDTO.getFacebookAccountId() == 0 && userRegisterDTO.getGoogleAccountId() == 0) {
+            String password = userRegisterDTO.getPassword();
             String encodedPassword = passwordEncoder.encode(password);
             newUser.setPassword(encodedPassword);
         }
@@ -88,5 +89,10 @@ public class UserService implements IUserService {
         //authenticate with Java Spring security
         authenticationManager.authenticate(authenticationToken);
         return jwtTokenUtil.generateToken(existingUser);
+    }
+
+    @Override
+    public User findUserByEmail(String email) throws Exception {
+        return userRepository.findByEmail(email).get();
     }
 }

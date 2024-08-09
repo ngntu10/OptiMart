@@ -1,13 +1,13 @@
 package com.Optimart.controllers;
 
-import com.Optimart.annotations.SwaggerDescriptionAnnotation;
-import com.Optimart.dto.UserDTO;
+import com.Optimart.annotations.SwaggerOperation;
+import com.Optimart.dto.Auth.UserRegisterDTO;
 import com.Optimart.constants.Endpoint;
-import com.Optimart.dto.UserLoginDTO;
+import com.Optimart.dto.Auth.UserLoginDTO;
 import com.Optimart.exceptions.TokenRefreshException;
 import com.Optimart.models.RefreshToken;
 import com.Optimart.models.User;
-import com.Optimart.requests.TokenRefreshRequest;
+import com.Optimart.dto.Auth.RefreshTokenRequest;
 import com.Optimart.responses.LoginResponse;
 import com.Optimart.responses.RegisterResponse;
 import com.Optimart.responses.TokenRefreshResponse;
@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+
 @RequiredArgsConstructor
 @RestController
 @Tag(name = "Auth", description = "Everything about auth")
@@ -39,13 +40,21 @@ public class AuthController {
     private final RefreshTokenService refreshTokenService;
     private final JwtTokenUtil jwtTokenUtil;
 
-    @SwaggerDescriptionAnnotation(summary = "Register User", tags = { "Auth" })
+    @ApiResponse(
+            responseCode = "200",
+            description = "OK",
+            content = @Content(
+                    schema = @Schema(implementation = RegisterResponse.class),
+                    mediaType = "application/json"
+            )
+    )
+    @SwaggerOperation(summary = "Register User")
     @PostMapping(Endpoint.Auth.REGISTER)
-    public ResponseEntity<?> createUser(@Valid @RequestBody UserDTO userDTO,
-                                        BindingResult result) {
+    public ResponseEntity<RegisterResponse> createUser(@Valid @RequestBody UserRegisterDTO userRegisterDTO,
+                                                       BindingResult result) {
         RegisterResponse registerResponse = new RegisterResponse();
         try {
-            if(result.hasErrors()){
+            if (result.hasErrors()) {
                 List<String> errorMessages = result.getFieldErrors()
                         .stream()
                         .map(FieldError::getDefaultMessage)
@@ -53,25 +62,32 @@ public class AuthController {
                 registerResponse.setMessage(errorMessages.toString());
                 return ResponseEntity.badRequest().body(registerResponse);
             }
-            if(!userDTO.getPassword().equals(userDTO.getRetypePassword())){
+            if (!userRegisterDTO.getPassword().equals(userRegisterDTO.getRetypePassword())) {
                 registerResponse.setMessage("Password does not match");
                 return ResponseEntity.badRequest().body(registerResponse);
             }
-            User registerUser = userService.createUser(userDTO);
+            User registerUser = userService.createUser(userRegisterDTO);
             registerResponse.setMessage("Register Successfully");
             registerResponse.setUser(registerUser);
             return ResponseEntity.ok(registerResponse);
-        }catch (Exception ex) {
+        } catch (Exception ex) {
             registerResponse.setMessage(ex.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(registerResponse);
         }
     }
 
-    @SwaggerDescriptionAnnotation(summary = "Login User", tags = { "Auth" })
+    @ApiResponse(
+            responseCode = "200",
+            description = "OK",
+            content = @Content(
+                    schema = @Schema(implementation = LoginResponse.class),
+                    mediaType = "application/json"
+            )
+    )
+    @SwaggerOperation(summary = "Login User")
     @PostMapping(Endpoint.Auth.LOGIN)
     public ResponseEntity<LoginResponse> login(
-            @Valid @RequestBody UserLoginDTO userLoginDTO){
-
+            @Valid @RequestBody UserLoginDTO userLoginDTO) {
         try {
             refreshTokenService.deleteByUserId(userLoginDTO.getMail());
             String access_token = userService.login(
@@ -79,38 +95,47 @@ public class AuthController {
                     userLoginDTO.getPassword()
             );
             RefreshToken refreshToken = refreshTokenService.createRefreshToken(userLoginDTO.getMail());
+            User user = userService.findUserByEmail(userLoginDTO.getMail());
             String refresh_token = refreshToken.getRefreshtoken();
             return ResponseEntity.ok(LoginResponse.builder()
-                    .message("Login successfully")
-                    .accessToken(access_token)
-                    .refreshToken(refresh_token)
-//                    .user()
-                    .build()
+                            .message("Login successfully")
+                            .accessToken(access_token)
+                            .refreshToken(refresh_token)
+                            .user(user)
+                            .build()
             );
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(
-                LoginResponse.builder()
-//                        .message("Login failed")
-                        .message(e.getMessage())
-                        .build()
+                    LoginResponse.builder()
+                            .message("Login successfully")
+                            .accessToken("")
+                            .refreshToken("")
+                            .user(null)
+                            .build()
             );
         }
     }
-    @SwaggerDescriptionAnnotation(summary = "Get new access token", tags = { "Auth" })
+
+    @ApiResponse(
+            responseCode = "200",
+            description = "OK",
+            content = @Content(
+                    schema = @Schema(implementation = TokenRefreshResponse.class),
+                    mediaType = "application/json"
+            )
+    )
+    @SwaggerOperation(summary = "Get new access token", implementation = TokenRefreshResponse.class)
     @PostMapping("/refreshtoken")
-    public ResponseEntity<TokenRefreshResponse> refreshtoken(@Valid @RequestBody TokenRefreshRequest request) {
+    public ResponseEntity<TokenRefreshResponse> refreshtoken(@Valid @RequestBody RefreshTokenRequest request) {
         String requestRefreshToken = request.getRefreshToken();
         try {
             RefreshToken refreshToken = refreshTokenService.findByToken(requestRefreshToken)
                     .orElseThrow(() -> new TokenRefreshException(requestRefreshToken, "Refresh token not existed"));
-            // Kiểm tra và xóa refreshToken còn tồn tại trong hệ thống
             RefreshToken verifiedRefreshToken = refreshTokenService.verifyExpiration(refreshToken);
-            // Xác thực thời gian hết hạn
             if (refreshTokenService.isExpired(verifiedRefreshToken)) {
                 User user = refreshToken.getUser();
-                // Tạo token mới
                 String token = jwtTokenUtil.generateToken(user);
-                return ResponseEntity.ok(new TokenRefreshResponse(token, requestRefreshToken,"Get access token success"));
+                return ResponseEntity.ok(new TokenRefreshResponse(token, requestRefreshToken, "Get access token success"));
             } else {
                 throw new TokenRefreshException(requestRefreshToken, "Refresh token has expired!");
             }

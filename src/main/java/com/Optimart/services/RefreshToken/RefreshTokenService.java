@@ -60,8 +60,10 @@ public class RefreshTokenService implements IRefreshTokenService {
     }
     @Override
     @Transactional
-    public int deleteByUserId(String userEmail) {
-        return refreshTokenRepository.deleteByUser(userRepository.findByEmail(userEmail).get());
+    public void deleteByUserId(String userEmail) {
+        if(!userRepository.findByEmail(userEmail).isEmpty()) {
+            refreshTokenRepository.deleteByUser(userRepository.findByEmail(userEmail).get());
+        }
     }
 
 }

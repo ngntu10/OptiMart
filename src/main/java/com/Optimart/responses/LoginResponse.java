@@ -11,13 +11,13 @@ import lombok.*;
 @Builder
 public class LoginResponse {
     @JsonProperty("access_token")
-    private String accessToken;
+    private String accessToken = "";
 
     @JsonProperty("refresh_token")
-    private String refreshToken;
+    private String refreshToken = "";
 
     @JsonProperty("user")
-    private User user;
+    private User user = new User();
 
     @JsonProperty("message")
     private String message;

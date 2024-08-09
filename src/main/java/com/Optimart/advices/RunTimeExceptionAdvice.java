@@ -15,7 +15,6 @@ import java.util.Date;
 public class RunTimeExceptionAdvice {
 
     @ExceptionHandler(value = CustomException.class)
-    @ResponseStatus(HttpStatus.FORBIDDEN)
     public ResponseEntity<ErrorResponse> handleCustomException(CustomException ex, WebRequest request) {
         ErrorResponse errorResponse = new ErrorResponse(
                 ex.getHttpStatus().value(),

@@ -1,12 +1,9 @@
-package com.Optimart.dto;
+package com.Optimart.dto.Auth;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
-
-import java.util.Date;
-import java.util.UUID;
 
 @Data //toString
 @Builder
@@ -14,7 +11,7 @@ import java.util.UUID;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserDTO {
+public class UserRegisterDTO {
     @Schema(description = "User email address", example = "admin@gmail.com")
     @JsonProperty("email")
     @NotBlank(message = "Mail is required")

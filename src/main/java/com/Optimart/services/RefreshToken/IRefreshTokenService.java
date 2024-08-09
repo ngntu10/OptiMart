@@ -9,7 +9,7 @@ public interface IRefreshTokenService {
     public Optional<RefreshToken> findByToken(String token);
     public RefreshToken createRefreshToken(String userEmail);
     public RefreshToken verifyExpiration(RefreshToken token);
-    public int deleteByUserId(String userEmail);
+    public void deleteByUserId(String userEmail);
     public boolean isExpired(RefreshToken token);
 
 }

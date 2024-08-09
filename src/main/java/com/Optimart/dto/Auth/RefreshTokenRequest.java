@@ -1,4 +1,4 @@
-package com.Optimart.requests;
+package com.Optimart.dto.Auth;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
@@ -8,7 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class TokenRefreshRequest {
+public class RefreshTokenRequest {
     @NotBlank
     private String refreshToken;
 }
