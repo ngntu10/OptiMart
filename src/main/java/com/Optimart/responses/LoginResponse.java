@@ -2,6 +2,7 @@ package com.Optimart.responses;
 
 import com.Optimart.models.User;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
 @Getter
@@ -10,18 +11,29 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 public class LoginResponse {
-    @JsonProperty("access_token")
-    private String accessToken = "";
 
-    @JsonProperty("refresh_token")
-    private String refreshToken = "";
+    private int status;
 
-    @JsonProperty("user")
-    private User user = new User();
-
-    @JsonProperty("message")
     private String message;
 
-    @JsonProperty("status")
-    private String status;
+    private String typeError;
+
+    private Data data;
+
+    private String statusMessage;
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    public static class Data {
+        @JsonProperty("access_token")
+        private String accessToken = "";
+
+        @JsonProperty("refresh_token")
+        private String refreshToken = "";
+        private User user;
+    }
+
 }

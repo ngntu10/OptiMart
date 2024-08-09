@@ -11,8 +11,8 @@ import java.time.LocalDateTime;
 @Data//toString
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
+//@AllArgsConstructor
+//@NoArgsConstructor
 @MappedSuperclass
 public class BaseEntity {
     @Column(name = "created_at")

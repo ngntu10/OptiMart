@@ -9,6 +9,7 @@ import com.Optimart.models.RefreshToken;
 import com.Optimart.models.User;
 import com.Optimart.dto.Auth.RefreshTokenRequest;
 import com.Optimart.responses.LoginResponse;
+import com.Optimart.responses.LoginResponse.Data;
 import com.Optimart.responses.RegisterResponse;
 import com.Optimart.responses.TokenRefreshResponse;
 import com.Optimart.services.RefreshToken.RefreshTokenService;
@@ -97,20 +98,22 @@ public class AuthController {
             RefreshToken refreshToken = refreshTokenService.createRefreshToken(userLoginDTO.getMail());
             User user = userService.findUserByEmail(userLoginDTO.getMail());
             String refresh_token = refreshToken.getRefreshtoken();
-            return ResponseEntity.ok(LoginResponse.builder()
-                            .message("Login successfully")
-                            .accessToken(access_token)
-                            .refreshToken(refresh_token)
-                            .user(user)
-                            .build()
-            );
+
+            Data data = Data.builder()
+                    .accessToken(access_token)
+                    .refreshToken(refresh_token)
+                    .user(user).build();
+
+            LoginResponse loginResponse = LoginResponse.builder()
+                    .status(200)
+                    .statusMessage("success")
+                    .message("Login successfully")
+                    .data(data).build();
+            return ResponseEntity.ok(loginResponse);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(
                     LoginResponse.builder()
-                            .message("Login successfully")
-                            .accessToken("")
-                            .refreshToken("")
-                            .user(null)
+                            .message(e.getMessage())
                             .build()
             );
         }
