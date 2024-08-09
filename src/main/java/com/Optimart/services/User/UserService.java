@@ -41,11 +41,8 @@ public class UserService implements IUserService {
 
         // CONVERT DTO => ENTITY
         User newUser = User.builder()
-                .fullName(userDTO.getFullName())
                 .email(userDTO.getMail())
                 .password(userDTO.getPassword())
-                .phoneNumber(userDTO.getPhoneNumber())
-                .address(userDTO.getAddress())
                 .facebookAccountId(userDTO.getFacebookAccountId())
                 .googleAccountId(userDTO.getGoogleAccountId())
                 .status(1)

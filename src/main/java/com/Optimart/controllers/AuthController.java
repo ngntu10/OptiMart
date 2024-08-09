@@ -1,5 +1,6 @@
 package com.Optimart.controllers;
 
+import com.Optimart.annotations.SwaggerDescriptionAnnotation;
 import com.Optimart.dto.UserDTO;
 import com.Optimart.constants.Endpoint;
 import com.Optimart.dto.UserLoginDTO;
@@ -13,6 +14,9 @@ import com.Optimart.responses.TokenRefreshResponse;
 import com.Optimart.services.RefreshToken.RefreshTokenService;
 import com.Optimart.services.User.UserService;
 import com.Optimart.utils.JwtTokenUtil;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +38,8 @@ public class AuthController {
     private final UserService userService;
     private final RefreshTokenService refreshTokenService;
     private final JwtTokenUtil jwtTokenUtil;
+
+    @SwaggerDescriptionAnnotation(summary = "Register User", tags = { "Auth" })
     @PostMapping(Endpoint.Auth.REGISTER)
     public ResponseEntity<?> createUser(@Valid @RequestBody UserDTO userDTO,
                                         BindingResult result) {
@@ -48,7 +54,8 @@ public class AuthController {
                 return ResponseEntity.badRequest().body(registerResponse);
             }
             if(!userDTO.getPassword().equals(userDTO.getRetypePassword())){
-                return ResponseEntity.badRequest().body("Password does not match");
+                registerResponse.setMessage("Password does not match");
+                return ResponseEntity.badRequest().body(registerResponse);
             }
             User registerUser = userService.createUser(userDTO);
             registerResponse.setMessage("Register Successfully");
@@ -60,6 +67,7 @@ public class AuthController {
         }
     }
 
+    @SwaggerDescriptionAnnotation(summary = "Login User", tags = { "Auth" })
     @PostMapping(Endpoint.Auth.LOGIN)
     public ResponseEntity<LoginResponse> login(
             @Valid @RequestBody UserLoginDTO userLoginDTO){
@@ -88,6 +96,7 @@ public class AuthController {
             );
         }
     }
+    @SwaggerDescriptionAnnotation(summary = "Get new access token", tags = { "Auth" })
     @PostMapping("/refreshtoken")
     public ResponseEntity<TokenRefreshResponse> refreshtoken(@Valid @RequestBody TokenRefreshRequest request) {
         String requestRefreshToken = request.getRefreshToken();

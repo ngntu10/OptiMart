@@ -1,11 +1,12 @@
 package com.Optimart.annotations;
 
-
+import com.Optimart.responses.ErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -17,20 +18,53 @@ import java.lang.annotation.Target;
 @Operation(
         summary = "",
         description = "",
-        tags = { "" }
+        tags = { "" },
+        responses = {@ApiResponse(
+                responseCode = "200",
+                description = "OK",
+                content = @Content(
+                        schema = @Schema(implementation = Object.class),
+                        mediaType = "application/json"
+                )
+        ),
+                @ApiResponse(
+                        responseCode = "400",
+                        description = "INVALID"
+                ),
+                @ApiResponse(
+                        responseCode = "403",
+                        description = "FORBIDDEN",
+                        content = @Content(
+                                schema = @Schema(implementation = Object.class)
+                        )
+                ),
+                @ApiResponse(
+                        responseCode = "404",
+                        description = "NOT_FOUND",
+                        content = @Content(
+                                schema = @Schema(implementation = Object.class)
+                        )
+                ),
+                @ApiResponse(
+                        responseCode = "409",
+                        description = "ALREADY_EXIST",
+                        content = @Content(
+                                schema = @Schema(implementation = ErrorResponse.class)
+                        )
+                ),
+                @ApiResponse(
+                        responseCode = "500",
+                        description = "INTERNAL_SERVER_ERROR",
+                        content = @Content(
+                                schema = @Schema(implementation = ErrorResponse.class)
+                        )
+                )}
+
 )
-@ApiResponses({
-        @ApiResponse(responseCode = "200", content = { @Content(schema = @Schema(implementation = Object.class), mediaType = "application/json") }),
-        @ApiResponse(responseCode = "404", content = @Content(schema = @Schema())),
-        @ApiResponse(responseCode = "500", content = @Content(schema = @Schema()))
-})
 public @interface SwaggerDescriptionAnnotation {
-
-    String summary() default "Retrieve an entity by Id";
-
-    String description() default "Get an entity object by specifying its id.";
-
+    String summary() default "";
+    String description() default "";
     String[] tags() default {};
-
     Class<?> implementation() default Object.class;
+    Class<?> response200() default Object.class;
 }

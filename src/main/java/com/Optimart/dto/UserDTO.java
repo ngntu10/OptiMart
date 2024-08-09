@@ -1,10 +1,12 @@
 package com.Optimart.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 import java.util.Date;
+import java.util.UUID;
 
 @Data //toString
 @Builder
@@ -13,39 +15,23 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserDTO {
-
-    @JsonProperty("fullname")
-    private String fullName;
-
-    @JsonProperty("phone_number")
-//    @NotBlank(message = "Phone number is required")
-    private String phoneNumber;
-
+    @Schema(description = "User email address", example = "admin@gmail.com")
     @JsonProperty("email")
     @NotBlank(message = "Mail is required")
     private String mail;
 
-    private String address;
 
+    @Schema(description = "User password", example = "123456789Tu@")
     @NotBlank(message = "Password can not be blank")
     private String password;
 
+    @Schema(description = "User password retype", example = "123456789Tu@")
     @JsonProperty("retype_password")
     private String retypePassword;
-
-    @JsonProperty("date_of_birth")
-    private Date dateOfBirth;
-
-    @JsonProperty("avatar")
-    private String avatar;
 
     @JsonProperty("facebook_account_id")
     private int facebookAccountId;
 
     @JsonProperty("google_account_id")
     private int googleAccountId;
-
-//    @NotNull(message = "Role id is required")
-    @JsonProperty("role_id")
-    private Long roleId;
 }
