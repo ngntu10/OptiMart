@@ -1,13 +1,11 @@
-    package com.Optimart.config;
+    package com.Optimart.configuration;
 
     import com.Optimart.enums.RoleNameEnum;
     import com.Optimart.filters.JwtTokenFilter;
     import lombok.RequiredArgsConstructor;
-    import org.jetbrains.annotations.NotNull;
     import org.springframework.beans.factory.annotation.Value;
     import org.springframework.context.annotation.Bean;
     import org.springframework.context.annotation.Configuration;
-    import org.springframework.data.util.Pair;
     import org.springframework.security.config.Customizer;
     import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
     import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -54,8 +52,10 @@
                                         "/configuration/ui",
                                         "/configuration/security",
 
+                                        // api
                                         String.format("%s/auth/register", apiPrefix),
-                                        String.format("%s/auth/login", apiPrefix)
+                                        String.format("%s/auth/login", apiPrefix),
+                                        String.format("%s/auth/refreshtoken", apiPrefix)
 
                                         )
                                 .permitAll()

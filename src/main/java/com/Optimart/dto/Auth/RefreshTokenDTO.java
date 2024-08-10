@@ -8,7 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class RefreshTokenRequest {
+public class RefreshTokenDTO {
     @NotBlank
     private String refreshToken;
 }

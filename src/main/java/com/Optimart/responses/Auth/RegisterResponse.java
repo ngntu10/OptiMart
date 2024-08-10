@@ -1,4 +1,4 @@
-package com.Optimart.responses;
+package com.Optimart.responses.Auth;
 
 import com.Optimart.models.User;
 import com.fasterxml.jackson.annotation.JsonProperty;

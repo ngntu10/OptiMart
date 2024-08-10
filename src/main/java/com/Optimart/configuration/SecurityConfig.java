@@ -1,4 +1,4 @@
-package com.Optimart.config;
+package com.Optimart.configuration;
 
 import com.Optimart.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;

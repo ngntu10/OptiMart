@@ -11,7 +11,7 @@ import lombok.*;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-//@Schema(description = "User login credentials", example = "{ \"email\": \"admin@gmail.com\", \"password\": \"123456789Tu@\" }")
+@Schema(description = "User login credentials", example = "{ \"email\": \"admin@gmail.com\", \"password\": \"123456789Tu@\" }")
 public class UserLoginDTO {
     @JsonProperty("email")
     @Schema(description = "User email address", example = "admin@gmail.com")

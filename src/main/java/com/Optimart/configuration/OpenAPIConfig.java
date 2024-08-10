@@ -1,4 +1,4 @@
-package com.Optimart.config;
+package com.Optimart.configuration;
 
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;

@@ -24,6 +24,8 @@ public class Role extends BaseEntity {
     @Column(name = "permission")
     private String permission;
 
-//    @ManyToMany(mappedBy = "roleList")
-//    private List<User> userList;
+    @OneToOne(mappedBy = "role")
+    private User user;
+
+
 }

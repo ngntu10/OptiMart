@@ -31,6 +31,9 @@ public class User extends BaseEntity implements UserDetails {
     @Column(name = "fullName")
     private String fullName;
 
+    @Column(name = "userName")
+    private String userName;
+
     @Column(name = "email", nullable = false, unique = true)
     private String email;
 
@@ -70,11 +73,7 @@ public class User extends BaseEntity implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<SimpleGrantedAuthority> authorityList = new ArrayList<>();
-        List<Role> roles = roleList;
-        for(Role role : roleList) {
-            authorityList.add(new SimpleGrantedAuthority("ROLE_"+role.getName().getValue().toUpperCase()));
-        }
-//        authorityList.add(new SimpleGrantedAuthority("ROLE_USER"));
+        authorityList.add(new SimpleGrantedAuthority("ROLE_"+role.getName().getValue().toUpperCase()));
         return authorityList;
     }
 
@@ -107,13 +106,9 @@ public class User extends BaseEntity implements UserDetails {
     @JoinColumn(name = "city_id")
     private City city;
 
-    @ManyToMany
-    @JoinTable(
-            name = "user_has_role",
-            joinColumns = @JoinColumn(name = "user_id", nullable = false),
-            inverseJoinColumns = @JoinColumn(name = "role_id", nullable = false)
-    )
-    List<Role> roleList;
+    @OneToOne
+    @JoinColumn(name = "role_id", nullable = false)
+    private Role role;
 
     @ManyToMany
     @JoinTable(

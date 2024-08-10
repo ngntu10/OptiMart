@@ -6,12 +6,13 @@ import com.Optimart.constants.Endpoint;
 import com.Optimart.dto.Auth.UserLoginDTO;
 import com.Optimart.exceptions.TokenRefreshException;
 import com.Optimart.models.RefreshToken;
+import com.Optimart.models.Role;
 import com.Optimart.models.User;
-import com.Optimart.dto.Auth.RefreshTokenRequest;
-import com.Optimart.responses.LoginResponse;
-import com.Optimart.responses.LoginResponse.Data;
-import com.Optimart.responses.RegisterResponse;
-import com.Optimart.responses.TokenRefreshResponse;
+import com.Optimart.dto.Auth.RefreshTokenDTO;
+import com.Optimart.responses.Auth.LoginResponse;
+import com.Optimart.responses.Auth.RegisterResponse;
+import com.Optimart.responses.Auth.TokenRefreshResponse;
+import com.Optimart.responses.Auth.UserLoginResponse;
 import com.Optimart.services.RefreshToken.RefreshTokenService;
 import com.Optimart.services.User.UserService;
 import com.Optimart.utils.JwtTokenUtil;
@@ -21,6 +22,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -30,6 +32,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -40,6 +43,7 @@ public class AuthController {
     private final UserService userService;
     private final RefreshTokenService refreshTokenService;
     private final JwtTokenUtil jwtTokenUtil;
+    private final ModelMapper mapper;
 
     @ApiResponse(
             responseCode = "200",
@@ -98,24 +102,13 @@ public class AuthController {
             RefreshToken refreshToken = refreshTokenService.createRefreshToken(userLoginDTO.getMail());
             User user = userService.findUserByEmail(userLoginDTO.getMail());
             String refresh_token = refreshToken.getRefreshtoken();
-
-            Data data = Data.builder()
-                    .accessToken(access_token)
-                    .refreshToken(refresh_token)
-                    .user(user).build();
-
-            LoginResponse loginResponse = LoginResponse.builder()
-                    .status(200)
-                    .statusMessage("success")
-                    .message("Login successfully")
-                    .data(data).build();
-            return ResponseEntity.ok(loginResponse);
+            UserLoginResponse userLoginResponse = mapper.map(user, UserLoginResponse.class);
+            userLoginResponse.setUsername(user.getEmail());
+            userLoginResponse.setRole(user.getRole().getName().name());
+            return ResponseEntity.ok(LoginResponse.success(access_token, refresh_token, userLoginResponse));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(
-                    LoginResponse.builder()
-                            .message(e.getMessage())
-                            .build()
-            );
+//            System.out.println(e.getMessage());
+            return ResponseEntity.badRequest().body(LoginResponse.failure());
         }
     }
 
@@ -129,7 +122,7 @@ public class AuthController {
     )
     @SwaggerOperation(summary = "Get new access token", implementation = TokenRefreshResponse.class)
     @PostMapping("/refreshtoken")
-    public ResponseEntity<TokenRefreshResponse> refreshtoken(@Valid @RequestBody RefreshTokenRequest request) {
+    public ResponseEntity<TokenRefreshResponse> refreshtoken(@Valid @RequestBody RefreshTokenDTO request) {
         String requestRefreshToken = request.getRefreshToken();
         try {
             RefreshToken refreshToken = refreshTokenService.findByToken(requestRefreshToken)

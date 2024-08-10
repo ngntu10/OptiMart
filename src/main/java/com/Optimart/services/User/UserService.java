@@ -50,9 +50,8 @@ public class UserService implements IUserService {
                 .userType(3)
                 .build();
 
-        List<Role> roles = new ArrayList<>() ;
-        roles.add(roleRepository.findByName(RoleNameEnum.USER));
-        newUser.setRoleList(roles);
+        Role role = roleRepository.findByName(RoleNameEnum.USER);
+        newUser.setRole(role);
 
         // Kiểm tra nếu có accountId, không yêu cầu password
         if (userRegisterDTO.getFacebookAccountId() == 0 && userRegisterDTO.getGoogleAccountId() == 0) {
