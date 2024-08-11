@@ -38,7 +38,7 @@ public class RefreshTokenService implements IRefreshTokenService {
             RefreshToken refreshToken = RefreshToken.builder()
                     .user(user)
                     .expiryDate(new Date(System.currentTimeMillis()+jwtRefreshExpiration*1000L))
-                    .refreshtoken(jwtTokenUtil.generateToken(userRepository.findByEmail(userEmail).get()))
+                    .refreshtoken(jwtTokenUtil.generateRefreshToken(userRepository.findByEmail(userEmail).get()))
                     .build();
             return refreshTokenRepository.save(refreshToken);
         }catch (Exception ex){

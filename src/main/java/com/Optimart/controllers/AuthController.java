@@ -47,7 +47,7 @@ public class AuthController {
 
     @ApiResponse(
             responseCode = "201",
-            description = "OK",
+            description = "SUCCESS OPERATION",
             content = @Content(
                     schema = @Schema(implementation = RegisterResponse.class),
                     mediaType = "application/json"
@@ -128,18 +128,16 @@ public class AuthController {
             RefreshToken refreshToken = refreshTokenService.findByToken(requestRefreshToken)
                     .orElseThrow(() -> new TokenRefreshException(requestRefreshToken, "Refresh token not existed"));
             RefreshToken verifiedRefreshToken = refreshTokenService.verifyExpiration(refreshToken);
-            if (refreshTokenService.isExpired(verifiedRefreshToken)) {
+            if (!refreshTokenService.isExpired(verifiedRefreshToken)) {
                 User user = refreshToken.getUser();
-                String token = jwtTokenUtil.generateToken(user);
-                return ResponseEntity.ok(new TokenRefreshResponse(token, requestRefreshToken, "Get access token success"));
+                String newAccessToken = jwtTokenUtil.generateToken(user);
+                return ResponseEntity.ok(TokenRefreshResponse.success(newAccessToken, requestRefreshToken));
             } else {
                 throw new TokenRefreshException(requestRefreshToken, "Refresh token has expired!");
             }
         } catch (Exception ex) {
             return ResponseEntity.badRequest().body(
-                    TokenRefreshResponse.builder()
-                            .message(ex.getMessage())
-                            .build()
+                        TokenRefreshResponse.failure(ex.getMessage())
             );
         }
     }
