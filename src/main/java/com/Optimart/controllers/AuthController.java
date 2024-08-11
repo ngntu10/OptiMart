@@ -1,6 +1,7 @@
 package com.Optimart.controllers;
 
-import com.Optimart.annotations.SwaggerOperation;
+import com.Optimart.annotations.SecuredSwaggerOperation;
+import com.Optimart.annotations.UnsecuredSwaggerOperation;
 import com.Optimart.dto.Auth.UserRegisterDTO;
 import com.Optimart.constants.Endpoint;
 import com.Optimart.dto.Auth.UserLoginDTO;
@@ -16,6 +17,7 @@ import com.Optimart.responses.Auth.UserLoginResponse;
 import com.Optimart.services.RefreshToken.RefreshTokenService;
 import com.Optimart.services.User.UserService;
 import com.Optimart.utils.JwtTokenUtil;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -27,10 +29,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,7 +52,7 @@ public class AuthController {
                     mediaType = "application/json"
             )
     )
-    @SwaggerOperation(summary = "Register User")
+    @UnsecuredSwaggerOperation(summary = "Register User")
     @PostMapping(Endpoint.Auth.REGISTER)
     public ResponseEntity<RegisterResponse> createUser(@Valid @RequestBody UserRegisterDTO userRegisterDTO,
                                                        BindingResult result) {
@@ -89,7 +88,7 @@ public class AuthController {
                     mediaType = "application/json"
             )
     )
-    @SwaggerOperation(summary = "Login User")
+    @UnsecuredSwaggerOperation(summary = "Login User")
     @PostMapping(Endpoint.Auth.LOGIN)
     public ResponseEntity<LoginResponse> login(
             @Valid @RequestBody UserLoginDTO userLoginDTO) {
@@ -107,8 +106,31 @@ public class AuthController {
             userLoginResponse.setRole(user.getRole().getName().name());
             return ResponseEntity.ok(LoginResponse.success(access_token, refresh_token, userLoginResponse));
         } catch (Exception e) {
-//            System.out.println(e.getMessage());
             return ResponseEntity.badRequest().body(LoginResponse.failure());
+        }
+    }
+
+    @ApiResponse(
+            responseCode = "200",
+            description = "OK",
+            content = @Content(
+                    schema = @Schema(implementation = UserLoginResponse.class),
+                    mediaType = "application/json"
+            )
+    )
+    @SecuredSwaggerOperation(summary = "Get my info user")
+    @GetMapping (Endpoint.Auth.ME)
+    public ResponseEntity<UserLoginResponse> getInfoCurrentUser(@Parameter(hidden = true) @RequestHeader("Authorization") String token) {
+        try {
+            String jwtToken = token.substring(7);
+            String email = jwtTokenUtil.extractEmail(jwtToken);
+            User user = userService.findUserByEmail(email);
+            UserLoginResponse userLoginResponse = mapper.map(user, UserLoginResponse.class);
+            userLoginResponse.setUsername(user.getEmail());
+            userLoginResponse.setRole(user.getRole().getName().name());
+            return ResponseEntity.ok().body(userLoginResponse);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(null);
         }
     }
 
@@ -120,7 +142,7 @@ public class AuthController {
                     mediaType = "application/json"
             )
     )
-    @SwaggerOperation(summary = "Get new access token", implementation = TokenRefreshResponse.class)
+    @SecuredSwaggerOperation(summary = "Get new access token")
     @PostMapping("/refreshtoken")
     public ResponseEntity<TokenRefreshResponse> refreshtoken(@Valid @RequestBody RefreshTokenDTO request) {
         String requestRefreshToken = request.getRefreshToken();
@@ -136,9 +158,7 @@ public class AuthController {
                 throw new TokenRefreshException(requestRefreshToken, "Refresh token has expired!");
             }
         } catch (Exception ex) {
-            return ResponseEntity.badRequest().body(
-                        TokenRefreshResponse.failure(ex.getMessage())
-            );
+            return ResponseEntity.badRequest().body(TokenRefreshResponse.failure(ex.getMessage()));
         }
     }
 

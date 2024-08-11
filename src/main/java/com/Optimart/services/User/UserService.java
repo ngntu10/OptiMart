@@ -48,6 +48,7 @@ public class UserService implements IUserService {
                 .googleAccountId(userRegisterDTO.getGoogleAccountId())
                 .status(1)
                 .userType(3)
+                .fullName(userRegisterDTO.getMail())
                 .build();
 
         Role role = roleRepository.findByName(RoleNameEnum.USER);

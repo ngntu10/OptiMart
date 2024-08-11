@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.lang.annotation.ElementType;
@@ -19,6 +20,7 @@ import java.lang.annotation.Target;
         summary = "",
         description = "",
         tags = { "" },
+        security = @SecurityRequirement(name = "bearerAuth"),
         responses = {
                 @ApiResponse(
                         responseCode = "400",
@@ -57,7 +59,7 @@ import java.lang.annotation.Target;
                 )}
 
 )
-public @interface SwaggerOperation {
+public @interface SecuredSwaggerOperation {
     String summary() default "";
     String description() default "";
     String[] tags() default {};
