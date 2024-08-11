@@ -19,14 +19,7 @@ import java.lang.annotation.Target;
         summary = "",
         description = "",
         tags = { "" },
-        responses = {@ApiResponse(
-                responseCode = "200",
-                description = "OK",
-                content = @Content(
-                        schema = @Schema(implementation = Object.class),
-                        mediaType = "application/json"
-                )
-        ),
+        responses = {
                 @ApiResponse(
                         responseCode = "400",
                         description = "BAD_REQUEST",

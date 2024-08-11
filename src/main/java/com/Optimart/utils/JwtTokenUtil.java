@@ -26,11 +26,14 @@ public class JwtTokenUtil {
     @Value("${jwt.secretKey}")
     private String secretKey;
 
+    @Value("${jwt.jwtRefreshExpiration}")
+    private Long jwtRefreshExpiration;
     public String generateToken(User user) throws Exception{
         Map<String,Object> claims =new HashMap<>();
 //        String SecretKey = this.generateSecretKey();
         claims.put("email", user.getEmail());
         try {
+            System.out.println(jwtRefreshExpiration);
             String token = Jwts.builder()
                     .setClaims(claims)
                     .setSubject(user.getEmail())
@@ -42,6 +45,24 @@ public class JwtTokenUtil {
             throw new InvalidParamException("Cannot create jwt token, error: "+ex.getMessage());
         }
     }
+
+    public String generateRefreshToken(User user) throws Exception{
+        Map<String,Object> claims =new HashMap<>();
+//        String SecretKey = this.generateSecretKey();
+        claims.put("email", user.getEmail());
+        try {
+            String token = Jwts.builder()
+                    .setClaims(claims)
+                    .setSubject(user.getEmail())
+                    .setExpiration(new Date(System.currentTimeMillis()+jwtRefreshExpiration*1000L))
+                    .signWith(getSignInKey(), SignatureAlgorithm.HS256)
+                    .compact();
+            return token;
+        }catch (Exception ex){
+            throw new InvalidParamException("Cannot create jwt token, error: "+ex.getMessage());
+        }
+    }
+
 
     private Key getSignInKey() {
         byte[] bytes = Decoders.BASE64.decode(secretKey);

@@ -46,7 +46,7 @@ public class AuthController {
     private final ModelMapper mapper;
 
     @ApiResponse(
-            responseCode = "200",
+            responseCode = "201",
             description = "OK",
             content = @Content(
                     schema = @Schema(implementation = RegisterResponse.class),
