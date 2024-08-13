@@ -34,21 +34,23 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                                     @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain) throws ServletException, IOException {
         try {
-            if(isByPassToken(request)){
-                filterChain.doFilter(request,response);  //enable bypass
+            System.out.println(request.getRequestURI());
+            if (isByPassToken(request)) {
+                filterChain.doFilter(request, response);
                 return;
             }
 
-            final String authHeader = request.getHeader("Authorization");
-            if(authHeader == null || !authHeader.startsWith("Bearer ")){
+                final String authHeader = request.getHeader("Authorization");
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "NOT UNAUTHORIZED");
                 return;
             }
+
             final String token = authHeader.substring(7);
             final String email = jwtTokenUtil.extractEmail(token);
-            if(email != null && SecurityContextHolder.getContext().getAuthentication() == null){
-                User userDetail = (User)userDetailsService.loadUserByUsername(email);
-                if (!jwtTokenUtil.isTokenExpired(token)){
+            if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                User userDetail = (User) userDetailsService.loadUserByUsername(email);
+                if (!jwtTokenUtil.isTokenExpired(token)) {
                     UsernamePasswordAuthenticationToken authenticationToken =
                             new UsernamePasswordAuthenticationToken(
                                     userDetail,
@@ -59,11 +61,13 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
                 }
             }
-            filterChain.doFilter(request, response); //enable bypass
-        }catch (Exception ex) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, ex.getMessage());
+
+            filterChain.doFilter(request, response);
+        } catch (Exception ex) {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, ex.getMessage());
         }
     }
+
 
     private boolean isByPassToken(@NonNull HttpServletRequest request){
         final List<Pair<String,String>> byPassToken = Arrays.asList(

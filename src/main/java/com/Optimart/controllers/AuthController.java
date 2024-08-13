@@ -14,6 +14,7 @@ import com.Optimart.responses.Auth.LoginResponse;
 import com.Optimart.responses.Auth.RegisterResponse;
 import com.Optimart.responses.Auth.TokenRefreshResponse;
 import com.Optimart.responses.Auth.UserLoginResponse;
+import com.Optimart.responses.BaseResponse;
 import com.Optimart.services.RefreshToken.RefreshTokenService;
 import com.Optimart.services.User.UserService;
 import com.Optimart.utils.JwtTokenUtil;
@@ -32,6 +33,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -143,7 +145,7 @@ public class AuthController {
             )
     )
     @SecuredSwaggerOperation(summary = "Get new access token")
-    @PostMapping("/refreshtoken")
+    @PostMapping(Endpoint.Auth.REFRESH_TOKEN)
     public ResponseEntity<TokenRefreshResponse> refreshtoken(@Valid @RequestBody RefreshTokenDTO request) {
         String requestRefreshToken = request.getRefreshToken();
         try {
@@ -153,7 +155,7 @@ public class AuthController {
             if (!refreshTokenService.isExpired(verifiedRefreshToken)) {
                 User user = refreshToken.getUser();
                 String newAccessToken = jwtTokenUtil.generateToken(user);
-                return ResponseEntity.ok(TokenRefreshResponse.success(newAccessToken, requestRefreshToken));
+                return ResponseEntity.ok().body(TokenRefreshResponse.success(newAccessToken, requestRefreshToken));
             } else {
                 throw new TokenRefreshException(requestRefreshToken, "Refresh token has expired!");
             }
@@ -162,4 +164,17 @@ public class AuthController {
         }
     }
 
+    @ApiResponse(
+            responseCode = "200",
+            description = "OK",
+            content = @Content(
+                    schema = @Schema(implementation = BaseResponse.class),
+                    mediaType = "application/json"
+            )
+    )
+    @SecuredSwaggerOperation(summary = "Logout User")
+    @PostMapping(Endpoint.Auth.LOGOUT)
+    public ResponseEntity<BaseResponse> logout(@Parameter(hidden = true) @RequestHeader("Authorization") String token){
+        return ResponseEntity.ok().body(new BaseResponse(new Date(),"Logout Success"));
+    }
 }

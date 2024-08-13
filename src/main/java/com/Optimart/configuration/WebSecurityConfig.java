@@ -52,11 +52,14 @@
                                         "/configuration/ui",
                                         "/configuration/security",
 
-                                        // api
+                                        // API
+
+                                        //Auth
                                         String.format("%s/auth/register", apiPrefix),
                                         String.format("%s/auth/login", apiPrefix),
                                         String.format("%s/auth/refreshtoken", apiPrefix),
-                                        String.format("%s/auth/me", apiPrefix)
+                                        String.format("%s/auth/me", apiPrefix),
+                                        String.format("%s/auth/logout", apiPrefix)
 
                                         )
                                 .permitAll()

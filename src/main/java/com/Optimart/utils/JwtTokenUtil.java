@@ -33,7 +33,6 @@ public class JwtTokenUtil {
 //        String SecretKey = this.generateSecretKey();
         claims.put("email", user.getEmail());
         try {
-            System.out.println(jwtRefreshExpiration);
             String token = Jwts.builder()
                     .setClaims(claims)
                     .setSubject(user.getEmail())

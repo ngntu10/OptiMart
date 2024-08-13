@@ -9,5 +9,6 @@ public class Endpoint {
         public static final String ME = "/me";
         public static final String REGISTER = "/register";
         public static final String LOGOUT = "/logout";
+        public static final String REFRESH_TOKEN = "/refreshtoken";
     }
 }
