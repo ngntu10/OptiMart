@@ -46,32 +46,13 @@ public class AuthController {
     private final JwtTokenUtil jwtTokenUtil;
     private final ModelMapper mapper;
 
-    @ApiResponse(
-            responseCode = "201",
-            description = "SUCCESS OPERATION",
-            content = @Content(
-                    schema = @Schema(implementation = RegisterResponse.class),
-                    mediaType = "application/json"
-            )
-    )
+    @ApiResponse(responseCode = "201", description = "SUCCESS OPERATION", content = @Content(schema = @Schema(implementation = RegisterResponse.class), mediaType = "application/json"))
     @UnsecuredSwaggerOperation(summary = "Register User")
     @PostMapping(Endpoint.Auth.REGISTER)
     public ResponseEntity<RegisterResponse> createUser(@Valid @RequestBody UserRegisterDTO userRegisterDTO,
                                                        BindingResult result) {
         RegisterResponse registerResponse = new RegisterResponse();
         try {
-            if (result.hasErrors()) {
-                List<String> errorMessages = result.getFieldErrors()
-                        .stream()
-                        .map(FieldError::getDefaultMessage)
-                        .toList();
-                registerResponse.setMessage(errorMessages.toString());
-                return ResponseEntity.badRequest().body(registerResponse);
-            }
-            if (!userRegisterDTO.getPassword().equals(userRegisterDTO.getRetypePassword())) {
-                registerResponse.setMessage("Password does not match");
-                return ResponseEntity.badRequest().body(registerResponse);
-            }
             User registerUser = userService.createUser(userRegisterDTO);
             registerResponse.setMessage("Register Successfully");
             registerResponse.setUser(registerUser);
@@ -82,14 +63,7 @@ public class AuthController {
         }
     }
 
-    @ApiResponse(
-            responseCode = "200",
-            description = "OK",
-            content = @Content(
-                    schema = @Schema(implementation = LoginResponse.class),
-                    mediaType = "application/json"
-            )
-    )
+    @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = LoginResponse.class), mediaType = "application/json"))
     @UnsecuredSwaggerOperation(summary = "Login User")
     @PostMapping(Endpoint.Auth.LOGIN)
     public ResponseEntity<LoginResponse> login(
@@ -105,21 +79,13 @@ public class AuthController {
             String refresh_token = refreshToken.getRefreshtoken();
             UserLoginResponse userLoginResponse = mapper.map(user, UserLoginResponse.class);
             userLoginResponse.setUsername(user.getEmail());
-            userLoginResponse.setRole(user.getRole().getName().name());
             return ResponseEntity.ok(LoginResponse.success(access_token, refresh_token, userLoginResponse));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(LoginResponse.failure());
         }
     }
 
-    @ApiResponse(
-            responseCode = "200",
-            description = "OK",
-            content = @Content(
-                    schema = @Schema(implementation = UserLoginResponse.class),
-                    mediaType = "application/json"
-            )
-    )
+    @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = UserLoginResponse.class), mediaType = "application/json"))
     @SecuredSwaggerOperation(summary = "Get my info user")
     @GetMapping (Endpoint.Auth.ME)
     public ResponseEntity<UserLoginResponse> getInfoCurrentUser(@Parameter(hidden = true) @RequestHeader("Authorization") String token) {
@@ -129,21 +95,14 @@ public class AuthController {
             User user = userService.findUserByEmail(email);
             UserLoginResponse userLoginResponse = mapper.map(user, UserLoginResponse.class);
             userLoginResponse.setUsername(user.getEmail());
-            userLoginResponse.setRole(user.getRole().getName().name());
+            userLoginResponse.setRole(user.getRole());
             return ResponseEntity.ok().body(userLoginResponse);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(null);
         }
     }
 
-    @ApiResponse(
-            responseCode = "200",
-            description = "OK",
-            content = @Content(
-                    schema = @Schema(implementation = TokenRefreshResponse.class),
-                    mediaType = "application/json"
-            )
-    )
+    @ApiResponse(responseCode = "200",description = "OK", content = @Content(schema = @Schema(implementation = TokenRefreshResponse.class), mediaType = "application/json"))
     @SecuredSwaggerOperation(summary = "Get new access token")
     @PostMapping(Endpoint.Auth.REFRESH_TOKEN)
     public ResponseEntity<TokenRefreshResponse> refreshtoken(@Valid @RequestBody RefreshTokenDTO request) {
@@ -164,14 +123,7 @@ public class AuthController {
         }
     }
 
-    @ApiResponse(
-            responseCode = "200",
-            description = "OK",
-            content = @Content(
-                    schema = @Schema(implementation = BaseResponse.class),
-                    mediaType = "application/json"
-            )
-    )
+    @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = BaseResponse.class), mediaType = "application/json"))
     @SecuredSwaggerOperation(summary = "Logout User")
     @PostMapping(Endpoint.Auth.LOGOUT)
     public ResponseEntity<BaseResponse> logout(@Parameter(hidden = true) @RequestHeader("Authorization") String token){

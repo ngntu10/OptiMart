@@ -39,7 +39,11 @@ public class UserService implements IUserService {
         if (userRepository.existsByEmail(email)){
             throw new DataIntegrityViolationException("Email already exists");
         }
-
+        Role userRole = Role.builder()
+                .name(RoleNameEnum.ADMIN)
+                .permissions(List.of("ADMIN.GRANTED"))
+                .build();
+        roleRepository.save(userRole);
         // CONVERT DTO => ENTITY
         User newUser = User.builder()
                 .email(userRegisterDTO.getMail())
@@ -49,10 +53,10 @@ public class UserService implements IUserService {
                 .status(1)
                 .userType(3)
                 .fullName(userRegisterDTO.getMail())
+                .role(userRole)
                 .build();
 
-        Role role = roleRepository.findByName(RoleNameEnum.USER);
-        newUser.setRole(role);
+        userRepository.save(newUser);
 
         // Kiểm tra nếu có accountId, không yêu cầu password
         if (userRegisterDTO.getFacebookAccountId() == 0 && userRegisterDTO.getGoogleAccountId() == 0) {

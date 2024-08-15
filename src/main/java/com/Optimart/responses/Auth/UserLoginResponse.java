@@ -1,5 +1,6 @@
 package com.Optimart.responses.Auth;
 
+import com.Optimart.models.Role;
 import lombok.*;
 
 import java.util.List;
@@ -12,7 +13,7 @@ import java.util.UUID;
 @Builder
 public class UserLoginResponse {
     private UUID id;
-    private String role;
+    private Role role;
     private String email;
     private String fullName;
     private String username;

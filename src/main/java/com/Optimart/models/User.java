@@ -1,5 +1,6 @@
 package com.Optimart.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
@@ -108,6 +109,7 @@ public class User extends BaseEntity implements UserDetails {
 
     @OneToOne
     @JoinColumn(name = "role_id", nullable = false)
+    @JsonIgnoreProperties({"user"})
     private Role role;
 
     @ManyToMany

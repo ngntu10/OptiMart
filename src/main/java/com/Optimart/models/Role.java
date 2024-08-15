@@ -1,4 +1,5 @@
 package com.Optimart.models;
+import java.util.List;
 import java.util.UUID;
 
 import com.Optimart.enums.RoleNameEnum;
@@ -12,20 +13,18 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "roles")
-public class Role extends BaseEntity {
+public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "name", nullable = false, unique = true)
+    @Column(name = "name", nullable = false)
     private RoleNameEnum name;
 
+    @ElementCollection
+    @CollectionTable(name = "role_permissions", joinColumns = @JoinColumn(name = "role_id"))
     @Column(name = "permission")
-    private String permission;
-
-    @OneToOne(mappedBy = "role")
-    private User user;
-
+    private List<String> permissions;
 
 }
