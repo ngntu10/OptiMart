@@ -69,7 +69,7 @@ public class AuthController {
     public ResponseEntity<LoginResponse> login(
             @Valid @RequestBody UserLoginDTO userLoginDTO) {
         try {
-            refreshTokenService.deleteByUserId(userLoginDTO.getMail());
+//            refreshTokenService.deleteByUserId(userLoginDTO.getMail());
             String access_token = userService.login(
                     userLoginDTO.getMail(),
                     userLoginDTO.getPassword()
@@ -123,9 +123,9 @@ public class AuthController {
         }
     }
 
-    @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = BaseResponse.class), mediaType = "application/json"))
-    @SecuredSwaggerOperation(summary = "Logout User")
-    @PostMapping(Endpoint.Auth.LOGOUT)
+    @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = Object.class), mediaType = "application/json"))
+    @SecuredSwaggerOperation(summary = "Update Info User")
+    @PostMapping(Endpoint.Auth.UPDATE_INFO)
     public ResponseEntity<BaseResponse> logout(@Parameter(hidden = true) @RequestHeader("Authorization") String token){
         return ResponseEntity.ok().body(new BaseResponse(new Date(),"Logout Success"));
     }

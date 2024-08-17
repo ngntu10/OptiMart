@@ -10,5 +10,7 @@ public class Endpoint {
         public static final String REGISTER = "/register";
         public static final String LOGOUT = "/logout";
         public static final String REFRESH_TOKEN = "/refreshtoken";
+        public static final String UPDATE_INFO = "/update-info";
+        public static final String CHANGE_PASSWORD = "/change-password";
     }
 }
