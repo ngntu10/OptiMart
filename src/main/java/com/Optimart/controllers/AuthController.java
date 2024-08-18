@@ -2,6 +2,7 @@ package com.Optimart.controllers;
 
 import com.Optimart.annotations.SecuredSwaggerOperation;
 import com.Optimart.annotations.UnsecuredSwaggerOperation;
+import com.Optimart.dto.Auth.ChangePassword;
 import com.Optimart.dto.Auth.UserRegisterDTO;
 import com.Optimart.constants.Endpoint;
 import com.Optimart.dto.Auth.UserLoginDTO;
@@ -15,6 +16,7 @@ import com.Optimart.responses.Auth.RegisterResponse;
 import com.Optimart.responses.Auth.TokenRefreshResponse;
 import com.Optimart.responses.Auth.UserLoginResponse;
 import com.Optimart.responses.BaseResponse;
+import com.Optimart.responses.CloudinaryResponse;
 import com.Optimart.services.RefreshToken.RefreshTokenService;
 import com.Optimart.services.User.UserService;
 import com.Optimart.utils.JwtTokenUtil;
@@ -70,11 +72,7 @@ public class AuthController {
     public ResponseEntity<LoginResponse> login(
             @Valid @RequestBody UserLoginDTO userLoginDTO) {
         try {
-//            refreshTokenService.deleteByUserId(userLoginDTO.getMail());
-            String access_token = userService.login(
-                    userLoginDTO.getMail(),
-                    userLoginDTO.getPassword()
-            );
+            String access_token = userService.login(userLoginDTO.getMail(), userLoginDTO.getPassword());
             RefreshToken refreshToken = refreshTokenService.createRefreshToken(userLoginDTO.getMail());
             User user = userService.findUserByEmail(userLoginDTO.getMail());
             String refresh_token = refreshToken.getRefreshtoken();
@@ -89,7 +87,7 @@ public class AuthController {
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = UserLoginResponse.class), mediaType = "application/json"))
     @SecuredSwaggerOperation(summary = "Get my info user")
     @GetMapping (Endpoint.Auth.ME)
-    public ResponseEntity<UserLoginResponse> getInfoCurrentUser(@Parameter(hidden = true) @RequestHeader("Authorization") String token) {
+    public ResponseEntity<UserLoginResponse> getInfoCurrentUser(@Parameter @RequestHeader("Authorization") String token) {
         try {
             String jwtToken = token.substring(7);
             String email = jwtTokenUtil.extractEmail(jwtToken);
@@ -125,19 +123,21 @@ public class AuthController {
         }
     }
 
-//    @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = Object.class), mediaType = "application/json"))
-//    @SecuredSwaggerOperation(summary = "Update Info User")
-//    @PostMapping(Endpoint.Auth.UPDATE_INFO)
-//    public ResponseEntity<BaseResponse> updateinfo(){
-//        return ResponseEntity.ok().body();
-//    }
+    @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = Object.class), mediaType = "application/json"))
+    @SecuredSwaggerOperation(summary = "Update Info User")
+    @PatchMapping(Endpoint.Auth.CHANGE_PASSWORD)
+    public ResponseEntity<BaseResponse> changePassword(@RequestBody ChangePassword changePassword,
+                                                       @Parameter @RequestHeader("Authorization") String token) throws Exception {
+        return ResponseEntity.ok().body(new BaseResponse(LocalDate.now(),
+                userService.changeUserPassword(changePassword,token)));
+    }
 
-    @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = BaseResponse.class), mediaType = "application/json"))
+    @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = CloudinaryResponse.class), mediaType = "application/json"))
     @SecuredSwaggerOperation(summary = "Update User Avatar")
     @PostMapping(Endpoint.Auth.CHANGE_AVATAR)
-    public ResponseEntity<BaseResponse> updateAvatar(@RequestParam("email") String email, @RequestPart final MultipartFile file){
-        userService.uploadImage(email, file);
-        return ResponseEntity.ok(new BaseResponse( LocalDate.now(),"Upload successfully"));
+    public ResponseEntity<CloudinaryResponse> updateAvatar(@RequestParam("email") String email, @RequestPart final MultipartFile file){
+        CloudinaryResponse response = userService.uploadImage(email, file);
+        return ResponseEntity.ok(CloudinaryResponse.success(response.getPublicId(), response.getUrl()));
     }
 
 }

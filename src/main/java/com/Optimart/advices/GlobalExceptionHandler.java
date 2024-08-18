@@ -2,6 +2,7 @@ package com.Optimart.advices;
 
 import com.Optimart.exceptions.DataNotFoundException;
 import com.Optimart.exceptions.FileUploadException;
+import com.Optimart.exceptions.InvalidInput;
 import com.Optimart.exceptions.InvalidParamException;
 import com.Optimart.responses.BaseResponse;
 import org.springframework.http.HttpStatus;
@@ -29,6 +30,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(value = InvalidParamException.class)
     public ResponseEntity<BaseResponse> handleInvalidParamException(InvalidParamException ex) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new BaseResponse(LocalDate.now(), ex.getMessage()));
+    }
+    @ExceptionHandler(value = InvalidInput.class)
+    public ResponseEntity<BaseResponse> handleInvalidParamException(InvalidInput ex) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new BaseResponse(LocalDate.now(), ex.getMessage()));
     }

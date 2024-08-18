@@ -60,7 +60,8 @@
                                         String.format("%s/auth/refreshtoken", apiPrefix),
                                         String.format("%s/auth/me", apiPrefix),
                                         String.format("%s/auth/logout", apiPrefix),
-                                        String.format("%s/auth/avatar", apiPrefix)
+                                        String.format("%s/auth/avatar", apiPrefix),
+                                        String.format("%s/auth/change-password", apiPrefix)
 
                                         )
                                 .permitAll()

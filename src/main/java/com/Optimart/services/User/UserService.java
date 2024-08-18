@@ -1,8 +1,10 @@
 package com.Optimart.services.User;
 
+import com.Optimart.dto.Auth.ChangePassword;
 import com.Optimart.dto.Auth.UserRegisterDTO;
 import com.Optimart.enums.RoleNameEnum;
 import com.Optimart.exceptions.DataNotFoundException;
+import com.Optimart.exceptions.InvalidInput;
 import com.Optimart.models.Role;
 import com.Optimart.models.User;
 import com.Optimart.repositories.RoleRepository;
@@ -21,7 +23,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -62,8 +63,6 @@ public class UserService implements IUserService {
                 .build();
 
         userRepository.save(newUser);
-
-        // Kiểm tra nếu có accountId, không yêu cầu password
         if (userRegisterDTO.getFacebookAccountId() == 0 && userRegisterDTO.getGoogleAccountId() == 0) {
             String password = userRegisterDTO.getPassword();
             String encodedPassword = passwordEncoder.encode(password);
@@ -105,8 +104,25 @@ public class UserService implements IUserService {
         return userRepository.findByEmail(email).get();
     }
 
+    @Override
     @Transactional
-    public void uploadImage(final String email, final MultipartFile file) {
+    public String changeUserPassword(ChangePassword changePassword, String token) throws Exception {
+        String jwtToken = token.substring(7);
+        String email = jwtTokenUtil.extractEmail(jwtToken);
+        User user = this.findUserByEmail(email);
+        String currentPassword = changePassword.getCurrentPassword();
+        String newPassword = changePassword.getNewPassword();
+        if(!passwordEncoder.matches(currentPassword, user.getPassword())){
+            throw new InvalidInput("Wrong password");
+        }
+        String encodedNewPassword = passwordEncoder.encode(newPassword);
+        user.setPassword(encodedNewPassword);
+        userRepository.save(user);
+        return "Update Password successfully";
+    }
+
+    @Transactional
+    public CloudinaryResponse uploadImage(final String email, final MultipartFile file) {
         Optional<User> optionalUser = userRepository.findByEmail(email);
         if(optionalUser.isEmpty()) throw new DataNotFoundException("User not found");
         User user = optionalUser.get();
@@ -116,5 +132,8 @@ public class UserService implements IUserService {
         user.setImageUrl(response.getUrl());
         user.setCloudinaryImageId(response.getPublicId());
         userRepository.save(user);
+        return response;
     }
+
+
 }

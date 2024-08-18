@@ -12,6 +12,5 @@ import java.util.Date;
 @Builder
 public class BaseResponse {
     private LocalDate timestamp;
-
     private String message;
 }

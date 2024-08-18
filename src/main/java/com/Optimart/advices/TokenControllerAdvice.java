@@ -13,7 +13,6 @@ import java.util.Date;
 
 @RestControllerAdvice
 public class TokenControllerAdvice {
-
     @ExceptionHandler(value = TokenRefreshException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ErrorResponse handleTokenRefreshException(TokenRefreshException ex, WebRequest request) {
