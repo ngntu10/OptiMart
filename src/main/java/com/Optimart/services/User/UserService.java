@@ -112,9 +112,8 @@ public class UserService implements IUserService {
         User user = this.findUserByEmail(email);
         String currentPassword = changePassword.getCurrentPassword();
         String newPassword = changePassword.getNewPassword();
-        if(!passwordEncoder.matches(currentPassword, user.getPassword())){
-            throw new InvalidInput("Wrong password");
-        }
+        if(currentPassword.equals(newPassword)) throw new InvalidInput("Mật khẩu mới phải khác mật khẩu cũ");
+        if(!passwordEncoder.matches(currentPassword, user.getPassword())) throw new InvalidInput("Wrong password");
         String encodedNewPassword = passwordEncoder.encode(newPassword);
         user.setPassword(encodedNewPassword);
         userRepository.save(user);
