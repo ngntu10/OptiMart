@@ -31,7 +31,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -49,8 +51,7 @@ public class AuthController {
     @ApiResponse(responseCode = "201", description = "SUCCESS OPERATION", content = @Content(schema = @Schema(implementation = RegisterResponse.class), mediaType = "application/json"))
     @UnsecuredSwaggerOperation(summary = "Register User")
     @PostMapping(Endpoint.Auth.REGISTER)
-    public ResponseEntity<RegisterResponse> createUser(@Valid @RequestBody UserRegisterDTO userRegisterDTO,
-                                                       BindingResult result) {
+    public ResponseEntity<RegisterResponse> createUser(@Valid @RequestBody UserRegisterDTO userRegisterDTO) {
         RegisterResponse registerResponse = new RegisterResponse();
         try {
             User registerUser = userService.createUser(userRegisterDTO);
@@ -94,6 +95,7 @@ public class AuthController {
             String email = jwtTokenUtil.extractEmail(jwtToken);
             User user = userService.findUserByEmail(email);
             UserLoginResponse userLoginResponse = mapper.map(user, UserLoginResponse.class);
+            userLoginResponse.setAvatarURL(user.getImageUrl());
             userLoginResponse.setUsername(user.getEmail());
             userLoginResponse.setRole(user.getRole());
             return ResponseEntity.ok().body(userLoginResponse);
@@ -129,4 +131,13 @@ public class AuthController {
 //    public ResponseEntity<BaseResponse> updateinfo(){
 //        return ResponseEntity.ok().body();
 //    }
+
+    @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = BaseResponse.class), mediaType = "application/json"))
+    @SecuredSwaggerOperation(summary = "Update User Avatar")
+    @PostMapping(Endpoint.Auth.CHANGE_AVATAR)
+    public ResponseEntity<BaseResponse> updateAvatar(@RequestParam("email") String email, @RequestPart final MultipartFile file){
+        userService.uploadImage(email, file);
+        return ResponseEntity.ok(new BaseResponse( LocalDate.now(),"Upload successfully"));
+    }
+
 }

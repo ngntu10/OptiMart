@@ -12,5 +12,11 @@ public class Endpoint {
         public static final String REFRESH_TOKEN = "/refreshtoken";
         public static final String UPDATE_INFO = "/update-info";
         public static final String CHANGE_PASSWORD = "/change-password";
+        public static final String CHANGE_AVATAR = "/avatar";
+    }
+
+    public static final class User {
+        public static final String BASE = API_PREFIX + "/user";
+
     }
 }

@@ -7,6 +7,9 @@ import com.Optimart.models.Role;
 import com.Optimart.models.User;
 import com.Optimart.repositories.RoleRepository;
 import com.Optimart.repositories.UserRepository;
+import com.Optimart.responses.CloudinaryResponse;
+import com.Optimart.services.CloudinaryService;
+import com.Optimart.utils.FileUploadUtil;
 import com.Optimart.utils.JwtTokenUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +19,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +34,7 @@ public class UserService implements IUserService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtTokenUtil jwtTokenUtil;
+    private final CloudinaryService cloudinaryService;
 
 
     @Override
@@ -98,5 +103,18 @@ public class UserService implements IUserService {
     @Override
     public User findUserByEmail(String email) throws Exception {
         return userRepository.findByEmail(email).get();
+    }
+
+    @Transactional
+    public void uploadImage(final String email, final MultipartFile file) {
+        Optional<User> optionalUser = userRepository.findByEmail(email);
+        if(optionalUser.isEmpty()) throw new DataNotFoundException("User not found");
+        User user = optionalUser.get();
+        FileUploadUtil.assertAllowed(file, FileUploadUtil.IMAGE_PATTERN);
+        final String fileName = FileUploadUtil.getFileName(file.getOriginalFilename());
+        final CloudinaryResponse response = cloudinaryService.uploadFile(file, fileName);
+        user.setImageUrl(response.getUrl());
+        user.setCloudinaryImageId(response.getPublicId());
+        userRepository.save(user);
     }
 }

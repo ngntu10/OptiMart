@@ -64,7 +64,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
             filterChain.doFilter(request, response);
         } catch (Exception ex) {
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, ex.getMessage());
+                throw new RuntimeException(ex.getMessage());
         }
     }
 
@@ -73,6 +73,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         final List<Pair<String,String>> byPassToken = Arrays.asList(
                 Pair.of(String.format("%s/auth/register", apiPrefix), "POST"),
                 Pair.of(String.format("%s/auth/login", apiPrefix), "POST"),
+                Pair.of(String.format("%s/auth/avatar", apiPrefix), "POST"),
 
                 Pair.of("/swagger-ui/**", "GET"),
                 Pair.of("/swagger-ui", "GET"),

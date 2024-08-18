@@ -18,6 +18,6 @@ public class UserLoginResponse {
     private String fullName;
     private String username;
     private String password;
-    private String avatar;
+    private String avatarURL;
     private String phoneNumber;
 }

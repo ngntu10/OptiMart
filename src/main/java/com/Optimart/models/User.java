@@ -50,8 +50,11 @@ public class User extends BaseEntity implements UserDetails {
     @Column(name = "status")
     private int status = 1;
 
-    @Column(name = "avatar")
-    private String avatar;
+    @Column(name = "imageUrl")
+    private String imageUrl;
+
+    @Column(name = "cloudinaryImageId")
+    private String cloudinaryImageId;
 
     @Column(name = "userType")
     private int userType = 3;

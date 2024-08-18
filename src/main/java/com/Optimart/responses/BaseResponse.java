@@ -2,6 +2,7 @@ package com.Optimart.responses;
 
 import lombok.*;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Getter
@@ -10,7 +11,7 @@ import java.util.Date;
 @NoArgsConstructor
 @Builder
 public class BaseResponse {
-    private Date timestamp;
+    private LocalDate timestamp;
 
     private String message;
 }
