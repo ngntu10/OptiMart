@@ -1,4 +1,4 @@
-package com.Optimart.configuration;
+package com.Optimart.configuration.Mapper;
 import com.Optimart.models.User;
 import com.Optimart.responses.Auth.UserLoginResponse;
 import org.modelmapper.ModelMapper;

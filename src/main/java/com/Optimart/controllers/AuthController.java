@@ -123,10 +123,10 @@ public class AuthController {
         }
     }
 
-    @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = Object.class), mediaType = "application/json"))
-    @SecuredSwaggerOperation(summary = "Update Info User")
-    @PostMapping(Endpoint.Auth.UPDATE_INFO)
-    public ResponseEntity<BaseResponse> logout(@Parameter(hidden = true) @RequestHeader("Authorization") String token){
-        return ResponseEntity.ok().body(new BaseResponse(new Date(),"Logout Success"));
-    }
+//    @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = Object.class), mediaType = "application/json"))
+//    @SecuredSwaggerOperation(summary = "Update Info User")
+//    @PostMapping(Endpoint.Auth.UPDATE_INFO)
+//    public ResponseEntity<BaseResponse> updateinfo(){
+//        return ResponseEntity.ok().body();
+//    }
 }
