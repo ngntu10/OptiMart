@@ -61,7 +61,8 @@
                                         String.format("%s/auth/me", apiPrefix),
                                         String.format("%s/auth/logout", apiPrefix),
                                         String.format("%s/auth/avatar", apiPrefix),
-                                        String.format("%s/auth/change-password", apiPrefix)
+                                        String.format("%s/auth/change-password", apiPrefix),
+                                        String.format("%s/auth/update-info", apiPrefix)
 
                                         )
                                 .permitAll()

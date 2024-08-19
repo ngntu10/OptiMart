@@ -14,4 +14,12 @@ public class RegisterResponse {
 
     @JsonProperty("user")
     private User user;
+
+    public static RegisterResponse success(User user){
+        return new RegisterResponse("Register successfully", user);
+    }
+
+    public static RegisterResponse failure(String message){
+        return new RegisterResponse(message, null);
+    }
 }

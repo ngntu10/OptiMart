@@ -1,4 +1,5 @@
 package com.Optimart.configuration.Mapper;
+import com.Optimart.dto.Auth.ChangeUserInfo;
 import com.Optimart.models.User;
 import com.Optimart.responses.Auth.UserLoginResponse;
 import org.modelmapper.ModelMapper;
@@ -14,7 +15,11 @@ public class MapperConfiguration {
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         modelMapper.typeMap(User.class, UserLoginResponse.class)
                 .addMappings(mapper -> mapper.map(User::getUsername, UserLoginResponse::setUsername));
-
+        modelMapper.typeMap(ChangeUserInfo.class, User.class).addMappings(mapper -> {
+            mapper.map(ChangeUserInfo::getFirstName, User::setFirstName);
+            mapper.map(ChangeUserInfo::getMiddleName, User::setMiddleName);
+            mapper.map(ChangeUserInfo::getLastName, User::setLastName);
+        });
         return modelMapper;
     }
 }

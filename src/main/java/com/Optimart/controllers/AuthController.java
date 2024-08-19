@@ -2,15 +2,12 @@ package com.Optimart.controllers;
 
 import com.Optimart.annotations.SecuredSwaggerOperation;
 import com.Optimart.annotations.UnsecuredSwaggerOperation;
-import com.Optimart.dto.Auth.ChangePassword;
-import com.Optimart.dto.Auth.UserRegisterDTO;
+import com.Optimart.dto.Auth.*;
 import com.Optimart.constants.Endpoint;
-import com.Optimart.dto.Auth.UserLoginDTO;
 import com.Optimart.exceptions.TokenRefreshException;
 import com.Optimart.models.RefreshToken;
 import com.Optimart.models.Role;
 import com.Optimart.models.User;
-import com.Optimart.dto.Auth.RefreshTokenDTO;
 import com.Optimart.responses.Auth.LoginResponse;
 import com.Optimart.responses.Auth.RegisterResponse;
 import com.Optimart.responses.Auth.TokenRefreshResponse;
@@ -54,15 +51,11 @@ public class AuthController {
     @UnsecuredSwaggerOperation(summary = "Register User")
     @PostMapping(Endpoint.Auth.REGISTER)
     public ResponseEntity<RegisterResponse> createUser(@Valid @RequestBody UserRegisterDTO userRegisterDTO) {
-        RegisterResponse registerResponse = new RegisterResponse();
         try {
             User registerUser = userService.createUser(userRegisterDTO);
-            registerResponse.setMessage("Register Successfully");
-            registerResponse.setUser(registerUser);
-            return ResponseEntity.ok(registerResponse);
+            return ResponseEntity.ok(RegisterResponse.success(registerUser));
         } catch (Exception ex) {
-            registerResponse.setMessage(ex.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(registerResponse);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(RegisterResponse.failure(ex.getMessage()));
         }
     }
 
@@ -93,7 +86,6 @@ public class AuthController {
             String email = jwtTokenUtil.extractEmail(jwtToken);
             User user = userService.findUserByEmail(email);
             UserLoginResponse userLoginResponse = mapper.map(user, UserLoginResponse.class);
-            userLoginResponse.setAvatarURL(user.getImageUrl());
             userLoginResponse.setUsername(user.getEmail());
             userLoginResponse.setRole(user.getRole());
             return ResponseEntity.ok().body(userLoginResponse);
@@ -111,20 +103,17 @@ public class AuthController {
             RefreshToken refreshToken = refreshTokenService.findByToken(requestRefreshToken)
                     .orElseThrow(() -> new TokenRefreshException(requestRefreshToken, "Refresh token not existed"));
             RefreshToken verifiedRefreshToken = refreshTokenService.verifyExpiration(refreshToken);
-            if (!refreshTokenService.isExpired(verifiedRefreshToken)) {
-                User user = refreshToken.getUser();
-                String newAccessToken = jwtTokenUtil.generateToken(user);
-                return ResponseEntity.ok().body(TokenRefreshResponse.success(newAccessToken, requestRefreshToken));
-            } else {
-                throw new TokenRefreshException(requestRefreshToken, "Refresh token has expired!");
-            }
+            if (refreshTokenService.isExpired(verifiedRefreshToken))throw new TokenRefreshException(requestRefreshToken, "Refresh token has expired!");
+            User user = refreshToken.getUser();
+            String newAccessToken = jwtTokenUtil.generateToken(user);
+            return ResponseEntity.ok().body(TokenRefreshResponse.success(newAccessToken, requestRefreshToken));
         } catch (Exception ex) {
             return ResponseEntity.badRequest().body(TokenRefreshResponse.failure(ex.getMessage()));
         }
     }
 
-    @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = Object.class), mediaType = "application/json"))
-    @SecuredSwaggerOperation(summary = "Update Info User")
+    @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = BaseResponse.class), mediaType = "application/json"))
+    @SecuredSwaggerOperation(summary = "Update User Password")
     @PatchMapping(Endpoint.Auth.CHANGE_PASSWORD)
     public ResponseEntity<BaseResponse> changePassword(@RequestBody ChangePassword changePassword,
                                                        @Parameter @RequestHeader("Authorization") String token) throws Exception {
@@ -140,4 +129,10 @@ public class AuthController {
         return ResponseEntity.ok(CloudinaryResponse.success(response.getPublicId(), response.getUrl()));
     }
 
+    @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = BaseResponse.class), mediaType = "application/json"))
+    @SecuredSwaggerOperation(summary = "Update User Avatar")
+    @PatchMapping(Endpoint.Auth.UPDATE_INFO)
+    public ResponseEntity<BaseResponse> updateInfo(@RequestBody ChangeUserInfo changeUserInfo){
+        return ResponseEntity.ok(new BaseResponse(LocalDate.now(), userService.changeUserInfo(changeUserInfo)));
+    }
 }

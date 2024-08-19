@@ -1,6 +1,7 @@
 package com.Optimart.services.User;
 
 import com.Optimart.dto.Auth.ChangePassword;
+import com.Optimart.dto.Auth.ChangeUserInfo;
 import com.Optimart.dto.Auth.UserRegisterDTO;
 import com.Optimart.enums.RoleNameEnum;
 import com.Optimart.exceptions.DataNotFoundException;
@@ -15,6 +16,7 @@ import com.Optimart.utils.FileUploadUtil;
 import com.Optimart.utils.JwtTokenUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -36,7 +38,7 @@ public class UserService implements IUserService {
     private final AuthenticationManager authenticationManager;
     private final JwtTokenUtil jwtTokenUtil;
     private final CloudinaryService cloudinaryService;
-
+    private final ModelMapper mapper;
 
     @Override
     @Transactional
@@ -118,6 +120,15 @@ public class UserService implements IUserService {
         user.setPassword(encodedNewPassword);
         userRepository.save(user);
         return "Update Password successfully";
+    }
+
+    @Override
+    public String changeUserInfo(ChangeUserInfo changeUserInfo) {
+        User user = userRepository.findByEmail(changeUserInfo.getEmail())
+                .orElseThrow(() -> new DataNotFoundException("User not found"));
+        mapper.map(changeUserInfo, user);
+        userRepository.save(user);
+        return "Change User Info Success";
     }
 
     @Transactional
