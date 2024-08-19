@@ -14,7 +14,7 @@ public class MapperConfiguration {
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         modelMapper.typeMap(User.class, UserLoginResponse.class)
-                .addMappings(mapper -> mapper.map(User::getUsername, UserLoginResponse::setUsername));
+                .addMappings(mapper -> mapper.map(User::getUsername, UserLoginResponse::setUserName));
         modelMapper.typeMap(ChangeUserInfo.class, User.class).addMappings(mapper -> {
             mapper.map(ChangeUserInfo::getFirstName, User::setFirstName);
             mapper.map(ChangeUserInfo::getMiddleName, User::setMiddleName);

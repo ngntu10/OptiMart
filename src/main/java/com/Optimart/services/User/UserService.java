@@ -1,5 +1,6 @@
 package com.Optimart.services.User;
 
+import com.Optimart.constants.MessageKeys;
 import com.Optimart.dto.Auth.ChangePassword;
 import com.Optimart.dto.Auth.ChangeUserInfo;
 import com.Optimart.dto.Auth.UserRegisterDTO;
@@ -14,6 +15,7 @@ import com.Optimart.responses.CloudinaryResponse;
 import com.Optimart.services.CloudinaryService;
 import com.Optimart.utils.FileUploadUtil;
 import com.Optimart.utils.JwtTokenUtil;
+import com.Optimart.utils.LocalizationUtils;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -39,13 +41,14 @@ public class UserService implements IUserService {
     private final JwtTokenUtil jwtTokenUtil;
     private final CloudinaryService cloudinaryService;
     private final ModelMapper mapper;
+    private final LocalizationUtils localizationUtils;
 
     @Override
     @Transactional
     public User createUser(UserRegisterDTO userRegisterDTO) throws Exception {
         String email = userRegisterDTO.getMail();
         if (userRepository.existsByEmail(email)){
-            throw new DataIntegrityViolationException("Email already exists");
+            throw new DataIntegrityViolationException(localizationUtils.getLocalizedMessage(MessageKeys.USER_ALREADY_EXIST));
         }
         Role userRole = Role.builder()
                 .name(RoleNameEnum.ADMIN)
@@ -61,6 +64,7 @@ public class UserService implements IUserService {
                 .status(1)
                 .userType(3)
                 .fullName(userRegisterDTO.getMail())
+                .userName(userRegisterDTO.getMail())
                 .role(userRole)
                 .build();
 
@@ -77,7 +81,7 @@ public class UserService implements IUserService {
     public String login(String email, String password) throws Exception {
         Optional<User> user = userRepository.findByEmail(email);
         if(user.isEmpty()){
-            throw new DataNotFoundException("Email does not exists");
+            throw new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.USER_NOT_EXIST));
         }
         User existingUser = user.get();
 
@@ -85,11 +89,11 @@ public class UserService implements IUserService {
         if(existingUser.getFacebookAccountId() == 0 &&
               existingUser.getGoogleAccountId() == 0 ) {
             if(!passwordEncoder.matches(password, existingUser.getPassword())){
-                throw new BadCredentialsException("Wrong email or password");
+                throw new BadCredentialsException(localizationUtils.getLocalizedMessage(MessageKeys.WRONG_INPUT));
             }
         }
         if(existingUser.getStatus() == 0) {
-            throw new DataNotFoundException("This account has been locked");
+            throw new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.ACCOUNT_LOCKED));
         }
 
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
@@ -114,27 +118,27 @@ public class UserService implements IUserService {
         User user = this.findUserByEmail(email);
         String currentPassword = changePassword.getCurrentPassword();
         String newPassword = changePassword.getNewPassword();
-        if(currentPassword.equals(newPassword)) throw new InvalidInput("Mật khẩu mới phải khác mật khẩu cũ");
-        if(!passwordEncoder.matches(currentPassword, user.getPassword())) throw new InvalidInput("Wrong password");
+        if(currentPassword.equals(newPassword)) throw new InvalidInput(localizationUtils.getLocalizedMessage(MessageKeys.DIFFERENT_PASSWORD));
+        if(!passwordEncoder.matches(currentPassword, user.getPassword())) throw new InvalidInput(localizationUtils.getLocalizedMessage(MessageKeys.WRONG_PASSWORD));
         String encodedNewPassword = passwordEncoder.encode(newPassword);
         user.setPassword(encodedNewPassword);
         userRepository.save(user);
-        return "Update Password successfully";
+        return localizationUtils.getLocalizedMessage(MessageKeys.UPDATE_PASSWORD_SUCCESSFULLY);
     }
 
     @Override
     public String changeUserInfo(ChangeUserInfo changeUserInfo) {
         User user = userRepository.findByEmail(changeUserInfo.getEmail())
-                .orElseThrow(() -> new DataNotFoundException("User not found"));
+                .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.USER_NOT_EXIST)));
         mapper.map(changeUserInfo, user);
         userRepository.save(user);
-        return "Change User Info Success";
+        return localizationUtils.getLocalizedMessage(MessageKeys.UPDATE_USER_SUCCESSFULLY);
     }
 
     @Transactional
     public CloudinaryResponse uploadImage(final String email, final MultipartFile file) {
         Optional<User> optionalUser = userRepository.findByEmail(email);
-        if(optionalUser.isEmpty()) throw new DataNotFoundException("User not found");
+        if(optionalUser.isEmpty()) throw new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.USER_NOT_EXIST));
         User user = optionalUser.get();
         FileUploadUtil.assertAllowed(file, FileUploadUtil.IMAGE_PATTERN);
         final String fileName = FileUploadUtil.getFileName(file.getOriginalFilename());
@@ -144,6 +148,4 @@ public class UserService implements IUserService {
         userRepository.save(user);
         return response;
     }
-
-
 }

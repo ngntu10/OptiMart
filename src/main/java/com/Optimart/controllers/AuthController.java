@@ -2,11 +2,11 @@ package com.Optimart.controllers;
 
 import com.Optimart.annotations.SecuredSwaggerOperation;
 import com.Optimart.annotations.UnsecuredSwaggerOperation;
+import com.Optimart.constants.MessageKeys;
 import com.Optimart.dto.Auth.*;
 import com.Optimart.constants.Endpoint;
 import com.Optimart.exceptions.TokenRefreshException;
 import com.Optimart.models.RefreshToken;
-import com.Optimart.models.Role;
 import com.Optimart.models.User;
 import com.Optimart.responses.Auth.LoginResponse;
 import com.Optimart.responses.Auth.RegisterResponse;
@@ -17,6 +17,7 @@ import com.Optimart.responses.CloudinaryResponse;
 import com.Optimart.services.RefreshToken.RefreshTokenService;
 import com.Optimart.services.User.UserService;
 import com.Optimart.utils.JwtTokenUtil;
+import com.Optimart.utils.LocalizationUtils;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -27,15 +28,10 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -46,16 +42,16 @@ public class AuthController {
     private final RefreshTokenService refreshTokenService;
     private final JwtTokenUtil jwtTokenUtil;
     private final ModelMapper mapper;
-
+    private final LocalizationUtils localizationUtils;
     @ApiResponse(responseCode = "201", description = "SUCCESS OPERATION", content = @Content(schema = @Schema(implementation = RegisterResponse.class), mediaType = "application/json"))
     @UnsecuredSwaggerOperation(summary = "Register User")
     @PostMapping(Endpoint.Auth.REGISTER)
     public ResponseEntity<RegisterResponse> createUser(@Valid @RequestBody UserRegisterDTO userRegisterDTO) {
         try {
             User registerUser = userService.createUser(userRegisterDTO);
-            return ResponseEntity.ok(RegisterResponse.success(registerUser));
+            return ResponseEntity.ok(new RegisterResponse(localizationUtils.getLocalizedMessage(MessageKeys.REGISTER_SUCCESSFULLY), registerUser));
         } catch (Exception ex) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(RegisterResponse.failure(ex.getMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new RegisterResponse(localizationUtils.getLocalizedMessage(MessageKeys.REGISTER_FAILED, ex.getMessage()), null));
         }
     }
 
@@ -70,10 +66,10 @@ public class AuthController {
             User user = userService.findUserByEmail(userLoginDTO.getMail());
             String refresh_token = refreshToken.getRefreshtoken();
             UserLoginResponse userLoginResponse = mapper.map(user, UserLoginResponse.class);
-            userLoginResponse.setUsername(user.getEmail());
-            return ResponseEntity.ok(LoginResponse.success(access_token, refresh_token, userLoginResponse));
+            return ResponseEntity.ok(LoginResponse.success(localizationUtils.getLocalizedMessage(MessageKeys.LOGIN_SUCCESSFULLY),
+                    access_token, refresh_token, userLoginResponse));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(LoginResponse.failure());
+            return ResponseEntity.badRequest().body(LoginResponse.failure(localizationUtils.getLocalizedMessage(MessageKeys.LOGIN_FAILED, e.getMessage())));
         }
     }
 
@@ -82,16 +78,11 @@ public class AuthController {
     @GetMapping (Endpoint.Auth.ME)
     public ResponseEntity<UserLoginResponse> getInfoCurrentUser(@Parameter @RequestHeader("Authorization") String token) {
         try {
-            String jwtToken = token.substring(7);
-            String email = jwtTokenUtil.extractEmail(jwtToken);
+            String email = jwtTokenUtil.extractEmail(token.substring(7));
             User user = userService.findUserByEmail(email);
             UserLoginResponse userLoginResponse = mapper.map(user, UserLoginResponse.class);
-            userLoginResponse.setUsername(user.getEmail());
-            userLoginResponse.setRole(user.getRole());
             return ResponseEntity.ok().body(userLoginResponse);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(null);
-        }
+        } catch (Exception e) { return ResponseEntity.badRequest().body(null);}
     }
 
     @ApiResponse(responseCode = "200",description = "OK", content = @Content(schema = @Schema(implementation = TokenRefreshResponse.class), mediaType = "application/json"))
@@ -101,15 +92,14 @@ public class AuthController {
         String requestRefreshToken = request.getRefreshToken();
         try {
             RefreshToken refreshToken = refreshTokenService.findByToken(requestRefreshToken)
-                    .orElseThrow(() -> new TokenRefreshException(requestRefreshToken, "Refresh token not existed"));
+                    .orElseThrow(() -> new TokenRefreshException(requestRefreshToken,
+                            localizationUtils.getLocalizedMessage(MessageKeys.REFRESHTOKEN_NOT_EXIST)));
             RefreshToken verifiedRefreshToken = refreshTokenService.verifyExpiration(refreshToken);
-            if (refreshTokenService.isExpired(verifiedRefreshToken))throw new TokenRefreshException(requestRefreshToken, "Refresh token has expired!");
+            if (refreshTokenService.isExpired(verifiedRefreshToken)) throw new TokenRefreshException(requestRefreshToken, localizationUtils.getLocalizedMessage(MessageKeys.REFRESHTOKEN_EXPIRED) );
             User user = refreshToken.getUser();
             String newAccessToken = jwtTokenUtil.generateToken(user);
-            return ResponseEntity.ok().body(TokenRefreshResponse.success(newAccessToken, requestRefreshToken));
-        } catch (Exception ex) {
-            return ResponseEntity.badRequest().body(TokenRefreshResponse.failure(ex.getMessage()));
-        }
+            return ResponseEntity.ok().body(TokenRefreshResponse.success(newAccessToken, requestRefreshToken, localizationUtils.getLocalizedMessage(MessageKeys.ACCESSTOKEN_SUCCESS)));
+        } catch (Exception ex) { return ResponseEntity.badRequest().body(TokenRefreshResponse.failure(ex.getMessage()));}
     }
 
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = BaseResponse.class), mediaType = "application/json"))
@@ -126,11 +116,11 @@ public class AuthController {
     @PostMapping(Endpoint.Auth.CHANGE_AVATAR)
     public ResponseEntity<CloudinaryResponse> updateAvatar(@RequestParam("email") String email, @RequestPart final MultipartFile file){
         CloudinaryResponse response = userService.uploadImage(email, file);
-        return ResponseEntity.ok(CloudinaryResponse.success(response.getPublicId(), response.getUrl()));
+        return ResponseEntity.ok(new CloudinaryResponse(response.getPublicId(), response.getUrl(), localizationUtils.getLocalizedMessage(MessageKeys.UPDATE_AVATAR_SUCCESS)));
     }
 
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = BaseResponse.class), mediaType = "application/json"))
-    @SecuredSwaggerOperation(summary = "Update User Avatar")
+    @SecuredSwaggerOperation(summary = "Update User Info")
     @PatchMapping(Endpoint.Auth.UPDATE_INFO)
     public ResponseEntity<BaseResponse> updateInfo(@RequestBody ChangeUserInfo changeUserInfo){
         return ResponseEntity.ok(new BaseResponse(LocalDate.now(), userService.changeUserInfo(changeUserInfo)));

@@ -19,8 +19,8 @@ public class TokenRefreshResponse {
     @JsonProperty("message")
     private String message;
 
-    public static TokenRefreshResponse success(String accessToken, String refreshToken) {
-        return new TokenRefreshResponse(accessToken, refreshToken, "Get access token success");
+    public static TokenRefreshResponse success(String accessToken, String refreshToken, String message) {
+        return new TokenRefreshResponse(accessToken, refreshToken, message);
     }
 
     public static TokenRefreshResponse failure(String message) {

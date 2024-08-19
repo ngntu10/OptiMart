@@ -1,12 +1,14 @@
 package com.Optimart.responses.Auth;
 
 import com.Optimart.models.User;
+import com.Optimart.utils.LocalizationUtils;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 @Getter
 @Setter
 @AllArgsConstructor
+@RequiredArgsConstructor
 @NoArgsConstructor
 public class RegisterResponse {
     @JsonProperty("message")
@@ -15,11 +17,4 @@ public class RegisterResponse {
     @JsonProperty("user")
     private User user;
 
-    public static RegisterResponse success(User user){
-        return new RegisterResponse("Register successfully", user);
-    }
-
-    public static RegisterResponse failure(String message){
-        return new RegisterResponse(message, null);
-    }
 }

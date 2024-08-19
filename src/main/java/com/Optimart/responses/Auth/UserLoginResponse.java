@@ -16,8 +16,11 @@ public class UserLoginResponse {
     private Role role;
     private String email;
     private String fullName;
-    private String username;
-    private String password;
+    private String userName;
+    private String firstName;
+    private String middleName;
+    private String address;
+    private String lastName;
     private String imageUrl;
     private String phoneNumber;
 }

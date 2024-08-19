@@ -27,12 +27,12 @@ public class LoginResponse {
         private UserLoginResponse user;
     }
 
-    public static LoginResponse success(String accessToken, String refreshToken, UserLoginResponse user) {
+    public static LoginResponse success(String message ,String accessToken, String refreshToken, UserLoginResponse user) {
         Data data = new Data(accessToken, refreshToken, user);
-        return new LoginResponse("Login successfully", data);
+        return new LoginResponse(message, data);
     }
 
-    public static LoginResponse failure() {
-        return new LoginResponse("Login Failed", null);
+    public static LoginResponse failure(String message) {
+        return new LoginResponse(message, null);
     }
 }

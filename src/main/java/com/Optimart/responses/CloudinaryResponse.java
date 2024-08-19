@@ -13,8 +13,4 @@ public class CloudinaryResponse {
     private String publicId;
     private String url;
     private String message;
-
-    public static CloudinaryResponse success(String publicId, String url){
-        return new CloudinaryResponse(publicId, url, "Update Successfully");
-    }
 }
