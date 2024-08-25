@@ -1,6 +1,7 @@
 package com.Optimart.controllers;
 
 import com.Optimart.constants.Endpoint;
+import com.Optimart.dto.Role.CreateRole;
 import com.Optimart.responses.APIResponse;
 import com.Optimart.responses.BaseResponse;
 import com.Optimart.responses.Role.RoleResponse;
@@ -34,7 +35,8 @@ public class RoleController {
 
     @ApiResponse(responseCode = "201", description = "SUCCESS OPERATION", content = @Content(schema = @Schema(implementation = BaseResponse.class)))
     @PostMapping()
-    public ResponseEntity<BaseResponse> addRole(@RequestBody String name) {
+    public ResponseEntity<BaseResponse> addRole(@RequestBody CreateRole createRole) {
+        String name = createRole.getName();
         return ResponseEntity.ok(new BaseResponse(LocalDate.now(), roleService.addRole(name)));
     }
 }

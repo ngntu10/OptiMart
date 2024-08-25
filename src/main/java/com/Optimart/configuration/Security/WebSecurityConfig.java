@@ -64,8 +64,8 @@
                                         String.format("%s/auth/update-info", apiPrefix),
 
                                         //Role
-                                        String.format("%s/roles", apiPrefix)
-
+                                        String.format("%s/roles", apiPrefix),
+                                        String.format("%s/**", apiPrefix)
                                         )
                                 .permitAll()
                                 .requestMatchers(POST,
