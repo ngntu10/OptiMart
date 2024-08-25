@@ -16,14 +16,13 @@ public class LoginResponse {
     @Getter
     @Setter
     @AllArgsConstructor
-    @NoArgsConstructor
     @Builder
     public static class Data {
         @JsonProperty("access_token")
-        private String accessToken = "";
+        private String accessToken;
 
         @JsonProperty("refresh_token")
-        private String refreshToken = "";
+        private String refreshToken;
         private UserLoginResponse user;
     }
 

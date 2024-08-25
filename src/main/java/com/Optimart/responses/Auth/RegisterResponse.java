@@ -9,7 +9,6 @@ import lombok.*;
 @Setter
 @AllArgsConstructor
 @RequiredArgsConstructor
-@NoArgsConstructor
 public class RegisterResponse {
     @JsonProperty("message")
     private String message;

@@ -4,7 +4,6 @@ import com.Optimart.constants.MessageKeys;
 import com.Optimart.dto.Auth.ChangePassword;
 import com.Optimart.dto.Auth.ChangeUserInfo;
 import com.Optimart.dto.Auth.UserRegisterDTO;
-import com.Optimart.enums.RoleNameEnum;
 import com.Optimart.exceptions.DataNotFoundException;
 import com.Optimart.exceptions.InvalidInput;
 import com.Optimart.models.Role;
@@ -51,7 +50,7 @@ public class UserService implements IUserService {
             throw new DataIntegrityViolationException(localizationUtils.getLocalizedMessage(MessageKeys.USER_ALREADY_EXIST));
         }
         Role userRole = Role.builder()
-                .name(RoleNameEnum.ADMIN)
+                .name("ADMIN")
                 .permissions(List.of("ADMIN.GRANTED"))
                 .build();
         roleRepository.save(userRole);

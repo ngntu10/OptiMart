@@ -69,7 +69,7 @@ public class AuthController {
             return ResponseEntity.ok(LoginResponse.success(localizationUtils.getLocalizedMessage(MessageKeys.LOGIN_SUCCESSFULLY),
                     access_token, refresh_token, userLoginResponse));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(LoginResponse.failure(localizationUtils.getLocalizedMessage(MessageKeys.LOGIN_FAILED, e.getMessage())));
+            return ResponseEntity.badRequest().body(LoginResponse.failure(e.getMessage()));
         }
     }
 

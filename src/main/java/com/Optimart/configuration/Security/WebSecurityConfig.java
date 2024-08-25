@@ -1,6 +1,5 @@
     package com.Optimart.configuration.Security;
 
-    import com.Optimart.enums.RoleNameEnum;
     import com.Optimart.filters.JwtTokenFilter;
     import lombok.RequiredArgsConstructor;
     import org.springframework.beans.factory.annotation.Value;
@@ -62,12 +61,15 @@
                                         String.format("%s/auth/logout", apiPrefix),
                                         String.format("%s/auth/avatar", apiPrefix),
                                         String.format("%s/auth/change-password", apiPrefix),
-                                        String.format("%s/auth/update-info", apiPrefix)
+                                        String.format("%s/auth/update-info", apiPrefix),
+
+                                        //Role
+                                        String.format("%s/roles", apiPrefix)
 
                                         )
                                 .permitAll()
                                 .requestMatchers(POST,
-                                        "/categories/**").hasAnyRole(RoleNameEnum.USER.getValue())
+                                        "/categories/**").hasAnyRole("ADMIN")
                                 .anyRequest().authenticated();
                         //.anyRequest().permitAll();
                     });

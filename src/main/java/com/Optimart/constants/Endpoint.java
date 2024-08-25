@@ -19,4 +19,8 @@ public class Endpoint {
         public static final String BASE = API_PREFIX + "/user";
 
     }
+    public static final class Role {
+        public static final String Base = API_PREFIX + "/roles";
+    }
+
 }
