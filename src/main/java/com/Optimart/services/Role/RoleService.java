@@ -16,6 +16,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.data.domain.Pageable;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -49,5 +50,25 @@ public class RoleService implements IRoleService{
         role.setName(name);
         Role savedRole = roleRepository.save(role);
         return localizationUtils.getLocalizedMessage(MessageKeys.ADD_ROLE_SUCCESS);
+    }
+
+    @Override
+    public Role getOne(String RoleId) {
+        return roleRepository.findById(UUID.fromString(RoleId)).get();
+    }
+
+    @Override
+    public String editRole(String id, String name) {
+        Role role = roleRepository.findById(UUID.fromString(id)).get();
+        role.setName(name);
+        roleRepository.save(role);
+        return localizationUtils.getLocalizedMessage(MessageKeys.EDIT_ROLE_SUCCESS);
+    }
+
+    @Override
+    public String deleteRole(String id) {
+        Role role = roleRepository.findById(UUID.fromString(id)).get();
+        roleRepository.delete(role);
+        return localizationUtils.getLocalizedMessage(MessageKeys.DELETE_ROLE_SUCCESS);
     }
 }
