@@ -9,4 +9,5 @@ import lombok.*;
 @Builder
 public class APIResponse<T> {
     private T data;
+    String message;
 }

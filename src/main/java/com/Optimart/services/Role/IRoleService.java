@@ -6,8 +6,8 @@ import com.Optimart.responses.Role.RoleResponse;
 
 public interface IRoleService {
     APIResponse<RoleResponse> getRoles(int limit, int page, String search, String order);
-    String addRole(String name);
+    public APIResponse<Role> addRole(String name);
     Role getOne(String RoleId);
-    String editRole(String id, String name);
-    String deleteRole(String id);
+    public APIResponse<Role> editRole(String id, String name);
+    public APIResponse<?> deleteRole(String id);
 }

@@ -1,11 +1,13 @@
 package com.Optimart.services.Role;
 
 import com.Optimart.constants.MessageKeys;
+import com.Optimart.exceptions.DataExistedException;
 import com.Optimart.models.Role;
 import com.Optimart.repositories.RoleRepository;
 import com.Optimart.responses.APIResponse;
 import com.Optimart.responses.Role.RoleResponse;
 import com.Optimart.utils.LocalizationUtils;
+import jakarta.validation.constraints.Null;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -16,6 +18,8 @@ import org.springframework.util.StringUtils;
 import org.springframework.data.domain.Pageable;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -26,6 +30,7 @@ public class RoleService implements IRoleService{
     private final LocalizationUtils localizationUtils;
     @Override
     public APIResponse<RoleResponse> getRoles(int limit, int page, String search, String order) {
+        RoleResponse roleResponse = new RoleResponse();
         Pageable pageable = PageRequest.of(page - 1, limit, Sort.by("createdAt").descending()); // Default
         if (StringUtils.hasText(order)) {
             String[] orderParams = order.split(" ");
@@ -34,22 +39,25 @@ public class RoleService implements IRoleService{
                 pageable = PageRequest.of(page - 1, limit, Sort.by(new Sort.Order(direction, orderParams[0])));
             }
         }
-        Page<Role> rolePage;
-        rolePage = StringUtils.hasText(search) ? roleRepository.findByNameContainingIgnoreCase(search, pageable) : roleRepository.findAll(pageable);
-        RoleResponse roleResponse = new RoleResponse(
-                rolePage.getContent(),
-                rolePage.getTotalPages(),
-                rolePage.getNumberOfElements());
-        return new APIResponse<>(roleResponse);
-    }
+            Page<Role> rolePage;
+            rolePage = StringUtils.hasText(search) ? roleRepository.findByNameContainingIgnoreCase(search, pageable) : roleRepository.findAll(pageable);
+            roleResponse = new RoleResponse(
+                    rolePage.getContent(),
+                    rolePage.getTotalPages(),
+                    rolePage.getNumberOfElements());
+            return new APIResponse<>(roleResponse, "Get role success");
+        }
 
     @Override
     @Transactional
-    public String addRole(String name) {
+    public APIResponse<Role> addRole(String name) {
         Role role = new Role();
+        Optional<Role> checkExistedRole = roleRepository.findByName(name);
+        if (checkExistedRole.isPresent())
+            return new APIResponse<>(null,localizationUtils.getLocalizedMessage(MessageKeys.ROLE_EXISTED));
         role.setName(name);
         Role savedRole = roleRepository.save(role);
-        return localizationUtils.getLocalizedMessage(MessageKeys.ADD_ROLE_SUCCESS);
+        return new APIResponse<>(role,localizationUtils.getLocalizedMessage(MessageKeys.ADD_ROLE_SUCCESS));
     }
 
     @Override
@@ -58,17 +66,17 @@ public class RoleService implements IRoleService{
     }
 
     @Override
-    public String editRole(String id, String name) {
+    public APIResponse<Role> editRole(String id, String name) {
         Role role = roleRepository.findById(UUID.fromString(id)).get();
         role.setName(name);
         roleRepository.save(role);
-        return localizationUtils.getLocalizedMessage(MessageKeys.EDIT_ROLE_SUCCESS);
+        return new APIResponse<>(role,localizationUtils.getLocalizedMessage(MessageKeys.EDIT_ROLE_SUCCESS));
     }
 
     @Override
-    public String deleteRole(String id) {
+    public APIResponse<?> deleteRole(String id) {
         Role role = roleRepository.findById(UUID.fromString(id)).get();
         roleRepository.delete(role);
-        return localizationUtils.getLocalizedMessage(MessageKeys.DELETE_ROLE_SUCCESS);
+        return new APIResponse<>(true,localizationUtils.getLocalizedMessage(MessageKeys.DELETE_ROLE_SUCCESS));
     }
 }

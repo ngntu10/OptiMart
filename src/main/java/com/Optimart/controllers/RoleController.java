@@ -30,7 +30,7 @@ public class RoleController {
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = Object.class), mediaType = "application/json"))
     @GetMapping
     public ResponseEntity<APIResponse<RoleResponse>> getRoles (
-                         @RequestParam(defaultValue = "10") int limit,
+                         @RequestParam(defaultValue = "20") int limit,
                          @RequestParam(defaultValue = "1") int page,
                          @RequestParam(required = false) String search,
                          @RequestParam(defaultValue = "createdAt asc") String order) {
@@ -39,9 +39,9 @@ public class RoleController {
 
     @SecuredSwaggerOperation(summary = "Add a new role")
     @PostMapping
-    public ResponseEntity<BaseResponse> addRole(@RequestBody CreateRole createRole) {
+    public ResponseEntity<?> addRole(@RequestBody CreateRole createRole) {
         String name = createRole.getName();
-        return ResponseEntity.ok(new BaseResponse(LocalDate.now(), roleService.addRole(name)));
+        return ResponseEntity.ok(roleService.addRole(name));
     }
 
     @SecuredSwaggerOperation(summary = "Get details roles by ID")
@@ -52,8 +52,8 @@ public class RoleController {
 
     @SecuredSwaggerOperation(summary = "Update an existing role")
     @PatchMapping("/{roleId}")
-    public ResponseEntity<?> editRole(@PathVariable String roleId, @RequestBody String name){
-        return ResponseEntity.ok().body(roleService.editRole(roleId, name));
+    public ResponseEntity<?> editRole(@PathVariable String roleId, @RequestBody CreateRole role){
+        return ResponseEntity.ok().body(roleService.editRole(roleId, role.getName()));
     }
 
     @SecuredSwaggerOperation(summary = "Delete role by ID")
