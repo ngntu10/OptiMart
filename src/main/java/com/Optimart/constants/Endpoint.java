@@ -21,6 +21,8 @@ public class Endpoint {
     }
     public static final class Role {
         public static final String Base = API_PREFIX + "/roles";
+        public static final String ID = "{roleId}";
+        public static final String DELETE_MANY = "/delete-many";
     }
 
 }

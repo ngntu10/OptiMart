@@ -5,7 +5,6 @@ import com.Optimart.constants.Endpoint;
 import com.Optimart.dto.Role.CreateRole;
 import com.Optimart.models.Role;
 import com.Optimart.responses.APIResponse;
-import com.Optimart.responses.BaseResponse;
 import com.Optimart.responses.Role.RoleResponse;
 import com.Optimart.services.Role.RoleService;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -17,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -45,20 +45,26 @@ public class RoleController {
     }
 
     @SecuredSwaggerOperation(summary = "Get details roles by ID")
-    @GetMapping("/{roleId}")
+    @GetMapping(Endpoint.Role.ID)
     public ResponseEntity<Role> getOne(@PathVariable String roleId){
         return ResponseEntity.ok().body(roleService.getOne(roleId));
     }
 
-    @SecuredSwaggerOperation(summary = "Update an existing role")
-    @PatchMapping("/{roleId}")
+    @SecuredSwaggerOperation(summary = "Update an existing role by ID")
+    @PatchMapping(Endpoint.Role.ID)
     public ResponseEntity<?> editRole(@PathVariable String roleId, @RequestBody CreateRole role){
         return ResponseEntity.ok().body(roleService.editRole(roleId, role.getName()));
     }
 
     @SecuredSwaggerOperation(summary = "Delete role by ID")
-    @DeleteMapping("/{roleId}")
+    @DeleteMapping(Endpoint.Role.ID)
     public ResponseEntity<?> deleteRole(@PathVariable String roleId){
         return ResponseEntity.ok().body(roleService.deleteRole(roleId));
+    }
+
+    @SecuredSwaggerOperation(summary = "Delete many roles by list ids")
+    @DeleteMapping(Endpoint.Role.DELETE_MANY)
+    public ResponseEntity<?> deleteMany(@RequestBody List<String> roleList){
+        return ResponseEntity.ok(roleService.deleteMany(roleList));
     }
 }

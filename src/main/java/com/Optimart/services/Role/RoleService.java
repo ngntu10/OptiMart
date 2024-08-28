@@ -1,13 +1,11 @@
 package com.Optimart.services.Role;
 
 import com.Optimart.constants.MessageKeys;
-import com.Optimart.exceptions.DataExistedException;
 import com.Optimart.models.Role;
 import com.Optimart.repositories.RoleRepository;
 import com.Optimart.responses.APIResponse;
 import com.Optimart.responses.Role.RoleResponse;
 import com.Optimart.utils.LocalizationUtils;
-import jakarta.validation.constraints.Null;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -78,5 +76,10 @@ public class RoleService implements IRoleService{
         Role role = roleRepository.findById(UUID.fromString(id)).get();
         roleRepository.delete(role);
         return new APIResponse<>(true,localizationUtils.getLocalizedMessage(MessageKeys.DELETE_ROLE_SUCCESS));
+    }
+
+    @Override
+    public APIResponse<?> deleteMany(List<String> roleList) {
+        return null;
     }
 }

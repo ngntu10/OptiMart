@@ -5,7 +5,7 @@
 For building and running the application you need:
 
 - [Node 20 & Npm 10](https://nodejs.org/en/download)
-- [JDK 21](https://www.oracle.com/java/technologies/downloads/#java21)
+- [JDK 17](https://www.oracle.com/java/technologies/downloads/#java21)
 - [Maven 3](https://maven.apache.org)
 
 [//]: # ()
