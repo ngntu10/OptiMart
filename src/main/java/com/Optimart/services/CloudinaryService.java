@@ -17,7 +17,6 @@ public class CloudinaryService {
     private final Cloudinary cloudinary;
     @Value("${cloudinary.api_key}")
     private String API_KEY;
-    @Transactional
     public CloudinaryResponse uploadFile(final MultipartFile file, final String fileName) {
         try {
             final Map result   = cloudinary.uploader()

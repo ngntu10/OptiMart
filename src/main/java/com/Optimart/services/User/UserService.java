@@ -135,7 +135,9 @@ public class UserService implements IUserService {
     }
 
     @Transactional
-    public CloudinaryResponse uploadImage(final String email, final MultipartFile file) {
+    public CloudinaryResponse uploadImage(String token, final MultipartFile file) {
+        String jwtToken = token.substring(7);
+        String email = jwtTokenUtil.extractEmail(jwtToken);
         Optional<User> optionalUser = userRepository.findByEmail(email);
         if(optionalUser.isEmpty()) throw new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.USER_NOT_EXIST));
         User user = optionalUser.get();

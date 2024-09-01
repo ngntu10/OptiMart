@@ -18,23 +18,23 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(value = FileUploadException.class)
     public ResponseEntity<BaseResponse> handleFileUploadExceptions(FileUploadException ex) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new BaseResponse(LocalDate.now(), ex.getMessage()));
     }
 
     @ExceptionHandler(value = DataNotFoundException.class)
     public ResponseEntity<BaseResponse> handleDataNotFoundExceptionExceptions(DataNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new BaseResponse(LocalDate.now(), ex.getMessage()));
     }
 
     @ExceptionHandler(value = InvalidParamException.class)
     public ResponseEntity<BaseResponse> handleInvalidParamException(InvalidParamException ex) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new BaseResponse(LocalDate.now(), ex.getMessage()));
     }
     @ExceptionHandler(value = InvalidInput.class)
-    public ResponseEntity<BaseResponse> handleInvalidParamException(InvalidInput ex) {
+    public ResponseEntity<BaseResponse> handleInvalidInputException(InvalidInput ex) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new BaseResponse(LocalDate.now(), ex.getMessage()));
     }

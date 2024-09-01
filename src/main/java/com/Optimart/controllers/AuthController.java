@@ -114,8 +114,9 @@ public class AuthController {
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = CloudinaryResponse.class), mediaType = "application/json"))
     @SecuredSwaggerOperation(summary = "Update User Avatar")
     @PostMapping(Endpoint.Auth.CHANGE_AVATAR)
-    public ResponseEntity<CloudinaryResponse> updateAvatar(@RequestParam("email") String email, @RequestPart final MultipartFile file){
-        CloudinaryResponse response = userService.uploadImage(email, file);
+    public ResponseEntity<CloudinaryResponse> updateAvatar(@Parameter @RequestHeader("Authorization") String token,
+                                                           @RequestParam("file") MultipartFile file){
+        CloudinaryResponse response = userService.uploadImage(token, file);
         return ResponseEntity.ok(new CloudinaryResponse(response.getPublicId(), response.getUrl(), localizationUtils.getLocalizedMessage(MessageKeys.UPDATE_AVATAR_SUCCESS)));
     }
 
