@@ -50,11 +50,17 @@ public class RoleController {
         return ResponseEntity.ok().body(roleService.getOne(roleId));
     }
 
-    @SecuredSwaggerOperation(summary = "Update an existing role by ID")
+    @SecuredSwaggerOperation(summary = "Update name for an existing role by ID")
     @PatchMapping(Endpoint.Role.ID)
     public ResponseEntity<?> editRole(@PathVariable String roleId, @RequestBody CreateRole role){
         return ResponseEntity.ok().body(roleService.editRole(roleId, role.getName()));
     }
+
+//    @SecuredSwaggerOperation(summary = "Update list permissions for an existing role by ID")
+//    @PatchMapping(Endpoint.Role.ID)
+//    public ResponseEntity<?> editRolePermissions(@PathVariable String roleId, @RequestBody CreateRole role){
+//        return ResponseEntity.ok().body(roleService.editRole(roleId, role.getName()));
+//    }
 
     @SecuredSwaggerOperation(summary = "Delete role by ID")
     @DeleteMapping(Endpoint.Role.ID)

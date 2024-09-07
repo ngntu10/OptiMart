@@ -15,7 +15,7 @@ import com.Optimart.responses.Auth.UserLoginResponse;
 import com.Optimart.responses.BaseResponse;
 import com.Optimart.responses.CloudinaryResponse;
 import com.Optimart.services.RefreshToken.RefreshTokenService;
-import com.Optimart.services.User.UserService;
+import com.Optimart.services.Auth.AuthService;
 import com.Optimart.utils.JwtTokenUtil;
 import com.Optimart.utils.LocalizationUtils;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -38,7 +38,7 @@ import java.time.LocalDate;
 @Tag(name = "Auth", description = "Everything about auth")
 @RequestMapping(Endpoint.Auth.BASE)
 public class AuthController {
-    private final UserService userService;
+    private final AuthService authService;
     private final RefreshTokenService refreshTokenService;
     private final JwtTokenUtil jwtTokenUtil;
     private final ModelMapper mapper;
@@ -48,7 +48,7 @@ public class AuthController {
     @PostMapping(Endpoint.Auth.REGISTER)
     public ResponseEntity<RegisterResponse> createUser(@Valid @RequestBody UserRegisterDTO userRegisterDTO) {
         try {
-            User registerUser = userService.createUser(userRegisterDTO);
+            User registerUser = authService.createUser(userRegisterDTO);
             return ResponseEntity.ok(new RegisterResponse(localizationUtils.getLocalizedMessage(MessageKeys.REGISTER_SUCCESSFULLY), registerUser));
         } catch (Exception ex) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new RegisterResponse(localizationUtils.getLocalizedMessage(MessageKeys.REGISTER_FAILED, ex.getMessage()), null));
@@ -61,9 +61,9 @@ public class AuthController {
     public ResponseEntity<LoginResponse> login(
             @Valid @RequestBody UserLoginDTO userLoginDTO) {
         try {
-            String access_token = userService.login(userLoginDTO.getMail(), userLoginDTO.getPassword());
+            String access_token = authService.login(userLoginDTO.getMail(), userLoginDTO.getPassword());
             RefreshToken refreshToken = refreshTokenService.createRefreshToken(userLoginDTO.getMail());
-            User user = userService.findUserByEmail(userLoginDTO.getMail());
+            User user = authService.findUserByEmail(userLoginDTO.getMail());
             String refresh_token = refreshToken.getRefreshtoken();
             UserLoginResponse userLoginResponse = mapper.map(user, UserLoginResponse.class);
             return ResponseEntity.ok(LoginResponse.success(localizationUtils.getLocalizedMessage(MessageKeys.LOGIN_SUCCESSFULLY),
@@ -79,7 +79,7 @@ public class AuthController {
     public ResponseEntity<UserLoginResponse> getInfoCurrentUser(@Parameter @RequestHeader("Authorization") String token) {
         try {
             String email = jwtTokenUtil.extractEmail(token.substring(7));
-            User user = userService.findUserByEmail(email);
+            User user = authService.findUserByEmail(email);
             UserLoginResponse userLoginResponse = mapper.map(user, UserLoginResponse.class);
             return ResponseEntity.ok().body(userLoginResponse);
         } catch (Exception e) { return ResponseEntity.badRequest().body(null);}
@@ -108,7 +108,7 @@ public class AuthController {
     public ResponseEntity<BaseResponse> changePassword(@RequestBody ChangePassword changePassword,
                                                        @Parameter @RequestHeader("Authorization") String token) throws Exception {
         return ResponseEntity.ok().body(new BaseResponse(LocalDate.now(),
-                userService.changeUserPassword(changePassword,token)));
+                authService.changeUserPassword(changePassword,token)));
     }
 
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = CloudinaryResponse.class), mediaType = "application/json"))
@@ -116,7 +116,7 @@ public class AuthController {
     @PostMapping(Endpoint.Auth.CHANGE_AVATAR)
     public ResponseEntity<CloudinaryResponse> updateAvatar(@Parameter @RequestHeader("Authorization") String token,
                                                            @RequestParam("file") MultipartFile file){
-        CloudinaryResponse response = userService.uploadImage(token, file);
+        CloudinaryResponse response = authService.uploadImage(token, file);
         return ResponseEntity.ok(new CloudinaryResponse(response.getPublicId(), response.getUrl(), localizationUtils.getLocalizedMessage(MessageKeys.UPDATE_AVATAR_SUCCESS)));
     }
 
@@ -124,6 +124,6 @@ public class AuthController {
     @SecuredSwaggerOperation(summary = "Update User Info")
     @PatchMapping(Endpoint.Auth.UPDATE_INFO)
     public ResponseEntity<BaseResponse> updateInfo(@RequestBody ChangeUserInfo changeUserInfo){
-        return ResponseEntity.ok(new BaseResponse(LocalDate.now(), userService.changeUserInfo(changeUserInfo)));
+        return ResponseEntity.ok(new BaseResponse(LocalDate.now(), authService.changeUserInfo(changeUserInfo)));
     }
 }

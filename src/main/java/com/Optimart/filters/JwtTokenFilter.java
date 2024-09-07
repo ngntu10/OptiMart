@@ -34,12 +34,11 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                                     @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain) throws ServletException, IOException {
         try {
-            System.out.println(request.getRequestURI());
+            System.out.println(request.getMethod() + " " +request.getRequestURI());
             if (isByPassToken(request)) {
                 filterChain.doFilter(request, response);
                 return;
             }
-
                 final String authHeader = request.getHeader("Authorization");
             if (authHeader == null || !authHeader.startsWith("Bearer ")) {
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "NOT UNAUTHORIZED");

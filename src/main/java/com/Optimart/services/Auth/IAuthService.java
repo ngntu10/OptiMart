@@ -1,13 +1,11 @@
-package com.Optimart.services.User;
+package com.Optimart.services.Auth;
 
 import com.Optimart.dto.Auth.ChangePassword;
 import com.Optimart.dto.Auth.ChangeUserInfo;
 import com.Optimart.dto.Auth.UserRegisterDTO;
 import com.Optimart.models.User;
 
-import java.util.Optional;
-
-public interface IUserService {
+public interface IAuthService {
     User createUser(UserRegisterDTO userRegisterDTO) throws Exception;
     String login(String email, String password) throws Exception;
     User findUserByEmail(String email) throws  Exception;

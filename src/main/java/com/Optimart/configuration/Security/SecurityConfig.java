@@ -1,6 +1,6 @@
 package com.Optimart.configuration.Security;
 
-import com.Optimart.repositories.UserRepository;
+import com.Optimart.repositories.AuthRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,10 +18,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @RequiredArgsConstructor
 @EnableWebSecurity
 public class SecurityConfig {
-    private final UserRepository userRepository;
+    private final AuthRepository authRepository;
     @Bean
     public UserDetailsService userDetailsService() {
-        return email -> userRepository
+        return email -> authRepository
                 .findByEmail(email)
                 .orElseThrow(() ->
                         new UsernameNotFoundException(

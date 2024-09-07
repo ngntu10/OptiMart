@@ -60,7 +60,7 @@ public class User extends BaseEntity implements UserDetails {
     private String cloudinaryImageId;
 
     @Column(name = "userType")
-    private int userType = 3;
+    private int userType = 1;
 
     @Column(name = "resetToken")
     private String resetToken;

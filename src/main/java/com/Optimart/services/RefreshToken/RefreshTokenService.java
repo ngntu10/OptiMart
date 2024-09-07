@@ -4,17 +4,15 @@ import com.Optimart.exceptions.TokenRefreshException;
 import com.Optimart.models.RefreshToken;
 import com.Optimart.models.User;
 import com.Optimart.repositories.RefreshTokenRepository;
-import com.Optimart.repositories.UserRepository;
+import com.Optimart.repositories.AuthRepository;
 import com.Optimart.utils.JwtTokenUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
 import java.util.Date;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -23,7 +21,7 @@ public class RefreshTokenService implements IRefreshTokenService {
     private Long jwtRefreshExpiration;
 
     private final RefreshTokenRepository refreshTokenRepository;
-    private final UserRepository userRepository;
+    private final AuthRepository authRepository;
     private final JwtTokenUtil jwtTokenUtil;
     @Override
     public Optional<RefreshToken> findByToken(String token) {
@@ -33,12 +31,12 @@ public class RefreshTokenService implements IRefreshTokenService {
     @Override
     public RefreshToken createRefreshToken(String userEmail) {
         try {
-            User user = userRepository.findByEmail(userEmail)
+            User user = authRepository.findByEmail(userEmail)
                     .orElseThrow(() -> new RuntimeException("User not found"));
             RefreshToken refreshToken = RefreshToken.builder()
                     .user(user)
                     .expiryDate(new Date(System.currentTimeMillis()+jwtRefreshExpiration*1000L))
-                    .refreshtoken(jwtTokenUtil.generateRefreshToken(userRepository.findByEmail(userEmail).get()))
+                    .refreshtoken(jwtTokenUtil.generateRefreshToken(authRepository.findByEmail(userEmail).get()))
                     .build();
             return refreshTokenRepository.save(refreshToken);
         }catch (Exception ex){
@@ -61,8 +59,8 @@ public class RefreshTokenService implements IRefreshTokenService {
     @Override
     @Transactional
     public void deleteByUserId(String userEmail) {
-        if(!userRepository.findByEmail(userEmail).isEmpty()) {
-            refreshTokenRepository.deleteByUser(userRepository.findByEmail(userEmail).get());
+        if(!authRepository.findByEmail(userEmail).isEmpty()) {
+            refreshTokenRepository.deleteByUser(authRepository.findByEmail(userEmail).get());
         }
     }
 

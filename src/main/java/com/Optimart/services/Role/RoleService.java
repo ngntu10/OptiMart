@@ -6,6 +6,7 @@ import com.Optimart.repositories.RoleRepository;
 import com.Optimart.responses.APIResponse;
 import com.Optimart.responses.Role.RoleResponse;
 import com.Optimart.utils.LocalizationUtils;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -39,10 +40,11 @@ public class RoleService implements IRoleService{
         }
             Page<Role> rolePage;
             rolePage = StringUtils.hasText(search) ? roleRepository.findByNameContainingIgnoreCase(search, pageable) : roleRepository.findAll(pageable);
-            roleResponse = new RoleResponse(
-                    rolePage.getContent(),
-                    rolePage.getTotalPages(),
-                    rolePage.getNumberOfElements());
+            roleResponse = RoleResponse.builder()
+                .roleList(rolePage.getContent())
+                .totalPage(rolePage.getTotalPages())
+                .totalCount(rolePage.getNumberOfElements())
+                .build();
             return new APIResponse<>(roleResponse, "Get role success");
         }
 
