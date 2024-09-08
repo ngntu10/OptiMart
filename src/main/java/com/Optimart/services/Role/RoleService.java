@@ -32,7 +32,7 @@ public class RoleService implements IRoleService{
         RoleResponse roleResponse = new RoleResponse();
         Pageable pageable = PageRequest.of(page - 1, limit, Sort.by("createdAt").descending()); // Default
         if (StringUtils.hasText(order)) {
-            String[] orderParams = order.split(" ");
+            String[] orderParams = order.split("-");
             if (orderParams.length == 2) {
                 Sort.Direction direction = orderParams[1].equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
                 pageable = PageRequest.of(page - 1, limit, Sort.by(new Sort.Order(direction, orderParams[0])));

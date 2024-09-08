@@ -24,4 +24,7 @@ public class MessageKeys {
     public static final String EDIT_ROLE_SUCCESS = "role.edit_success";
     public static final String DELETE_ROLE_SUCCESS = "role.delete_success";
     public static final String ROLE_EXISTED = "role.existed";
+
+    // USERS
+    public static final String USER_GET_SUCCESS = "users.get_success";
 }

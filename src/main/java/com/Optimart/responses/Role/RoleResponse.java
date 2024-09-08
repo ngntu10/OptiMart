@@ -1,9 +1,7 @@
 package com.Optimart.responses.Role;
 
 import com.Optimart.models.Role;
-import com.Optimart.responses.PagingResponse;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 
 import java.util.List;
 
@@ -11,8 +9,9 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@SuperBuilder
-public class RoleResponse extends PagingResponse {
+@Builder
+public class RoleResponse {
     List<Role> roleList;
-
+    private int totalPage;
+    private int totalCount;
 }

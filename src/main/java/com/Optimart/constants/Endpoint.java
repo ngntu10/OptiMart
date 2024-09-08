@@ -15,7 +15,7 @@ public class Endpoint {
     }
 
     public static final class User {
-        public static final String BASE = API_PREFIX + "/user";
+        public static final String BASE = API_PREFIX + "/users";
         public static final String ID = "{userId}";
         public static final String DELETE_MANY = "/delete-many";
 

@@ -3,6 +3,8 @@ package com.Optimart.responses.User;
 import com.Optimart.models.Role;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @NoArgsConstructor
