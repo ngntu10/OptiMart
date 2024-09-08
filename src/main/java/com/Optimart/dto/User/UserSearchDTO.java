@@ -16,9 +16,4 @@ public class UserSearchDTO {
     private String status;
     private String cityId;
     private String userType;
-
-    private List<Integer> roleIds;
-    private List<Integer> statuses;
-    private List<Integer> cityIds;
-    private List<Integer> userTypes;
 }

@@ -29,7 +29,6 @@ public class UserController {
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = Object.class), mediaType = "application/json"))
     @GetMapping
     public ResponseEntity<PagingUserResponse<List<UserResponse>> > getAllUser(@ModelAttribute UserSearchDTO userSearchDTO) {
-        System.out.println(Endpoint.User.BASE);
          return ResponseEntity.ok(userService.getUsers(userSearchDTO));
     }
 

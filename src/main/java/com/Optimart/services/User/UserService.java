@@ -3,6 +3,7 @@ package com.Optimart.services.User;
 import com.Optimart.constants.MessageKeys;
 import com.Optimart.dto.User.UserSearchDTO;
 import com.Optimart.models.User;
+import com.Optimart.repositories.Specification.UserSpecification;
 import com.Optimart.repositories.UserRepository;
 import com.Optimart.responses.User.PagingUserResponse;
 import com.Optimart.responses.User.UserResponse;
@@ -13,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -33,8 +35,9 @@ public class UserService implements IUserservice {
     public PagingUserResponse<List<UserResponse>> getUsers(@ModelAttribute UserSearchDTO userSearchDTO) {
         UserResponse userResponse = new UserResponse();
         List<UserResponse> userResponseList = new ArrayList<>();
+        List<User> userList = new ArrayList<>();
         if (userSearchDTO.getPage() == -1 && userSearchDTO.getLimit() == -1 ) {
-            List<User> userList = userRepository.findAll();
+            userList = userRepository.findAll();
             userResponseList = userList.stream()
                     .map(user -> modelMapper.map(user, UserResponse.class))
                     .toList();
@@ -49,27 +52,14 @@ public class UserService implements IUserservice {
                 pageable = PageRequest.of(userSearchDTO.getPage() - 1, userSearchDTO.getLimit(), Sort.by(new Sort.Order(direction, orderParams[0])));
             }
         }
-        List<Integer> roleIds = parseListFromQueryParam(userSearchDTO.getRoleId());
-        List<Integer> statuses = parseListFromQueryParam(userSearchDTO.getStatus());
-        List<Integer> cityIds = parseListFromQueryParam(userSearchDTO.getCityId());
-        List<Integer> userTypes = parseListFromQueryParam(userSearchDTO.getUserType());
-
-        userSearchDTO.setRoleIds(roleIds);
-        userSearchDTO.setStatuses(statuses);
-        userSearchDTO.setCityIds(cityIds);
-        userSearchDTO.setUserTypes(userTypes);
-        Page<User> users = userRepository.findUsersWithFillter(userSearchDTO, pageable);
-        return new PagingUserResponse<>(userResponseList, localizationUtils.getLocalizedMessage(MessageKeys.USER_GET_SUCCESS), users.getTotalPages(), users.getTotalElements());
+        Specification<User> specification = UserSpecification.filterUsers(userSearchDTO.getRoleId(), userSearchDTO.getStatus(), userSearchDTO.getCityId(),
+                                                                          userSearchDTO.getUserType(), userSearchDTO.getSearch());
+        Page<User> userPage = userRepository.findAll(specification, pageable);
+        userList = userPage.getContent();
+        userResponseList = userList.stream()
+                .map(user -> modelMapper.map(user, UserResponse.class))
+                .toList();
+        return new PagingUserResponse<>(userResponseList, localizationUtils.getLocalizedMessage(MessageKeys.USER_GET_SUCCESS), userPage.getTotalPages(), userPage.getTotalElements());
     }
 
-    private List<Integer> parseListFromQueryParam(String queryParam) {
-        if (queryParam == null || queryParam.isEmpty()) {
-            return Collections.emptyList();
-        }
-        return Arrays.stream(queryParam.split("\\|"))
-                .map(String::trim)
-                .filter(value -> !value.isEmpty())
-                .map(Integer::parseInt)
-                .collect(Collectors.toList());
-    }
 }
