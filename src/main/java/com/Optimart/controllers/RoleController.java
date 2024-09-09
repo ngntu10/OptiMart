@@ -27,7 +27,7 @@ public class RoleController {
     private final RoleService roleService;
 
     @SecuredSwaggerOperation(summary = "Get all role")
-    @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = Object.class), mediaType = "application/json"))
+    @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = APIResponse.class), mediaType = "application/json"))
     @GetMapping
     public ResponseEntity<APIResponse<RoleResponse>> getRoles (
                          @RequestParam(defaultValue = "20") int limit,

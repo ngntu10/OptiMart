@@ -20,10 +20,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -34,10 +31,11 @@ public class UserService implements IUserservice {
     @Override
     public PagingUserResponse<List<UserResponse>> getUsers(@ModelAttribute UserSearchDTO userSearchDTO) {
         UserResponse userResponse = new UserResponse();
-        List<UserResponse> userResponseList = new ArrayList<>();
-        List<User> userList = new ArrayList<>();
+        List<UserResponse> userResponseList;
+        List<User> userList;
         if (userSearchDTO.getPage() == -1 && userSearchDTO.getLimit() == -1 ) {
             userList = userRepository.findAll();
+
             userResponseList = userList.stream()
                     .map(user -> modelMapper.map(user, UserResponse.class))
                     .toList();

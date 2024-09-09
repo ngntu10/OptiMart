@@ -16,7 +16,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -28,7 +27,8 @@ public class UserController {
     @SecuredSwaggerOperation(summary = "Get all user")
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = Object.class), mediaType = "application/json"))
     @GetMapping
-    public ResponseEntity<PagingUserResponse<List<UserResponse>> > getAllUser(@ModelAttribute UserSearchDTO userSearchDTO) {
+    public ResponseEntity<PagingUserResponse<?>> getAllUser(@ModelAttribute UserSearchDTO userSearchDTO) {
+        System.out.println(Endpoint.User.BASE);
          return ResponseEntity.ok(userService.getUsers(userSearchDTO));
     }
 
