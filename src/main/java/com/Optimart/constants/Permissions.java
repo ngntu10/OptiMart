@@ -1,20 +1,20 @@
 package com.Optimart.constants;
 
 public class Permissions {
-    private static final String ADMIN = "ADMIN.GRANTED";
-    private static final String BASIC = "BASIC.PUBLIC";
-    private static final String DASHBOARD = "DASHBOARD";
-    private static final class MANAGE_PRODUCT {
-        private static class Product {
-            private static final String CREATE = "MANAGE_PRODUCT.PRODUCT.CREATE";
-            private static final String UPDATE = "MANAGE_PRODUCT.PRODUCT.UPDATE";
-            private static final String DELETE = "MANAGE_PRODUCT.PRODUCT.DELETE";
+    public static final String ADMIN = "ADMIN.GRANTED";
+    public static final String BASIC = "BASIC.PUBLIC";
+    public static final String DASHBOARD = "DASHBOARD";
+    public static final class MANAGE_PRODUCT {
+        public static class Product {
+            public static final String CREATE = "MANAGE_PRODUCT.PRODUCT.CREATE";
+            public static final String UPDATE = "MANAGE_PRODUCT.PRODUCT.UPDATE";
+            public static final String DELETE = "MANAGE_PRODUCT.PRODUCT.DELETE";
         }
 
-        private static class ProductType {
-            private static final String CREATE = "MANAGE_PRODUCT.PRODUCT_TYPE.CREATE";
-            private static final String UPDATE = "MANAGE_PRODUCT.PRODUCT_TYPE.UPDATE";
-            private static final String DELETE = "MANAGE_PRODUCT.PRODUCT_TYPE.DELETE";
+        public static class ProductType {
+            public static final String CREATE = "MANAGE_PRODUCT.PRODUCT_TYPE.CREATE";
+            public static final String UPDATE = "MANAGE_PRODUCT.PRODUCT_TYPE.UPDATE";
+            public static final String DELETE = "MANAGE_PRODUCT.PRODUCT_TYPE.DELETE";
         }
     }
     public static class System {

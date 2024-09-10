@@ -33,15 +33,16 @@ public class UserService implements IUserservice {
         UserResponse userResponse = new UserResponse();
         List<UserResponse> userResponseList;
         List<User> userList;
+        Pageable pageable;
         if (userSearchDTO.getPage() == -1 && userSearchDTO.getLimit() == -1 ) {
             userList = userRepository.findAll();
-
             userResponseList = userList.stream()
                     .map(user -> modelMapper.map(user, UserResponse.class))
                     .toList();
             return new PagingUserResponse<>(userResponseList, localizationUtils.getLocalizedMessage(MessageKeys.USER_GET_SUCCESS), 1, (long) userResponseList.size());
+        } else {
+             pageable = PageRequest.of(userSearchDTO.getPage() - 1, userSearchDTO.getLimit(), Sort.by("createdAt").descending());
         }
-        Pageable pageable = PageRequest.of(userSearchDTO.getPage() - 1, userSearchDTO.getLimit(), Sort.by("createdAt").descending());
         if (StringUtils.hasText(userSearchDTO.getOrder())) {
             String order = userSearchDTO.getOrder();
             String[] orderParams = order.split("-");

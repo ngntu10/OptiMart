@@ -1,6 +1,7 @@
 package com.Optimart.services.Auth;
 
 import com.Optimart.constants.MessageKeys;
+import com.Optimart.constants.Permissions;
 import com.Optimart.dto.Auth.ChangePassword;
 import com.Optimart.dto.Auth.ChangeUserInfo;
 import com.Optimart.dto.Auth.UserRegisterDTO;
@@ -49,11 +50,7 @@ public class AuthService implements IAuthService {
         if (authRepository.existsByEmail(email)){
             throw new DataIntegrityViolationException(localizationUtils.getLocalizedMessage(MessageKeys.USER_ALREADY_EXIST));
         }
-        Role userRole = Role.builder()
-                .name("ADMIN")
-                .permissions(List.of("ADMIN.GRANTED"))
-                .build();
-        roleRepository.save(userRole);
+        Role userRole = roleRepository.findByName("BASIC").get();
         // CONVERT DTO => ENTITY
         User newUser = User.builder()
                 .email(userRegisterDTO.getMail())
@@ -129,7 +126,7 @@ public class AuthService implements IAuthService {
     public String changeUserInfo(ChangeUserInfo changeUserInfo) {
         User user = authRepository.findByEmail(changeUserInfo.getEmail())
                 .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.USER_NOT_EXIST)));
-        mapper.map(changeUserInfo, user);
+        mapper.map(changeUserInfo, User.class);
         authRepository.save(user);
         return localizationUtils.getLocalizedMessage(MessageKeys.UPDATE_USER_SUCCESSFULLY);
     }

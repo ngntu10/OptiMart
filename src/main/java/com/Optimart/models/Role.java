@@ -20,7 +20,7 @@ public class Role extends BaseEntity{
     @Column(name = "name", nullable = false)
     private String name;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "role_permissions", joinColumns = @JoinColumn(name = "role_id"))
     @Column(name = "permission")
     private List<String> permissions;
