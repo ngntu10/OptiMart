@@ -5,6 +5,8 @@ import org.springframework.data.jpa.domain.Specification;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class UserSpecification {
     public static Specification<User> byRoleIds(String roleIds){
@@ -12,8 +14,11 @@ public class UserSpecification {
             if (roleIds == null || roleIds.isEmpty()) {
                 return criteriaBuilder.conjunction();
             }
-            List<String> roleIdList = Arrays.asList(roleIds.split("-"));
-            return root.get("roleId").in(roleIdList);
+            List<UUID> roleIdList = Arrays.stream(roleIds.split(" "))
+                    .map(UUID::fromString)
+                    .collect(Collectors.toList());
+            System.out.println(roleIdList);
+            return root.get("role").get("id").in(roleIdList);
         };
     }
     public static Specification<User> hasStatuses(String status) {
@@ -50,7 +55,7 @@ public class UserSpecification {
                 return criteriaBuilder.conjunction();
             }
             return criteriaBuilder.or(
-                    criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), "%" + search.toLowerCase() + "%"),
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get("fullName")), "%" + search.toLowerCase() + "%"),
                     criteriaBuilder.like(criteriaBuilder.lower(root.get("email")), "%" + search.toLowerCase() + "%")
             );
         };

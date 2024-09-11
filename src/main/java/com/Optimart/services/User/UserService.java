@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -34,13 +35,14 @@ public class UserService implements IUserservice {
         List<UserResponse> userResponseList;
         List<User> userList;
         Pageable pageable;
-        if (userSearchDTO.getPage() == -1 && userSearchDTO.getLimit() == -1 ) {
+        if (userSearchDTO.getPage() == 0 && userSearchDTO.getLimit() == 0 ) {
             userList = userRepository.findAll();
             userResponseList = userList.stream()
                     .map(user -> modelMapper.map(user, UserResponse.class))
                     .toList();
             return new PagingUserResponse<>(userResponseList, localizationUtils.getLocalizedMessage(MessageKeys.USER_GET_SUCCESS), 1, (long) userResponseList.size());
         } else {
+            userSearchDTO.setPage(Math.max(userSearchDTO.getPage(),1));
              pageable = PageRequest.of(userSearchDTO.getPage() - 1, userSearchDTO.getLimit(), Sort.by("createdAt").descending());
         }
         if (StringUtils.hasText(userSearchDTO.getOrder())) {
@@ -59,6 +61,12 @@ public class UserService implements IUserservice {
                 .map(user -> modelMapper.map(user, UserResponse.class))
                 .toList();
         return new PagingUserResponse<>(userResponseList, localizationUtils.getLocalizedMessage(MessageKeys.USER_GET_SUCCESS), userPage.getTotalPages(), userPage.getTotalElements());
+    }
+
+    @Override
+    public UserResponse getOneUser(String userId) {
+        User user = userRepository.findById(UUID.fromString(userId)).get();
+        return modelMapper.map(user, UserResponse.class);
     }
 
 }

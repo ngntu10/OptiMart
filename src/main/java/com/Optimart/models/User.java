@@ -119,7 +119,6 @@ public class User extends BaseEntity implements UserDetails {
 
     @OneToOne
     @JoinColumn(name = "role_id", nullable = false)
-//    @JsonIgnoreProperties({"user"})
     private Role role;
 
     @ManyToMany

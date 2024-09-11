@@ -3,6 +3,7 @@ package com.Optimart.controllers;
 import com.Optimart.annotations.SecuredSwaggerOperation;
 import com.Optimart.constants.Endpoint;
 import com.Optimart.dto.User.UserSearchDTO;
+import com.Optimart.models.User;
 import com.Optimart.responses.User.PagingUserResponse;
 import com.Optimart.services.User.UserService;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -33,8 +34,8 @@ public class UserController {
     @SecuredSwaggerOperation(summary = "Update an existing user")
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = Object.class), mediaType = "application/json"))
     @GetMapping(Endpoint.User.ID)
-    @PreAuthorize("hasAuthority('ROLE_SYSTEM.USER.VIEW')")
-    public ResponseEntity<?> getOneUser(@RequestParam UUID userId){
-        return null;
+//    @PreAuthorize("hasAuthority('ROLE_SYSTEM.USER.VIEW')")
+    public ResponseEntity<?> getOneUser(@PathVariable String userId){
+        return ResponseEntity.ok(userService.getOneUser(userId));
     }
 }
