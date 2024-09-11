@@ -21,6 +21,7 @@ public class UserResponse {
     private Role role;
     private String phoneNumber;
     private String cityName;
+    private String imageUrl;
     private int status;
     private int userType;
 }

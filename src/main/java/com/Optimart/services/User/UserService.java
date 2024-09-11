@@ -66,7 +66,8 @@ public class UserService implements IUserservice {
     @Override
     public UserResponse getOneUser(String userId) {
         User user = userRepository.findById(UUID.fromString(userId)).get();
-        return modelMapper.map(user, UserResponse.class);
+        UserResponse userResponse = modelMapper.map(user, UserResponse.class);
+        return userResponse;
     }
 
 }

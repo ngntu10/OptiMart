@@ -11,6 +11,7 @@ import com.Optimart.models.Role;
 import com.Optimart.models.User;
 import com.Optimart.repositories.RoleRepository;
 import com.Optimart.repositories.AuthRepository;
+import com.Optimart.responses.Auth.UserLoginResponse;
 import com.Optimart.responses.CloudinaryResponse;
 import com.Optimart.services.CloudinaryService;
 import com.Optimart.utils.FileUploadUtil;
@@ -123,27 +124,32 @@ public class AuthService implements IAuthService {
     }
 
     @Override
-    public String changeUserInfo(ChangeUserInfo changeUserInfo) {
+    public UserLoginResponse changeUserInfo(ChangeUserInfo changeUserInfo) {
         User user = authRepository.findByEmail(changeUserInfo.getEmail())
                 .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.USER_NOT_EXIST)));
-        mapper.map(changeUserInfo, User.class);
+        mapper.map(changeUserInfo, user);
         authRepository.save(user);
-        return localizationUtils.getLocalizedMessage(MessageKeys.UPDATE_USER_SUCCESSFULLY);
+        UserLoginResponse userLoginResponse = mapper.map(user, UserLoginResponse.class);
+        return userLoginResponse;
     }
 
     @Transactional
     public CloudinaryResponse uploadImage(String token, final MultipartFile file) {
-        String jwtToken = token.substring(7);
-        String email = jwtTokenUtil.extractEmail(jwtToken);
-        Optional<User> optionalUser = authRepository.findByEmail(email);
-        if(optionalUser.isEmpty()) throw new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.USER_NOT_EXIST));
-        User user = optionalUser.get();
-        FileUploadUtil.assertAllowed(file, FileUploadUtil.IMAGE_PATTERN);
-        final String fileName = FileUploadUtil.getFileName(file.getOriginalFilename());
-        final CloudinaryResponse response = cloudinaryService.uploadFile(file, fileName);
-        user.setImageUrl(response.getUrl());
-        user.setCloudinaryImageId(response.getPublicId());
-        authRepository.save(user);
-        return response;
+        try {
+            String jwtToken = token.substring(7);
+            String email = jwtTokenUtil.extractEmail(jwtToken);
+            Optional<User> optionalUser = authRepository.findByEmail(email);
+            if(optionalUser.isEmpty()) throw new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.USER_NOT_EXIST));
+            User user = optionalUser.get();
+            FileUploadUtil.assertAllowed(file, FileUploadUtil.IMAGE_PATTERN);
+            final String fileName = FileUploadUtil.getFileName(file.getOriginalFilename());
+            final CloudinaryResponse response = cloudinaryService.uploadFile(file, fileName);
+            user.setImageUrl(response.getUrl());
+            user.setCloudinaryImageId(response.getPublicId());
+            authRepository.save(user);
+            return response;
+        } catch (Exception ex){
+            throw new RuntimeException(ex.getMessage());
+        }
     }
 }

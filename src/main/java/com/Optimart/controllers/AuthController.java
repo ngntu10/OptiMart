@@ -8,6 +8,7 @@ import com.Optimart.constants.Endpoint;
 import com.Optimart.exceptions.TokenRefreshException;
 import com.Optimart.models.RefreshToken;
 import com.Optimart.models.User;
+import com.Optimart.responses.APIResponse;
 import com.Optimart.responses.Auth.LoginResponse;
 import com.Optimart.responses.Auth.RegisterResponse;
 import com.Optimart.responses.Auth.TokenRefreshResponse;
@@ -123,7 +124,7 @@ public class AuthController {
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = BaseResponse.class), mediaType = "application/json"))
     @SecuredSwaggerOperation(summary = "Update User Info")
     @PatchMapping(Endpoint.Auth.UPDATE_INFO)
-    public ResponseEntity<BaseResponse> updateInfo(@RequestBody ChangeUserInfo changeUserInfo){
-        return ResponseEntity.ok(new BaseResponse(LocalDate.now(), authService.changeUserInfo(changeUserInfo)));
+    public ResponseEntity<APIResponse<UserLoginResponse>> updateInfo(@RequestBody ChangeUserInfo changeUserInfo){
+        return ResponseEntity.ok(new APIResponse<>( authService.changeUserInfo(changeUserInfo), localizationUtils.getLocalizedMessage(MessageKeys.UPDATE_USER_SUCCESSFULLY)));
     }
 }
