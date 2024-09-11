@@ -26,12 +26,12 @@ public class UserController {
     @SecuredSwaggerOperation(summary = "Get all user")
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = Object.class), mediaType = "application/json"))
     @GetMapping
-//    @PreAuthorize("hasAuthority('ROLE_SYSTEM.USER.VIEW')")
+//    @PreAuthorize("hasAnyAuthority('ROLE_SYSTEM.USER.VIEW')")
     public ResponseEntity<PagingUserResponse<?>> getAllUser(@ModelAttribute UserSearchDTO userSearchDTO) {
          return ResponseEntity.ok(userService.getUsers(userSearchDTO));
     }
 
-    @SecuredSwaggerOperation(summary = "Update an existing user")
+    @SecuredSwaggerOperation(summary = "Get details for an existing user")
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = Object.class), mediaType = "application/json"))
     @GetMapping(Endpoint.User.ID)
 //    @PreAuthorize("hasAuthority('ROLE_SYSTEM.USER.VIEW')")
