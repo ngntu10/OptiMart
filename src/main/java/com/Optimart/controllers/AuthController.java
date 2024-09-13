@@ -80,7 +80,7 @@ public class AuthController {
     public ResponseEntity<UserLoginResponse> getInfoCurrentUser(@Parameter @RequestHeader("Authorization") String token) {
         try {
             String email = jwtTokenUtil.extractEmail(token.substring(7));
-            User user = authService.findUserByEmail(email);
+            User user = authService.findUserByEmail(email);  // Need to refactor code ****
             UserLoginResponse userLoginResponse = mapper.map(user, UserLoginResponse.class);
             return ResponseEntity.ok().body(userLoginResponse);
         } catch (Exception e) { return ResponseEntity.badRequest().body(null);}

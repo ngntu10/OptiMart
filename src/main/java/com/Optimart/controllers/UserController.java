@@ -2,9 +2,10 @@ package com.Optimart.controllers;
 
 import com.Optimart.annotations.SecuredSwaggerOperation;
 import com.Optimart.constants.Endpoint;
+import com.Optimart.dto.User.CreateUserDTO;
 import com.Optimart.dto.User.UserSearchDTO;
-import com.Optimart.models.User;
 import com.Optimart.responses.User.PagingUserResponse;
+import com.Optimart.responses.User.UserResponse;
 import com.Optimart.services.User.UserService;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -14,8 +15,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.UUID;
 
 @RequiredArgsConstructor
 @RestController
@@ -35,7 +34,14 @@ public class UserController {
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = Object.class), mediaType = "application/json"))
     @GetMapping(Endpoint.User.ID)
 //    @PreAuthorize("hasAuthority('ROLE_SYSTEM.USER.VIEW')")
-    public ResponseEntity<?> getOneUser(@PathVariable String userId){
+    public ResponseEntity<UserResponse> getOneUser(@PathVariable String userId){
         return ResponseEntity.ok(userService.getOneUser(userId));
+    }
+
+    @SecuredSwaggerOperation(summary = "Create a new user")
+    @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = Object.class), mediaType = "application/json"))
+    @PostMapping(Endpoint.User.BASE)
+    public ResponseEntity<?> createUser(@RequestBody CreateUserDTO createUserDTO){
+        return ResponseEntity.ok(userService.createNewUser(createUserDTO));
     }
 }

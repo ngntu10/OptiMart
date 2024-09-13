@@ -1,10 +1,15 @@
 package com.Optimart.services.User;
 
 import com.Optimart.constants.MessageKeys;
+import com.Optimart.dto.User.CreateUserDTO;
 import com.Optimart.dto.User.UserSearchDTO;
+import com.Optimart.exceptions.DataExistedException;
+import com.Optimart.models.Role;
 import com.Optimart.models.User;
+import com.Optimart.repositories.RoleRepository;
 import com.Optimart.repositories.Specification.UserSpecification;
 import com.Optimart.repositories.UserRepository;
+import com.Optimart.responses.APIResponse;
 import com.Optimart.responses.User.PagingUserResponse;
 import com.Optimart.responses.User.UserResponse;
 import com.Optimart.utils.LocalizationUtils;
@@ -27,6 +32,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class UserService implements IUserservice {
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
     private final ModelMapper modelMapper;
     private final LocalizationUtils localizationUtils;
     @Override
@@ -69,5 +75,17 @@ public class UserService implements IUserservice {
         UserResponse userResponse = modelMapper.map(user, UserResponse.class);
         return userResponse;
     }
+
+    @Override
+    public APIResponse<User> createNewUser(CreateUserDTO createUserDTO) {
+        if (userRepository.existsByEmail(createUserDTO.getEmail()))
+             throw new DataExistedException(localizationUtils.getLocalizedMessage(MessageKeys.USER_ALREADY_EXIST));
+        User user = modelMapper.map(createUserDTO, User.class);
+        Role role = roleRepository.findById(UUID.fromString(createUserDTO.getRoleId())).get();
+        user.setRole(role);
+        userRepository.save(user);
+        return new APIResponse<>(user, localizationUtils.getLocalizedMessage(MessageKeys.USER_CREATE_SUCCESS) );
+    }
+
 
 }

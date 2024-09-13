@@ -27,4 +27,5 @@ public class MessageKeys {
 
     // USERS
     public static final String USER_GET_SUCCESS = "users.get_success";
+    public static final String USER_CREATE_SUCCESS = "users.create_success";
 }
