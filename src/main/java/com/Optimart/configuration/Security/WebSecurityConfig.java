@@ -51,8 +51,6 @@
                                         "/configuration/ui",
                                         "/configuration/security",
 
-                                        // API
-
                                         //Auth
                                         String.format("%s/auth/register", apiPrefix),
                                         String.format("%s/auth/login", apiPrefix),
@@ -65,11 +63,12 @@
 
                                         //Role
                                         String.format("%s/roles", apiPrefix),
-                                        String.format("%s/**", apiPrefix)
+                                        String.format("%s/**", apiPrefix),
+
+                                        // Users
+                                        String.format("%s/users", apiPrefix)
                                         )
                                 .permitAll()
-                                .requestMatchers(POST,
-                                        "/categories/**").hasAnyRole("ADMIN")
                                 .anyRequest().authenticated();
                         //.anyRequest().permitAll();
                     });

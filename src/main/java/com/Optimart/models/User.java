@@ -117,7 +117,7 @@ public class User extends BaseEntity implements UserDetails {
     @JoinColumn(name = "city_id")
     private City city;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "role_id", nullable = false)
     private Role role;
 

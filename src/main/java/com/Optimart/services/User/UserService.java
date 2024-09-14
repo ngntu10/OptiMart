@@ -20,6 +20,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -33,6 +34,7 @@ import java.util.UUID;
 public class UserService implements IUserservice {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final PasswordEncoder passwordEncoder;
     private final ModelMapper modelMapper;
     private final LocalizationUtils localizationUtils;
     @Override
@@ -81,11 +83,12 @@ public class UserService implements IUserservice {
         if (userRepository.existsByEmail(createUserDTO.getEmail()))
              throw new DataExistedException(localizationUtils.getLocalizedMessage(MessageKeys.USER_ALREADY_EXIST));
         User user = modelMapper.map(createUserDTO, User.class);
-        Role role = roleRepository.findById(UUID.fromString(createUserDTO.getRoleId())).get();
+        Role role = roleRepository.findById(UUID.fromString(createUserDTO.getRole())).get();
         user.setRole(role);
+        user.setUserType(1);
+        user.setPassword(passwordEncoder.encode(createUserDTO.getPassword()));
         userRepository.save(user);
         return new APIResponse<>(user, localizationUtils.getLocalizedMessage(MessageKeys.USER_CREATE_SUCCESS) );
     }
-
 
 }

@@ -40,7 +40,7 @@ public class UserController {
 
     @SecuredSwaggerOperation(summary = "Create a new user")
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = Object.class), mediaType = "application/json"))
-    @PostMapping(Endpoint.User.BASE)
+    @PostMapping
     public ResponseEntity<?> createUser(@RequestBody CreateUserDTO createUserDTO){
         return ResponseEntity.ok(userService.createNewUser(createUserDTO));
     }

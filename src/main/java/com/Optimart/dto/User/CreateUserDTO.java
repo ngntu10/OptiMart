@@ -11,16 +11,13 @@ import java.util.UUID;
 @Builder
 public class CreateUserDTO {
     private String email;
-    private String roleId;
-    private String userName;
+    private String role;
     private String firstName;
     private String middleName;
     private String address;
     private String lastName;
-    private String imageUrl;
     private String phoneNumber;
     private String password;
-    private final int status = 1;
-//    private String cityId;
+    private String city;
 
 }
