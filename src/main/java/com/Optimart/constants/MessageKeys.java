@@ -28,4 +28,6 @@ public class MessageKeys {
     // USERS
     public static final String USER_GET_SUCCESS = "users.get_success";
     public static final String USER_CREATE_SUCCESS = "users.create_success";
+    public static final String USER_PHONE_EXISTED = "users.phone_existed";
+    public static final String USER_EDIT_SUCCESS = "users.edit_success";
 }

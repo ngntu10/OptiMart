@@ -2,6 +2,7 @@ package com.Optimart.services.User;
 
 import com.Optimart.constants.MessageKeys;
 import com.Optimart.dto.User.CreateUserDTO;
+import com.Optimart.dto.User.EditUserDTO;
 import com.Optimart.dto.User.UserSearchDTO;
 import com.Optimart.exceptions.DataExistedException;
 import com.Optimart.models.Role;
@@ -81,7 +82,9 @@ public class UserService implements IUserservice {
     @Override
     public APIResponse<User> createNewUser(CreateUserDTO createUserDTO) {
         if (userRepository.existsByEmail(createUserDTO.getEmail()))
-            return new APIResponse<>(null, localizationUtils.getLocalizedMessage(MessageKeys.USER_ALREADY_EXIST) );
+            return new APIResponse<>(null, localizationUtils.getLocalizedMessage(MessageKeys.USER_ALREADY_EXIST));
+        if (userRepository.existsByPhoneNumber(createUserDTO.getPhoneNumber()))
+            return new APIResponse<>(null, localizationUtils.getLocalizedMessage(MessageKeys.USER_PHONE_EXISTED));
         User user = modelMapper.map(createUserDTO, User.class);
         Role role = roleRepository.findById(UUID.fromString(createUserDTO.getRole())).get();
         user.setRole(role);
@@ -89,6 +92,15 @@ public class UserService implements IUserservice {
         user.setPassword(passwordEncoder.encode(createUserDTO.getPassword()));
         userRepository.save(user);
         return new APIResponse<>(user, localizationUtils.getLocalizedMessage(MessageKeys.USER_CREATE_SUCCESS) );
+    }
+
+    @Override
+    public APIResponse<UserResponse> editUser(EditUserDTO editUserDTO) {
+        User user = userRepository.findByEmail(editUserDTO.getEmail()).get();
+        modelMapper.map(editUserDTO, user);
+        UserResponse userResponse = modelMapper.map(user, UserResponse.class);
+        userRepository.save(user);
+        return new APIResponse<>(userResponse, localizationUtils.getLocalizedMessage(MessageKeys.USER_EDIT_SUCCESS));
     }
 
 }

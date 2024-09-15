@@ -1,6 +1,7 @@
 package com.Optimart.services.User;
 
 import com.Optimart.dto.User.CreateUserDTO;
+import com.Optimart.dto.User.EditUserDTO;
 import com.Optimart.dto.User.UserSearchDTO;
 import com.Optimart.models.User;
 import com.Optimart.responses.APIResponse;
@@ -15,4 +16,5 @@ public interface IUserservice {
     PagingUserResponse<List<UserResponse>> getUsers(@ModelAttribute UserSearchDTO userSearchDTO);
     UserResponse getOneUser (String userId);
     APIResponse<User> createNewUser(CreateUserDTO createUserDTO);
+    APIResponse<UserResponse> editUser(EditUserDTO editUserDTO);
 }

@@ -3,7 +3,10 @@ package com.Optimart.controllers;
 import com.Optimart.annotations.SecuredSwaggerOperation;
 import com.Optimart.constants.Endpoint;
 import com.Optimart.dto.User.CreateUserDTO;
+import com.Optimart.dto.User.EditUserDTO;
 import com.Optimart.dto.User.UserSearchDTO;
+import com.Optimart.models.User;
+import com.Optimart.responses.APIResponse;
 import com.Optimart.responses.User.PagingUserResponse;
 import com.Optimart.responses.User.UserResponse;
 import com.Optimart.services.User.UserService;
@@ -41,7 +44,14 @@ public class UserController {
     @SecuredSwaggerOperation(summary = "Create a new user")
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = Object.class), mediaType = "application/json"))
     @PostMapping
-    public ResponseEntity<?> createUser(@RequestBody CreateUserDTO createUserDTO){
+    public ResponseEntity<APIResponse<User>> createUser(@RequestBody CreateUserDTO createUserDTO){
         return ResponseEntity.ok(userService.createNewUser(createUserDTO));
     }
+    @SecuredSwaggerOperation(summary = "Update an existing user")
+    @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = Object.class), mediaType = "application/json"))
+    @PatchMapping(Endpoint.User.ID)
+    public ResponseEntity<APIResponse<UserResponse>> editUser(@RequestBody EditUserDTO user){
+        return ResponseEntity.ok(userService.editUser(user));
+    }
+
 }
