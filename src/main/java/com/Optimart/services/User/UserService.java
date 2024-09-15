@@ -4,13 +4,13 @@ import com.Optimart.constants.MessageKeys;
 import com.Optimart.dto.User.CreateUserDTO;
 import com.Optimart.dto.User.EditUserDTO;
 import com.Optimart.dto.User.UserSearchDTO;
-import com.Optimart.exceptions.DataExistedException;
 import com.Optimart.models.Role;
 import com.Optimart.models.User;
 import com.Optimart.repositories.RoleRepository;
 import com.Optimart.repositories.Specification.UserSpecification;
 import com.Optimart.repositories.UserRepository;
 import com.Optimart.responses.APIResponse;
+import com.Optimart.responses.BaseResponse;
 import com.Optimart.responses.User.PagingUserResponse;
 import com.Optimart.responses.User.UserResponse;
 import com.Optimart.utils.LocalizationUtils;
@@ -26,7 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
-import java.util.ArrayList;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -40,7 +40,6 @@ public class UserService implements IUserservice {
     private final LocalizationUtils localizationUtils;
     @Override
     public PagingUserResponse<List<UserResponse>> getUsers(@ModelAttribute UserSearchDTO userSearchDTO) {
-        UserResponse userResponse = new UserResponse();
         List<UserResponse> userResponseList;
         List<User> userList;
         Pageable pageable;
@@ -97,10 +96,21 @@ public class UserService implements IUserservice {
     @Override
     public APIResponse<UserResponse> editUser(EditUserDTO editUserDTO) {
         User user = userRepository.findByEmail(editUserDTO.getEmail()).get();
+        Role role = roleRepository.findById(UUID.fromString(editUserDTO.getRole())).get();
         modelMapper.map(editUserDTO, user);
         UserResponse userResponse = modelMapper.map(user, UserResponse.class);
+        user.setRole(role);
         userRepository.save(user);
         return new APIResponse<>(userResponse, localizationUtils.getLocalizedMessage(MessageKeys.USER_EDIT_SUCCESS));
+    }
+
+    @Override
+    public APIResponse<Boolean> deleteUser(String userId) {
+        User user = userRepository.findById(UUID.fromString(userId)).get();
+        System.out.println(user.getRole().getName());
+        if(user.getRole().getName().equals(Role.ADMIN)) return new APIResponse<>(null, localizationUtils.getLocalizedMessage(MessageKeys.NOT_DELETE_ADMIN_USER));
+        userRepository.delete(user);
+        return new APIResponse<>(true, localizationUtils.getLocalizedMessage(MessageKeys.USER_DELETE_SUCCESS));
     }
 
 }

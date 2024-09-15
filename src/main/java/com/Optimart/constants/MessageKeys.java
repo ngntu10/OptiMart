@@ -30,4 +30,6 @@ public class MessageKeys {
     public static final String USER_CREATE_SUCCESS = "users.create_success";
     public static final String USER_PHONE_EXISTED = "users.phone_existed";
     public static final String USER_EDIT_SUCCESS = "users.edit_success";
+    public static final String USER_DELETE_SUCCESS = "user.delete_success";
+    public static final String NOT_DELETE_ADMIN_USER = "user.not_delete_admin";
 }

@@ -28,4 +28,7 @@ public class Role extends BaseEntity{
 //    @OneToMany(mappedBy = "role")
 //    private List<User> user;
 
+    public static final String ADMIN = "ADMIN";
+    public static final String BASIC = "BASIC";
+
 }

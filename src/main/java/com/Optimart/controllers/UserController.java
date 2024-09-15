@@ -19,6 +19,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @RestController
 @Tag(name = "User", description = "Everything about user")
@@ -52,6 +54,20 @@ public class UserController {
     @PatchMapping(Endpoint.User.ID)
     public ResponseEntity<APIResponse<UserResponse>> editUser(@RequestBody EditUserDTO user){
         return ResponseEntity.ok(userService.editUser(user));
+    }
+
+    @SecuredSwaggerOperation(summary = "Delete an existing user")
+    @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = Object.class), mediaType = "application/json"))
+    @DeleteMapping(Endpoint.User.ID)
+    public ResponseEntity<APIResponse<Boolean>> deleteUser(@PathVariable String userId){
+        return ResponseEntity.ok(userService.deleteUser(userId));
+    }
+
+    @SecuredSwaggerOperation(summary = "Delete an existing user")
+    @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = Object.class), mediaType = "application/json"))
+    @DeleteMapping(Endpoint.User.DELETE_MANY)
+    public ResponseEntity<APIResponse<String>> deleteMutiUser(@RequestBody List<String> userIdList){
+        return null;
     }
 
 }
