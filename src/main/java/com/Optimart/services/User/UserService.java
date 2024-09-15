@@ -81,7 +81,7 @@ public class UserService implements IUserservice {
     @Override
     public APIResponse<User> createNewUser(CreateUserDTO createUserDTO) {
         if (userRepository.existsByEmail(createUserDTO.getEmail()))
-             throw new DataExistedException(localizationUtils.getLocalizedMessage(MessageKeys.USER_ALREADY_EXIST));
+            return new APIResponse<>(null, localizationUtils.getLocalizedMessage(MessageKeys.USER_ALREADY_EXIST) );
         User user = modelMapper.map(createUserDTO, User.class);
         Role role = roleRepository.findById(UUID.fromString(createUserDTO.getRole())).get();
         user.setRole(role);
