@@ -2,6 +2,7 @@ package com.Optimart.services.User;
 
 import com.Optimart.dto.User.CreateUserDTO;
 import com.Optimart.dto.User.EditUserDTO;
+import com.Optimart.dto.User.UserMutilDeleteDTO;
 import com.Optimart.dto.User.UserSearchDTO;
 import com.Optimart.models.User;
 import com.Optimart.responses.APIResponse;
@@ -19,4 +20,5 @@ public interface IUserservice {
     APIResponse<User> createNewUser(CreateUserDTO createUserDTO);
     APIResponse<UserResponse> editUser(EditUserDTO editUserDTO);
     APIResponse<Boolean> deleteUser(String userId);
+    APIResponse<Boolean> deleteMutilUser(UserMutilDeleteDTO userMutilDeleteDTO);
 }

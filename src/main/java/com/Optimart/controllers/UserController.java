@@ -4,6 +4,7 @@ import com.Optimart.annotations.SecuredSwaggerOperation;
 import com.Optimart.constants.Endpoint;
 import com.Optimart.dto.User.CreateUserDTO;
 import com.Optimart.dto.User.EditUserDTO;
+import com.Optimart.dto.User.UserMutilDeleteDTO;
 import com.Optimart.dto.User.UserSearchDTO;
 import com.Optimart.models.User;
 import com.Optimart.responses.APIResponse;
@@ -66,8 +67,8 @@ public class UserController {
     @SecuredSwaggerOperation(summary = "Delete an existing user")
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = Object.class), mediaType = "application/json"))
     @DeleteMapping(Endpoint.User.DELETE_MANY)
-    public ResponseEntity<APIResponse<String>> deleteMutiUser(@RequestBody List<String> userIdList){
-        return null;
+    public ResponseEntity<APIResponse<Boolean>> deleteMutiUser(@RequestBody UserMutilDeleteDTO userMutilDeleteDTO){
+        return ResponseEntity.ok(userService.deleteMutilUser(userMutilDeleteDTO));
     }
 
 }

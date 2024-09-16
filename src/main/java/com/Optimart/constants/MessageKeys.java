@@ -32,4 +32,9 @@ public class MessageKeys {
     public static final String USER_EDIT_SUCCESS = "users.edit_success";
     public static final String USER_DELETE_SUCCESS = "user.delete_success";
     public static final String NOT_DELETE_ADMIN_USER = "user.not_delete_admin";
+
+    // DELIVERY TYPES
+    public static final String DELIVERY_TYPE_CREATE_SUCCESS = "delivery_type.create_success";
+    public static final String DELIVERY_TYPE_UPDATE_SUCCESS = "delivery_type.update_success";
+    public static final String DELIVERY_TYPE_DELETE_SUCCESS = "delivery_type.delete_success" ;
 }

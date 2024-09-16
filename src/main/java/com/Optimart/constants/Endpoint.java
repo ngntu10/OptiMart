@@ -21,8 +21,20 @@ public class Endpoint {
 
     }
     public static final class Role {
-        public static final String Base = API_PREFIX + "/roles";
+        public static final String BASE = API_PREFIX + "/roles";
         public static final String ID = "{roleId}";
+        public static final String DELETE_MANY = "/delete-many";
+    }
+
+    public static  class PaymentType{
+        public static final String BASE = API_PREFIX + "/payment-type";
+        public static final String ID = "{paymentTypeId}";
+        public static final String DELETE_MANY = "/delete-many";
+    }
+
+    public static  class DeliveryType{
+        public static final String BASE = API_PREFIX + "/delivery-type";
+        public static final String ID = "{deliveryTypeId}";
         public static final String DELETE_MANY = "/delete-many";
     }
 

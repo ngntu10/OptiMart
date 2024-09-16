@@ -3,6 +3,7 @@ package com.Optimart.services.User;
 import com.Optimart.constants.MessageKeys;
 import com.Optimart.dto.User.CreateUserDTO;
 import com.Optimart.dto.User.EditUserDTO;
+import com.Optimart.dto.User.UserMutilDeleteDTO;
 import com.Optimart.dto.User.UserSearchDTO;
 import com.Optimart.models.Role;
 import com.Optimart.models.User;
@@ -10,7 +11,6 @@ import com.Optimart.repositories.RoleRepository;
 import com.Optimart.repositories.Specification.UserSpecification;
 import com.Optimart.repositories.UserRepository;
 import com.Optimart.responses.APIResponse;
-import com.Optimart.responses.BaseResponse;
 import com.Optimart.responses.User.PagingUserResponse;
 import com.Optimart.responses.User.UserResponse;
 import com.Optimart.utils.LocalizationUtils;
@@ -26,7 +26,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -113,4 +112,12 @@ public class UserService implements IUserservice {
         return new APIResponse<>(true, localizationUtils.getLocalizedMessage(MessageKeys.USER_DELETE_SUCCESS));
     }
 
+    @Override
+    public APIResponse<Boolean> deleteMutilUser(UserMutilDeleteDTO userMutilDeleteDTO) {
+        List<String> userList = userMutilDeleteDTO.getUserIds();
+        userList.forEach(item -> {
+            userRepository.deleteById(UUID.fromString(item));
+        });
+        return new APIResponse<>(true, localizationUtils.getLocalizedMessage(MessageKeys.USER_DELETE_SUCCESS));
+    }
 }

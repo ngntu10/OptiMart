@@ -26,9 +26,9 @@ public class Paymenttype extends BaseEntity {
     @OneToMany(mappedBy = "paymentMethod")
     List<Order> orders;
 
-    @Enumerated(EnumType.STRING)
+//    @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = false)
-    private PaymentType paymentType;
+    private String paymentType;
 
 
 

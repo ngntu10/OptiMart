@@ -21,7 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RestController
 @Tag(name = "Role", description = "Everything about role")
-@RequestMapping(Endpoint.Role.Base)
+@RequestMapping(Endpoint.Role.BASE)
 public class RoleController {
 
     private final RoleService roleService;

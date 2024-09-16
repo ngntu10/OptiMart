@@ -2,6 +2,7 @@ package com.Optimart.models;
 import java.util.List;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -25,9 +26,13 @@ public class DeliveryType extends BaseEntity {
     @Column(name = "id")
     private UUID id;
 
-    @Column(name = "name", nullable = false)
-    private int price;
+    @Column(name = "price", nullable = false)
+    private Long price;
 
+    @Column(name = "name", nullable = false)
+    private String name;
+
+    @JsonIgnore
     @OneToMany(mappedBy = "deliveryMethod")
     List<Order> orders;
 
