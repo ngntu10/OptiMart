@@ -14,7 +14,7 @@ public interface ICityLocaleService {
     PagingResponse<List<City>> findAll(CityLocaleSearchDTO cityTypeSearchDTO);
     APIResponse<City> createType(CityLocaleDTO createCityDTO);
     City getCity(String id);
-    APIResponse<City> editCity(CityLocaleDTO cityTypeDTO);
+    APIResponse<City> editCity(CityLocaleDTO cityTypeDTO, String cityId);
     APIResponse<Boolean> deleteCity(String id);
     APIResponse<Boolean> deleteMutilCity(CityMutilDeleteDTO cityMutilDeleteDTO);
 }

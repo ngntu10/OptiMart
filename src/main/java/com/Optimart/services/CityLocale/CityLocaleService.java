@@ -69,8 +69,8 @@ public class CityLocaleService implements ICityLocaleService{
     }
 
     @Override
-    public APIResponse<City> editCity(CityLocaleDTO cityTypeDTO) {
-        City city = cityLocaleRepository.findByName(cityTypeDTO.getName()).get();
+    public APIResponse<City> editCity(CityLocaleDTO cityTypeDTO, String cityId) {
+        City city = cityLocaleRepository.findById(Long.parseLong(cityId)).get();
         mapper.map(cityTypeDTO, city);
         cityLocaleRepository.save(city);
         return new APIResponse<>(city, localizationUtils.getLocalizedMessage(MessageKeys.CITY_UPDATE_SUCCESS));

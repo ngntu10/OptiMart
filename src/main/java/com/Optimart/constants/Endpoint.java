@@ -38,4 +38,10 @@ public class Endpoint {
         public static final String DELETE_MANY = "/delete-many";
     }
 
+    public static  class CityLocale{
+        public static final String BASE = API_PREFIX + "/city";
+        public static final String ID = "{cityId}";
+        public static final String DELETE_MANY = "/delete-many";
+    }
+
 }
