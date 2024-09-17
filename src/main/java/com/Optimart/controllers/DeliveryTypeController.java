@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 public class DeliveryTypeController {
     private final DeliveryTypeService deliveryTypeService;
     @GetMapping
-    public ResponseEntity<?> getDeliveryType(@RequestBody DeliveryTypeSearchDTO deliveryTypeSearchDTO){
+    public ResponseEntity<?> getDeliveryType(@ModelAttribute DeliveryTypeSearchDTO deliveryTypeSearchDTO){
         return ResponseEntity.ok(deliveryTypeService.findAll(deliveryTypeSearchDTO));
     }
 

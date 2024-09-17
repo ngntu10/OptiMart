@@ -1,4 +1,4 @@
-package com.Optimart.responses.User;
+package com.Optimart.responses;
 
 import lombok.*;
 
@@ -9,7 +9,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class PagingUserResponse<T> {
+public class PagingResponse<T> {
     private T data;
     String message;
     private int totalPage;

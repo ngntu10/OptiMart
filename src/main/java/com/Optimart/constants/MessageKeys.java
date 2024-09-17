@@ -37,4 +37,11 @@ public class MessageKeys {
     public static final String DELIVERY_TYPE_CREATE_SUCCESS = "delivery_type.create_success";
     public static final String DELIVERY_TYPE_UPDATE_SUCCESS = "delivery_type.update_success";
     public static final String DELIVERY_TYPE_DELETE_SUCCESS = "delivery_type.delete_success" ;
+    public static final String DELIVERY_TYPE_GET_SUCCESS = "delivery_type.get_success" ;
+
+    // Payment Type
+    public static final String PAYMENT_TYPE_CREATE_SUCCESS = "payment_type.create_success";
+    public static final String PAYMENT_TYPE_UPDATE_SUCCESS = "payment_type.update_success";
+    public static final String PAYMENT_TYPE_DELETE_SUCCESS = "payment_type.delete_success" ;
+    public static final String PAYMENT_TYPE_GET_SUCCESS = "payment_type.get_success" ;
 }

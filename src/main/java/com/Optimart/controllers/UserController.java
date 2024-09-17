@@ -8,7 +8,7 @@ import com.Optimart.dto.User.UserMutilDeleteDTO;
 import com.Optimart.dto.User.UserSearchDTO;
 import com.Optimart.models.User;
 import com.Optimart.responses.APIResponse;
-import com.Optimart.responses.User.PagingUserResponse;
+import com.Optimart.responses.PagingResponse;
 import com.Optimart.responses.User.UserResponse;
 import com.Optimart.services.User.UserService;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -17,10 +17,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -32,7 +29,7 @@ public class UserController {
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = Object.class), mediaType = "application/json"))
     @GetMapping
 //    @PreAuthorize("hasAnyAuthority('ROLE_SYSTEM.USER.VIEW')")
-    public ResponseEntity<PagingUserResponse<?>> getAllUser(@ModelAttribute UserSearchDTO userSearchDTO) {
+    public ResponseEntity<PagingResponse<?>> getAllUser(@ModelAttribute UserSearchDTO userSearchDTO) {
          return ResponseEntity.ok(userService.getUsers(userSearchDTO));
     }
 

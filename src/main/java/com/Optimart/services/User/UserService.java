@@ -11,7 +11,7 @@ import com.Optimart.repositories.RoleRepository;
 import com.Optimart.repositories.Specification.UserSpecification;
 import com.Optimart.repositories.UserRepository;
 import com.Optimart.responses.APIResponse;
-import com.Optimart.responses.User.PagingUserResponse;
+import com.Optimart.responses.PagingResponse;
 import com.Optimart.responses.User.UserResponse;
 import com.Optimart.utils.LocalizationUtils;
 import lombok.RequiredArgsConstructor;
@@ -38,7 +38,7 @@ public class UserService implements IUserservice {
     private final ModelMapper modelMapper;
     private final LocalizationUtils localizationUtils;
     @Override
-    public PagingUserResponse<List<UserResponse>> getUsers(@ModelAttribute UserSearchDTO userSearchDTO) {
+    public PagingResponse<List<UserResponse>> getUsers(@ModelAttribute UserSearchDTO userSearchDTO) {
         List<UserResponse> userResponseList;
         List<User> userList;
         Pageable pageable;
@@ -47,7 +47,7 @@ public class UserService implements IUserservice {
             userResponseList = userList.stream()
                     .map(user -> modelMapper.map(user, UserResponse.class))
                     .toList();
-            return new PagingUserResponse<>(userResponseList, localizationUtils.getLocalizedMessage(MessageKeys.USER_GET_SUCCESS), 1, (long) userResponseList.size());
+            return new PagingResponse<>(userResponseList, localizationUtils.getLocalizedMessage(MessageKeys.USER_GET_SUCCESS), 1, (long) userResponseList.size());
         } else {
             userSearchDTO.setPage(Math.max(userSearchDTO.getPage(),1));
              pageable = PageRequest.of(userSearchDTO.getPage() - 1, userSearchDTO.getLimit(), Sort.by("createdAt").descending());
@@ -67,7 +67,7 @@ public class UserService implements IUserservice {
         userResponseList = userList.stream()
                 .map(user -> modelMapper.map(user, UserResponse.class))
                 .toList();
-        return new PagingUserResponse<>(userResponseList, localizationUtils.getLocalizedMessage(MessageKeys.USER_GET_SUCCESS), userPage.getTotalPages(), userPage.getTotalElements());
+        return new PagingResponse<>(userResponseList, localizationUtils.getLocalizedMessage(MessageKeys.USER_GET_SUCCESS), userPage.getTotalPages(), userPage.getTotalElements());
     }
 
     @Override

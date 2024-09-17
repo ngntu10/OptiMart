@@ -28,7 +28,7 @@ public class Paymenttype extends BaseEntity {
 
 //    @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = false)
-    private String paymentType;
+    private String type;
 
 
 
