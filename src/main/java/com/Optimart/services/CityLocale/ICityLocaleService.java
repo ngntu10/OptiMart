@@ -16,5 +16,5 @@ public interface ICityLocaleService {
     City getCity(String id);
     APIResponse<City> editCity(CityLocaleDTO cityTypeDTO, String cityId);
     APIResponse<Boolean> deleteCity(String id);
-    APIResponse<Boolean> deleteMutilCity(CityMutilDeleteDTO cityMutilDeleteDTO);
+    APIResponse<Boolean> deleteMultiCity(CityMutilDeleteDTO cityMutilDeleteDTO);
 }

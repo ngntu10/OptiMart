@@ -5,13 +5,9 @@ import com.Optimart.dto.CityLocale.CityLocaleDTO;
 import com.Optimart.dto.CityLocale.CityLocaleSearchDTO;
 import com.Optimart.dto.CityLocale.CityMutilDeleteDTO;
 import com.Optimart.models.City;
-import com.Optimart.models.DeliveryType;
-import com.Optimart.models.User;
 import com.Optimart.repositories.CityLocaleRepository;
-import com.Optimart.repositories.DeliveryTypeRepository;
 import com.Optimart.responses.APIResponse;
 import com.Optimart.responses.PagingResponse;
-import com.Optimart.responses.User.UserResponse;
 import com.Optimart.utils.LocalizationUtils;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -23,7 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -84,7 +79,7 @@ public class CityLocaleService implements ICityLocaleService{
     }
 
     @Override
-    public APIResponse<Boolean> deleteMutilCity(CityMutilDeleteDTO cityMutilDeleteDTO) {
+    public APIResponse<Boolean> deleteMultiCity(CityMutilDeleteDTO cityMutilDeleteDTO) {
         List<String> cityIds = cityMutilDeleteDTO.getCityIds();
         cityIds.forEach(item -> {
             cityLocaleRepository.deleteById(Long.parseLong(item));
