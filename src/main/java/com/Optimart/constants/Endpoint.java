@@ -44,4 +44,18 @@ public class Endpoint {
         public static final String DELETE_MANY = "/delete-many";
     }
 
+    public static  class Product{
+        public static final String BASE = API_PREFIX + "/products";
+        public static final String ID = "{productId}";
+        public static final String DELETE_MANY = "/delete-many";
+        public static final String PUBLIC = "/public";
+        public static final String RELATED = "/related";
+        public static final String PUBLIC_ID = "/public/{productId}";
+        public static final String PUBLIC_SLUG_ID = "/public/slug/{slugId}";
+        public static final String LIKE = "/like";
+        public static final String UNLIKE = "/unlike";
+        public static final String LIKED_ME = "/liked/me";
+        public static final String VIEWED_ME = "viewed/me";
+
+    }
 }

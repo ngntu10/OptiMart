@@ -1,5 +1,6 @@
 package com.Optimart.responses.User;
 
+import com.Optimart.models.City;
 import com.Optimart.models.Role;
 import lombok.*;
 
@@ -20,7 +21,7 @@ public class UserResponse {
     private String email;
     private Role role;
     private String phoneNumber;
-    private String cityName;
+    private City city;
     private String imageUrl;
     private int status;
     private int userType;

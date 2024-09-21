@@ -5,8 +5,10 @@ import com.Optimart.dto.User.CreateUserDTO;
 import com.Optimart.dto.User.EditUserDTO;
 import com.Optimart.dto.User.UserMutilDeleteDTO;
 import com.Optimart.dto.User.UserSearchDTO;
+import com.Optimart.models.City;
 import com.Optimart.models.Role;
 import com.Optimart.models.User;
+import com.Optimart.repositories.CityLocaleRepository;
 import com.Optimart.repositories.RoleRepository;
 import com.Optimart.repositories.Specification.UserSpecification;
 import com.Optimart.repositories.UserRepository;
@@ -34,6 +36,7 @@ import java.util.UUID;
 public class UserService implements IUserservice {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final CityLocaleRepository cityLocaleRepository;
     private final PasswordEncoder passwordEncoder;
     private final ModelMapper modelMapper;
     private final LocalizationUtils localizationUtils;
@@ -95,11 +98,13 @@ public class UserService implements IUserservice {
     @Override
     public APIResponse<UserResponse> editUser(EditUserDTO editUserDTO) {
         User user = userRepository.findByEmail(editUserDTO.getEmail()).get();
-        Role role = roleRepository.findById(UUID.fromString(editUserDTO.getRole())).get();
+        Role role = roleRepository.findByName(editUserDTO.getRole()).get();
+        City city = cityLocaleRepository.findByName(editUserDTO.getCity()).get();
         modelMapper.map(editUserDTO, user);
-        UserResponse userResponse = modelMapper.map(user, UserResponse.class);
         user.setRole(role);
+        user.setCity(city);
         userRepository.save(user);
+        UserResponse userResponse = modelMapper.map(user, UserResponse.class);
         return new APIResponse<>(userResponse, localizationUtils.getLocalizedMessage(MessageKeys.USER_EDIT_SUCCESS));
     }
 

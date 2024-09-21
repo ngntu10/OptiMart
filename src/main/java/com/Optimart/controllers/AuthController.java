@@ -123,7 +123,7 @@ public class AuthController {
 
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = BaseResponse.class), mediaType = "application/json"))
     @SecuredSwaggerOperation(summary = "Update User Info")
-    @PatchMapping(Endpoint.Auth.UPDATE_INFO)
+    @PutMapping(Endpoint.Auth.UPDATE_INFO)
     public ResponseEntity<APIResponse<UserLoginResponse>> updateInfo(@RequestBody ChangeUserInfo changeUserInfo){
         return ResponseEntity.ok(new APIResponse<>( authService.changeUserInfo(changeUserInfo), localizationUtils.getLocalizedMessage(MessageKeys.UPDATE_USER_SUCCESSFULLY)));
     }

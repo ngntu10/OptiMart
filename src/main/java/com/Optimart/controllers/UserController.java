@@ -6,11 +6,13 @@ import com.Optimart.dto.User.CreateUserDTO;
 import com.Optimart.dto.User.EditUserDTO;
 import com.Optimart.dto.User.UserMutilDeleteDTO;
 import com.Optimart.dto.User.UserSearchDTO;
+import com.Optimart.models.Paymenttype;
 import com.Optimart.models.User;
 import com.Optimart.responses.APIResponse;
 import com.Optimart.responses.PagingResponse;
 import com.Optimart.responses.User.UserResponse;
 import com.Optimart.services.User.UserService;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -26,7 +28,7 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
     public final UserService userService;
     @SecuredSwaggerOperation(summary = "Get all user")
-    @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = Object.class), mediaType = "application/json"))
+    @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema(implementation = Paymenttype.class)), mediaType = "application/json"))
     @GetMapping
 //    @PreAuthorize("hasAnyAuthority('ROLE_SYSTEM.USER.VIEW')")
     public ResponseEntity<PagingResponse<?>> getAllUser(@ModelAttribute UserSearchDTO userSearchDTO) {
@@ -34,7 +36,7 @@ public class UserController {
     }
 
     @SecuredSwaggerOperation(summary = "Get details for an existing user")
-    @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = Object.class), mediaType = "application/json"))
+    @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = UserResponse.class), mediaType = "application/json"))
     @GetMapping(Endpoint.User.ID)
 //    @PreAuthorize("hasAuthority('ROLE_SYSTEM.USER.VIEW')")
     public ResponseEntity<UserResponse> getOneUser(@PathVariable String userId){
@@ -49,7 +51,7 @@ public class UserController {
     }
     @SecuredSwaggerOperation(summary = "Update an existing user")
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = Object.class), mediaType = "application/json"))
-    @PatchMapping(Endpoint.User.ID)
+    @PutMapping(Endpoint.User.ID)
     public ResponseEntity<APIResponse<UserResponse>> editUser(@RequestBody EditUserDTO user){
         return ResponseEntity.ok(userService.editUser(user));
     }

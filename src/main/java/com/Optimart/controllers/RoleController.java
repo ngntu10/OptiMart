@@ -51,7 +51,7 @@ public class RoleController {
     }
 
     @SecuredSwaggerOperation(summary = "Update name for an existing role by ID")
-    @PatchMapping(Endpoint.Role.ID)
+    @PutMapping(Endpoint.Role.ID)
     public ResponseEntity<?> editRole(@PathVariable String roleId, @RequestBody CreateRole role){
         return ResponseEntity.ok().body(roleService.editRole(roleId, role.getName()));
     }

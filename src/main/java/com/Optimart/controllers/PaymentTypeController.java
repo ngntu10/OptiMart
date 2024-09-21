@@ -5,10 +5,10 @@ import com.Optimart.constants.Endpoint;
 import com.Optimart.dto.PaymentType.PaymentTypeDTO;
 import com.Optimart.dto.PaymentType.PaymentTypeMutiDeleteDTO;
 import com.Optimart.dto.PaymentType.PaymentTypeSearchDTO;
-import com.Optimart.models.City;
 import com.Optimart.models.Paymenttype;
 import com.Optimart.responses.APIResponse;
 import com.Optimart.responses.PagingResponse;
+import com.Optimart.responses.User.UserResponse;
 import com.Optimart.services.PaymentType.PaymentTypeService;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -28,7 +28,7 @@ import java.util.List;
 public class PaymentTypeController {
     private final PaymentTypeService paymentTypeService;
 
-    @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema(implementation = Paymenttype.class)), mediaType = "application/json"))
+    @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema(implementation = UserResponse.class)), mediaType = "application/json"))
     @SecuredSwaggerOperation(summary = "Get list payment type")
     @GetMapping
     public ResponseEntity<PagingResponse<List<Paymenttype>>> getPaymentType(@ModelAttribute PaymentTypeSearchDTO paymentTypeSearchDTO){
