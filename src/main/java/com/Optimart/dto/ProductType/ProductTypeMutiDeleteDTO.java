@@ -11,6 +11,6 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class PaymentTypeMutiDeleteDTO {
-    List<String> paymentTypeIds;
+public class ProductTypeMutiDeleteDTO {
+    List<String> productTypeIds;
 }

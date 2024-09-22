@@ -1,5 +1,7 @@
 package com.Optimart.dto.Product;
 
-public class ProductMultiDeleteDTO {
+import java.util.List;
 
+public class ProductMultiDeleteDTO {
+      List<String> productIds;
 }

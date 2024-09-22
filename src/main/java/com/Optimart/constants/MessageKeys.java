@@ -45,6 +45,12 @@ public class MessageKeys {
     public static final String PAYMENT_TYPE_DELETE_SUCCESS = "payment_type.delete_success" ;
     public static final String PAYMENT_TYPE_GET_SUCCESS = "payment_type.get_success" ;
 
+    // PRODUCT TYPE
+    public static final String PRODUCT_TYPE_CREATE_SUCCESS = "product_type.create_success";
+    public static final String PRODUCT_TYPE_UPDATE_SUCCESS = "product_type.update_success";
+    public static final String PRODUCT_TYPE_DELETE_SUCCESS = "product_type.delete_success" ;
+    public static final String PRODUCT_TYPE_GET_SUCCESS = "product_type.get_success" ;
+
     // CITY LOCALES
     public static final String CITY_CREATE_SUCCESS = "city.create_success";
     public static final String CITY_UPDATE_SUCCESS = "city.update_success";

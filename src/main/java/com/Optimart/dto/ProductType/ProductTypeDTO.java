@@ -11,7 +11,6 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProductTypeDTO {
-    private String id;
     private String name;
-    private String type;
+    private String slug;
 }

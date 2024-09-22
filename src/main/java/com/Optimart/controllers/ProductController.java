@@ -39,8 +39,8 @@ public class ProductController {
         return null;
     }
 
-    @PostMapping(Endpoint.Product.ID)
-    public ResponseEntity<?> updateProduct(@PathVariable String productId){
+    @PutMapping(Endpoint.Product.ID)
+    public ResponseEntity<?> updateProduct(@PathVariable String productId, @RequestBody ProductDTO productDTO){
 
         return null;
     }
