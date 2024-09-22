@@ -4,6 +4,7 @@ import com.Optimart.models.ProductType;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -15,4 +16,5 @@ public interface ProductTypeRepository extends JpaRepository<ProductType, UUID> 
     @NotNull Optional<ProductType> findById(@NotNull UUID productTypeId);
     Page<ProductType> findByNameContainingIgnoreCase(String search, Pageable pageable);
 
+    Page<ProductType> findAll(Specification<ProductType> productTypeSpecification, Pageable pageable);
 }

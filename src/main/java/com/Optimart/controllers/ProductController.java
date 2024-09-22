@@ -1,11 +1,19 @@
 package com.Optimart.controllers;
 
+import com.Optimart.annotations.SecuredSwaggerOperation;
 import com.Optimart.constants.Endpoint;
 import com.Optimart.dto.Product.CreateProductDTO;
 import com.Optimart.dto.Product.ProductDTO;
 import com.Optimart.dto.Product.ProductMultiDeleteDTO;
 import com.Optimart.dto.Product.ProductSearchDTO;
+import com.Optimart.models.DeliveryType;
+import com.Optimart.models.Product;
+import com.Optimart.services.Product.ProductService;
+import com.Optimart.utils.LocalizationUtils;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,17 +28,19 @@ import java.util.Map;
 @Tag(name = "Product", description = "Everything about product")
 @RequestMapping(Endpoint.Product.BASE)
 public class ProductController {
-
+    private final LocalizationUtils localizationUtils;
+    private final ProductService productService;
     @GetMapping
     public ResponseEntity<?> getListProducts(@Parameter Map<String, String> filters){
 
         return null;
     }
 
+    @ApiResponse(responseCode = "201", description = "CREATED", content = @Content(schema = @Schema(implementation = Object.class), mediaType = "application/json"))
+    @SecuredSwaggerOperation(summary = "Create a new product")
     @PostMapping
     public ResponseEntity<?> createNewProduct(@RequestBody CreateProductDTO createProductDTO){
-
-        return null;
+        return ResponseEntity.ok(productService.createProduct(createProductDTO));
     }
 
     @GetMapping(Endpoint.Product.ID)
