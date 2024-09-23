@@ -1,20 +1,15 @@
 package com.Optimart.services.ProductType;
 
-import com.Optimart.constants.Endpoint;
 import com.Optimart.constants.MessageKeys;
 import com.Optimart.dto.ProductType.ProductTypeDTO;
 import com.Optimart.dto.ProductType.ProductTypeMutiDeleteDTO;
 import com.Optimart.dto.ProductType.ProductTypeSearchDTO;
-import com.Optimart.models.Product;
 import com.Optimart.models.ProductType;
-import com.Optimart.models.User;
 import com.Optimart.repositories.ProductTypeRepository;
-import com.Optimart.repositories.Specification.UserSpecification;
 import com.Optimart.responses.APIResponse;
 import com.Optimart.responses.PagingResponse;
 import com.Optimart.responses.User.UserResponse;
 import com.Optimart.utils.LocalizationUtils;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -42,9 +37,9 @@ public class ProductTypeService implements IProductTypeService {
         if (productTypeSearchDTO.getPage() == -1 && productTypeSearchDTO.getLimit() == -1 ) {
             productTypes = productTypeRepository.findAll();
             productTypes.stream()
-                    .map(user -> modelMapper.map(user, UserResponse.class))
+                    .map(productType -> modelMapper.map(productType, ProductType.class))
                     .toList();
-            return new PagingResponse<>(productTypes, localizationUtils.getLocalizedMessage(MessageKeys.USER_GET_SUCCESS), 1, (long) productTypes.size());
+            return new PagingResponse<>(productTypes, localizationUtils.getLocalizedMessage(MessageKeys.PRODUCT_TYPE_GET_SUCCESS), 1, (long) productTypes.size());
         } else {
             productTypeSearchDTO.setPage(Math.max(productTypeSearchDTO.getPage(),1));
             pageable = PageRequest.of(productTypeSearchDTO.getPage() - 1, productTypeSearchDTO.getLimit(), Sort.by("createdAt").descending());

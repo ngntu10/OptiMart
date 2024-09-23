@@ -2,6 +2,8 @@ package com.Optimart.models;
 import java.util.List;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -25,6 +27,7 @@ public class ProductType extends BaseEntity {
     @Column(name = "slug", nullable = false, unique = true)
     private String slug;
 
-    @ManyToMany(mappedBy = "productTypeList")
+    @OneToMany(mappedBy = "productType")
+    @JsonIgnoreProperties("productType")
     private List<Product> productList;
 }

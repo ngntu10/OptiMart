@@ -12,9 +12,9 @@ import java.util.Map;
 
 public interface IProductService {
     APIResponse<Product> createProduct(CreateProductDTO createProductDTO);
-    PagingResponse<List<Product>> findAllProduct(Map<String, String> filters);
-    APIResponse<Product> updateProduct(ProductDTO productDTO);
+    PagingResponse<List<Product>> findAllProduct(Map<Object, String> filters);
+    APIResponse<Product> updateProduct(ProductDTO product, String productId);
     APIResponse<Boolean> deleteProduct(String productId);
     APIResponse<Boolean> deleteMultiProduct(ProductMultiDeleteDTO productMultiDeleteDTO);
-    ProductDTO getOneProduct(String productId);
+    Product getOneProduct(String productId);
 }

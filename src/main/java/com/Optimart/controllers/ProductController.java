@@ -31,9 +31,8 @@ public class ProductController {
     private final LocalizationUtils localizationUtils;
     private final ProductService productService;
     @GetMapping
-    public ResponseEntity<?> getListProducts(@Parameter Map<String, String> filters){
-
-        return null;
+    public ResponseEntity<?> getListProducts(@RequestParam Map<Object, String> filters){
+        return ResponseEntity.ok(productService.findAllProduct(filters));
     }
 
     @ApiResponse(responseCode = "201", description = "CREATED", content = @Content(schema = @Schema(implementation = Object.class), mediaType = "application/json"))
@@ -45,20 +44,17 @@ public class ProductController {
 
     @GetMapping(Endpoint.Product.ID)
     public ResponseEntity<?> getOneProduct(@PathVariable String productId){
-
-        return null;
+        return ResponseEntity.ok(productService.getOneProduct(productId));
     }
 
     @PutMapping(Endpoint.Product.ID)
-    public ResponseEntity<?> updateProduct(@PathVariable String productId, @RequestBody ProductDTO productDTO){
-
-        return null;
+    public ResponseEntity<?> updateProduct(@PathVariable String productId, @RequestBody ProductDTO product){
+        return ResponseEntity.ok(productService.updateProduct(product, productId));
     }
 
     @DeleteMapping(Endpoint.Product.ID)
     public ResponseEntity<?> deleteProduct(@PathVariable String productId){
-
-        return null;
+        return ResponseEntity.ok(productService.deleteProduct(productId));
     }
 
     @GetMapping(Endpoint.Product.PUBLIC)
@@ -87,8 +83,7 @@ public class ProductController {
 
     @DeleteMapping(Endpoint.Product.DELETE_MANY)
     public ResponseEntity<?> deleteMultiProduct(@RequestBody ProductMultiDeleteDTO productMultiDeleteDTO){
-
-        return null;
+        return ResponseEntity.ok(productService.deleteMultiProduct(productMultiDeleteDTO));
     }
 
     @PostMapping(Endpoint.Product.LIKE)

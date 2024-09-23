@@ -1,5 +1,6 @@
 package com.Optimart.models;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -76,13 +77,17 @@ public class Product extends BaseEntity {
     @ManyToMany(mappedBy = "viewedProductList")
     private List<User> userViewedList;
 
-    @ManyToMany
-    @JoinTable(
-            name = "productTypes",
-            joinColumns = @JoinColumn(name = "product_id"),
-            inverseJoinColumns = @JoinColumn(name = "productType_id")
-    )
-    private List<ProductType> productTypeList;
+//    @ManyToMany
+//    @JoinTable(
+//            name = "productTypes",
+//            joinColumns = @JoinColumn(name = "product_id"),
+//            inverseJoinColumns = @JoinColumn(name = "productType_id")
+//    )
+//    private List<ProductType> productTypeList;
+
+    @ManyToOne
+    @JoinColumn(name = "productTypeId")
+    private ProductType productType;
 
     @OneToMany(mappedBy = "product")
     private List<Review> reviewList;
