@@ -62,5 +62,7 @@ public class MessageKeys {
     public static final String PRODUCT_UPDATE_SUCCESS = "product.update_success";
     public static final String PRODUCT_DELETE_SUCCESS = "product.delete_success" ;
     public static final String PRODUCT_GET_SUCCESS = "product.get_success" ;
+    public static final String PRODUCT_NOT_EXISTED = "product.not_existed";
+    public static final String PRODUCT_IMAGE_UPDATE_SUCCESS = "product.image.update_success";
 
 }

@@ -99,7 +99,7 @@ public class UserService implements IUserservice {
     public APIResponse<UserResponse> editUser(EditUserDTO editUserDTO) {
         User user = userRepository.findByEmail(editUserDTO.getEmail()).get();
         Role role = roleRepository.findByName(editUserDTO.getRole()).get();
-        City city = cityLocaleRepository.findByName(editUserDTO.getCity()).get();
+        City city = cityLocaleRepository.findById(Long.parseLong(editUserDTO.getCity())).get();
         modelMapper.map(editUserDTO, user);
         user.setRole(role);
         user.setCity(city);

@@ -53,6 +53,7 @@ public class Endpoint {
     public static  class Product{
         public static final String BASE = API_PREFIX + "/products";
         public static final String ID = "{productId}";
+        public static final String CHANGE_IMAGE = "/image";
         public static final String DELETE_MANY = "/delete-many";
         public static final String PUBLIC = "/public";
         public static final String RELATED = "/related";

@@ -4,13 +4,19 @@ import com.Optimart.constants.MessageKeys;
 import com.Optimart.dto.Product.CreateProductDTO;
 import com.Optimart.dto.Product.ProductDTO;
 import com.Optimart.dto.Product.ProductMultiDeleteDTO;
+import com.Optimart.exceptions.DataNotFoundException;
 import com.Optimart.models.Product;
 import com.Optimart.models.ProductType;
+import com.Optimart.models.User;
 import com.Optimart.repositories.ProductRepository;
 import com.Optimart.repositories.ProductTypeRepository;
 import com.Optimart.responses.APIResponse;
+import com.Optimart.responses.CloudinaryResponse;
 import com.Optimart.responses.PagingResponse;
+import com.Optimart.services.CloudinaryService;
+import com.Optimart.utils.FileUploadUtil;
 import com.Optimart.utils.LocalizationUtils;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -20,15 +26,18 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class ProductService implements IProductService {
     private final LocalizationUtils localizationUtils;
+    private final CloudinaryService cloudinaryService;
     private final ProductRepository productRepository;
     private final ProductTypeRepository productTypeRepository;
     private final ModelMapper modelMapper;
@@ -48,7 +57,7 @@ public class ProductService implements IProductService {
         int page = Integer.parseInt(filters.getOrDefault("page", "-1"));
         int limit = Integer.parseInt(filters.getOrDefault("limit", "-1"));
         String order = filters.get("order");
-        if (page == 0 && limit == 0 ) {
+        if (page == -1 && limit == -1 ) {
             productList = productRepository.findAll();
             productList.stream()
                     .map(product -> modelMapper.map(product, Product.class))
@@ -105,5 +114,22 @@ public class ProductService implements IProductService {
     @Override
     public Product getOneProduct(String productId) {
         return productRepository.findById(UUID.fromString(productId)).get();
+    }
+
+    @Transactional
+    public CloudinaryResponse uploadImage(String productId, final MultipartFile file) {
+        try {
+            Optional<Product> optionalProduct = productRepository.findById(UUID.fromString(productId));
+            if(optionalProduct.isEmpty()) throw new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.PRODUCT_NOT_EXISTED));
+            Product product = optionalProduct.get();
+            FileUploadUtil.assertAllowed(file, FileUploadUtil.IMAGE_PATTERN);
+            final String fileName = FileUploadUtil.getFileName(file.getOriginalFilename());
+            final CloudinaryResponse response = cloudinaryService.uploadFile(file, fileName);
+            product.setImage(response.getUrl());
+            productRepository.save(product);
+            return response;
+        } catch (Exception ex){
+            throw new RuntimeException(ex.getMessage());
+        }
     }
 }

@@ -2,25 +2,35 @@ package com.Optimart.controllers;
 
 import com.Optimart.annotations.SecuredSwaggerOperation;
 import com.Optimart.constants.Endpoint;
+import com.Optimart.constants.MessageKeys;
 import com.Optimart.dto.Product.CreateProductDTO;
 import com.Optimart.dto.Product.ProductDTO;
 import com.Optimart.dto.Product.ProductMultiDeleteDTO;
 import com.Optimart.dto.Product.ProductSearchDTO;
+import com.Optimart.exceptions.DataNotFoundException;
 import com.Optimart.models.DeliveryType;
 import com.Optimart.models.Product;
+import com.Optimart.models.User;
+import com.Optimart.responses.CloudinaryResponse;
+import com.Optimart.services.CloudinaryService;
 import com.Optimart.services.Product.ProductService;
+import com.Optimart.utils.FileUploadUtil;
+import com.Optimart.utils.JwtTokenUtil;
 import com.Optimart.utils.LocalizationUtils;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -30,6 +40,7 @@ import java.util.Map;
 public class ProductController {
     private final LocalizationUtils localizationUtils;
     private final ProductService productService;
+    private final CloudinaryService cloudinaryService;
     @GetMapping
     public ResponseEntity<?> getListProducts(@RequestParam Map<Object, String> filters){
         return ResponseEntity.ok(productService.findAllProduct(filters));
@@ -52,6 +63,14 @@ public class ProductController {
         return ResponseEntity.ok(productService.updateProduct(product, productId));
     }
 
+    @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = CloudinaryResponse.class), mediaType = "application/json"))
+    @SecuredSwaggerOperation(summary = "Update Product image")
+    @PostMapping(Endpoint.Product.CHANGE_IMAGE)
+    public ResponseEntity<CloudinaryResponse> updateAvatar(@RequestParam String productId,
+                                                           @RequestParam("file") MultipartFile file) {
+        CloudinaryResponse response = productService.uploadImage(productId, file);
+        return ResponseEntity.ok(new CloudinaryResponse(response.getPublicId(), response.getUrl(), localizationUtils.getLocalizedMessage(MessageKeys.PRODUCT_IMAGE_UPDATE_SUCCESS)));
+    }
     @DeleteMapping(Endpoint.Product.ID)
     public ResponseEntity<?> deleteProduct(@PathVariable String productId){
         return ResponseEntity.ok(productService.deleteProduct(productId));

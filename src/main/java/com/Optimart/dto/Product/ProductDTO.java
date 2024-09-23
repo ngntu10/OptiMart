@@ -19,6 +19,7 @@ public class ProductDTO {
     private String slug;
     private String image;
     private Long price;
+    private int status;
     private int countInStock;
     private String description;
     private int discount;
