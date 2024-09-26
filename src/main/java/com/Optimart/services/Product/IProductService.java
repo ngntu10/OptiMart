@@ -15,6 +15,7 @@ public interface IProductService {
     PagingResponse<List<Product>> findAllProduct(Map<Object, String> filters);
     PagingResponse<List<Product>> findAllProductPublic(Map<Object, String> filters);
     Product getOneProduct(String productId);
+    Product getOneProductBySlug(String slug);
     Product getOneProductPublic(String productId, Boolean isViewed);
     APIResponse<Product> updateProduct(ProductDTO product, String productId);
     APIResponse<Boolean> deleteProduct(String productId);

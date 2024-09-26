@@ -18,6 +18,7 @@ import com.Optimart.utils.FileUploadUtil;
 import com.Optimart.utils.LocalizationUtils;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -67,6 +68,15 @@ public class ProductService implements IProductService {
             page = Math.max(Integer.parseInt(filters.getOrDefault("page", "-1")), 1);
             pageable = PageRequest.of(page - 1, limit, Sort.by("createdAt").descending());
         }
+        pageable = getPageable(pageable, page, limit, order);
+//        Specification<User> specification = UserSpecification.filterUsers(userSearchDTO.getRoleId(), userSearchDTO.getStatus(), userSearchDTO.getCityId(),
+//                userSearchDTO.getUserType(), userSearchDTO.getSearch());
+
+        Specification<Product> specification = null;
+        return getListPagingResponse(pageable, specification);
+    }
+
+    private Pageable getPageable(Pageable pageable, int page, int limit, String order) {
         if (StringUtils.hasText(order)) {
             String[] orderParams = order.split("-");
             if (orderParams.length == 2) {
@@ -74,10 +84,12 @@ public class ProductService implements IProductService {
                 pageable = PageRequest.of(page, limit, Sort.by(new Sort.Order(direction, orderParams[0])));
             }
         }
-//        Specification<User> specification = UserSpecification.filterUsers(userSearchDTO.getRoleId(), userSearchDTO.getStatus(), userSearchDTO.getCityId(),
-//                userSearchDTO.getUserType(), userSearchDTO.getSearch());
+        return pageable;
+    }
 
-        Specification<Product> specification = null;
+    @NotNull
+    private PagingResponse<List<Product>> getListPagingResponse(Pageable pageable, Specification<Product> specification) {
+        List<Product> productList;
         Page<Product> productPage = productRepository.findAll(specification, pageable);
         productList = productPage.getContent();
         productList.stream()
@@ -103,20 +115,9 @@ public class ProductService implements IProductService {
             page = Math.max(Integer.parseInt(filters.getOrDefault("page", "-1")), 1);
             pageable = PageRequest.of(page - 1, limit, Sort.by("createdAt").descending());
         }
-        if (StringUtils.hasText(order)) {
-            String[] orderParams = order.split("-");
-            if (orderParams.length == 2) {
-                Sort.Direction direction = orderParams[1].equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
-                pageable = PageRequest.of(page, limit, Sort.by(new Sort.Order(direction, orderParams[0])));
-            }
-        }
+        pageable = getPageable(pageable, page, limit, order);
         Specification<Product> productSpecification = ProductSpecification.filterProducts(filters.get("productType"), "1", filters.get("search"));
-        Page<Product> productPage = productRepository.findAll(productSpecification, pageable);
-        productList = productPage.getContent();
-        productList.stream()
-                .map(product -> modelMapper.map(product, Product.class))
-                .toList();
-        return new PagingResponse<>(productList, localizationUtils.getLocalizedMessage(MessageKeys.PRODUCT_GET_SUCCESS), productPage.getTotalPages(), productPage.getTotalElements());
+        return getListPagingResponse(pageable, productSpecification);
     }
 
     @Override
@@ -147,6 +148,11 @@ public class ProductService implements IProductService {
     @Override
     public Product getOneProduct(String productId) {
         return productRepository.findById(UUID.fromString(productId)).get();
+    }
+
+    @Override
+    public Product getOneProductBySlug(String slug) {
+        return productRepository.findBySlug(slug).get();
     }
 
     @Override

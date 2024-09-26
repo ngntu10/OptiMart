@@ -1,6 +1,7 @@
 package com.Optimart.controllers;
 
 import com.Optimart.annotations.SecuredSwaggerOperation;
+import com.Optimart.annotations.UnsecuredSwaggerOperation;
 import com.Optimart.constants.Endpoint;
 import com.Optimart.constants.MessageKeys;
 import com.Optimart.dto.Product.CreateProductDTO;
@@ -83,7 +84,7 @@ public class ProductController {
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema(implementation = Product.class)), mediaType = "application/json"))
     @SecuredSwaggerOperation(summary = "Get list public product (Status = 1)")
     @GetMapping(Endpoint.Product.PUBLIC)
-    public ResponseEntity<?> getListProductsPublic(@Parameter Map<Object, String> filters){
+    public ResponseEntity<?> getListProductsPublic(@RequestParam Map<Object, String> filters){
         return ResponseEntity.ok(productService.findAllProductPublic(filters));
     }
 
@@ -103,11 +104,10 @@ public class ProductController {
     }
 
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema(implementation = Product.class)), mediaType = "application/json"))
-    @SecuredSwaggerOperation(summary = "Get list public slug by id (Status = 1)")
+    @UnsecuredSwaggerOperation(summary = "Get list public slug by id (Status = 1)")
     @GetMapping(Endpoint.Product.PUBLIC_SLUG_ID)
     public ResponseEntity<?> getPublicSlugProductById(@PathVariable String slugId){
-
-        return null;
+        return ResponseEntity.ok(productService.getOneProductBySlug(slugId));
     }
 
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema(implementation = Product.class)), mediaType = "application/json"))
