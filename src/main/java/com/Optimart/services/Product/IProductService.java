@@ -13,8 +13,10 @@ import java.util.Map;
 public interface IProductService {
     APIResponse<Product> createProduct(CreateProductDTO createProductDTO);
     PagingResponse<List<Product>> findAllProduct(Map<Object, String> filters);
+    PagingResponse<List<Product>> findAllProductPublic(Map<Object, String> filters);
+    Product getOneProduct(String productId);
+    Product getOneProductPublic(String productId, Boolean isViewed);
     APIResponse<Product> updateProduct(ProductDTO product, String productId);
     APIResponse<Boolean> deleteProduct(String productId);
     APIResponse<Boolean> deleteMultiProduct(ProductMultiDeleteDTO productMultiDeleteDTO);
-    Product getOneProduct(String productId);
 }

@@ -7,9 +7,9 @@ import com.Optimart.dto.Product.ProductMultiDeleteDTO;
 import com.Optimart.exceptions.DataNotFoundException;
 import com.Optimart.models.Product;
 import com.Optimart.models.ProductType;
-import com.Optimart.models.User;
 import com.Optimart.repositories.ProductRepository;
 import com.Optimart.repositories.ProductTypeRepository;
+import com.Optimart.repositories.Specification.ProductSpecification;
 import com.Optimart.responses.APIResponse;
 import com.Optimart.responses.CloudinaryResponse;
 import com.Optimart.responses.PagingResponse;
@@ -87,6 +87,39 @@ public class ProductService implements IProductService {
     }
 
     @Override
+    public PagingResponse<List<Product>> findAllProductPublic(Map<Object, String> filters) {
+        List<Product> productList;
+        Pageable pageable;
+        int page = Integer.parseInt(filters.getOrDefault("page", "-1"));
+        int limit = Integer.parseInt(filters.getOrDefault("limit", "-1"));
+        String order = filters.get("order");
+        if (page == -1 && limit == -1 ) {
+            productList = productRepository.findAllByStatus(1);
+            productList.stream()
+                    .map(product -> modelMapper.map(product, Product.class))
+                    .toList();
+            return new PagingResponse<>(productList, localizationUtils.getLocalizedMessage(MessageKeys.PRODUCT_GET_SUCCESS), 1, (long) productList.size());
+        } else {
+            page = Math.max(Integer.parseInt(filters.getOrDefault("page", "-1")), 1);
+            pageable = PageRequest.of(page - 1, limit, Sort.by("createdAt").descending());
+        }
+        if (StringUtils.hasText(order)) {
+            String[] orderParams = order.split("-");
+            if (orderParams.length == 2) {
+                Sort.Direction direction = orderParams[1].equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
+                pageable = PageRequest.of(page, limit, Sort.by(new Sort.Order(direction, orderParams[0])));
+            }
+        }
+        Specification<Product> productSpecification = ProductSpecification.filterProducts(filters.get("productType"), "1", filters.get("search"));
+        Page<Product> productPage = productRepository.findAll(productSpecification, pageable);
+        productList = productPage.getContent();
+        productList.stream()
+                .map(product -> modelMapper.map(product, Product.class))
+                .toList();
+        return new PagingResponse<>(productList, localizationUtils.getLocalizedMessage(MessageKeys.PRODUCT_GET_SUCCESS), productPage.getTotalPages(), productPage.getTotalElements());
+    }
+
+    @Override
     public APIResponse<Product> updateProduct(ProductDTO product, String productId) {
         Product product1 = productRepository.findById(UUID.fromString(productId)).get();
         ProductType productType = productTypeRepository.findById(UUID.fromString(product.getType())).get();
@@ -115,6 +148,14 @@ public class ProductService implements IProductService {
     public Product getOneProduct(String productId) {
         return productRepository.findById(UUID.fromString(productId)).get();
     }
+
+    @Override
+    public Product getOneProductPublic(String productId, Boolean isViewed) {
+        Product product = productRepository.findById(UUID.fromString(productId)).get();
+//        if(isViewed)
+        return product;
+    }
+
 
     @Transactional
     public CloudinaryResponse uploadImage(String productId, final MultipartFile file) {
