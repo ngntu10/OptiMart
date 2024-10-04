@@ -1,11 +1,13 @@
 package com.Optimart.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Getter
@@ -71,11 +73,12 @@ public class Product extends BaseEntity {
     )
     private List<City> cityList;
 
+    @JsonIgnore
     @ManyToMany(mappedBy = "likeProductList")
-    private List<User> userLikedList;
+    private Set<User> userLikedList;
 
     @ManyToMany(mappedBy = "viewedProductList")
-    private List<User> userViewedList;
+    private Set<User> userViewedList;
 
 //    @ManyToMany
 //    @JoinTable(

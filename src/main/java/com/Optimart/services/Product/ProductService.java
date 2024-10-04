@@ -4,10 +4,13 @@ import com.Optimart.constants.MessageKeys;
 import com.Optimart.dto.Product.CreateProductDTO;
 import com.Optimart.dto.Product.ProductDTO;
 import com.Optimart.dto.Product.ProductMultiDeleteDTO;
+import com.Optimart.dto.Product.ReactionProductDTO;
 import com.Optimart.exceptions.DataNotFoundException;
 import com.Optimart.models.City;
 import com.Optimart.models.Product;
 import com.Optimart.models.ProductType;
+import com.Optimart.models.User;
+import com.Optimart.repositories.AuthRepository;
 import com.Optimart.repositories.CityLocaleRepository;
 import com.Optimart.repositories.ProductRepository;
 import com.Optimart.repositories.ProductTypeRepository;
@@ -17,6 +20,7 @@ import com.Optimart.responses.CloudinaryResponse;
 import com.Optimart.responses.PagingResponse;
 import com.Optimart.services.CloudinaryService;
 import com.Optimart.utils.FileUploadUtil;
+import com.Optimart.utils.JwtTokenUtil;
 import com.Optimart.utils.LocalizationUtils;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -31,10 +35,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -42,10 +43,12 @@ import java.util.stream.Collectors;
 public class ProductService implements IProductService {
     private final LocalizationUtils localizationUtils;
     private final CloudinaryService cloudinaryService;
+    private final ModelMapper modelMapper;
+    private final JwtTokenUtil jwtTokenUtil;
     private final CityLocaleRepository cityLocaleRepository;
     private final ProductRepository productRepository;
     private final ProductTypeRepository productTypeRepository;
-    private final ModelMapper modelMapper;
+    private final AuthRepository authRepository;
     @Override
     public APIResponse<Product> createProduct(CreateProductDTO createProductDTO) {
         Product product = modelMapper.map(createProductDTO, Product.class);
@@ -56,8 +59,25 @@ public class ProductService implements IProductService {
     }
 
     @Override
-    public APIResponse<Product> likeProduct(ProductDTO productDTO) {
-        return null;
+    public APIResponse<Boolean> likeProduct(ReactionProductDTO reactionProductDTO, String token) {
+        String jwtToken = token.substring(7);
+        String email = jwtTokenUtil.extractEmail(jwtToken);
+        Optional<User> optionalUser = authRepository.findByEmail(email);
+        if(optionalUser.isEmpty())
+            throw new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.USER_NOT_EXIST));
+        User user = optionalUser.get();
+
+        String productId = reactionProductDTO.getProductId();
+        Set<Product> productList = user.getLikeProductList();
+        Optional<Product> optionalProduct = productRepository.findById(UUID.fromString(productId));
+        Product product = optionalProduct.get();
+        productList.add(product);
+
+        Set<User> userList = product.getUserLikedList();
+        userList.add(user);
+        product.setUserLikedList(userList);
+        productRepository.save(product);
+        return new APIResponse<>(true, localizationUtils.getLocalizedMessage(MessageKeys.PRODUCT_LIKED));
     }
 
     @Override
@@ -80,7 +100,7 @@ public class ProductService implements IProductService {
         page -= 1;
         pageable = PageRequest.of(page, limit, Sort.by("createdAt").descending());
         pageable = getPageable(pageable, page, limit, order);
-        Specification<Product> specification = ProductSpecification.filterProducts(filters.get("productType"), "1", filters.get("search"));;
+        Specification<Product> specification = ProductSpecification.filterProducts(filters.get("productType"), filters.get("status"), filters.get("search"));;
         return getListPagingResponse(pageable, specification);
     }
 
@@ -138,7 +158,8 @@ public class ProductService implements IProductService {
         if (page == -1 && limit == -1 ) {
             productList = productRepository.findAll();
             List<Product> products =  productList.stream()
-                    .filter(product -> product.getProductType().getName().equals(type.getName()))
+                    .filter(product -> product.getProductType().getName().equals(type.getName())
+                            && product.getStatus() == 1)
                     .map(item -> modelMapper.map(item, Product.class))
                     .collect(Collectors.toList());
             products.remove(product1);
@@ -196,6 +217,7 @@ public class ProductService implements IProductService {
 //        if(isViewed)
         return product;
     }
+
 
 
     @Transactional

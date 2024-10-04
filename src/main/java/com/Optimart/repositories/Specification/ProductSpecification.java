@@ -24,7 +24,7 @@ public class ProductSpecification {
             if(ProductType == null || ProductType.isEmpty()){
                 return criteriaBuilder.conjunction();
             }
-            List<UUID> productTypeList = Arrays.stream(ProductType.split(" "))
+            List<UUID> productTypeList = Arrays.stream(ProductType.split("\\|"))
                     .map(UUID::fromString)
                     .toList();
 

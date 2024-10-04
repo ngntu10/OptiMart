@@ -127,7 +127,7 @@ public class User extends BaseEntity implements UserDetails {
             joinColumns = @JoinColumn(name = "user_id", nullable = false),
             inverseJoinColumns = @JoinColumn(name = "product_id", nullable = false)
     )
-    List<Product> likeProductList;
+    Set<Product> likeProductList;
 
 
     @ManyToOne
@@ -140,7 +140,7 @@ public class User extends BaseEntity implements UserDetails {
             joinColumns = @JoinColumn(name = "user_id", nullable = false),
             inverseJoinColumns = @JoinColumn(name = "product_id", nullable = false)
     )
-    List<Product> viewedProductList;
+    Set<Product> viewedProductList;
 
     @OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST,CascadeType.REMOVE})
     private List<userShippingAddress> userShippingAddressList;

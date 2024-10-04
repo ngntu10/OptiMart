@@ -4,23 +4,20 @@ import com.Optimart.annotations.SecuredSwaggerOperation;
 import com.Optimart.annotations.UnsecuredSwaggerOperation;
 import com.Optimart.constants.Endpoint;
 import com.Optimart.constants.MessageKeys;
-import com.Optimart.dto.Product.CreateProductDTO;
-import com.Optimart.dto.Product.ProductDTO;
-import com.Optimart.dto.Product.ProductMultiDeleteDTO;
-import com.Optimart.dto.Product.ProductSearchDTO;
+import com.Optimart.dto.Product.*;
+import com.Optimart.exceptions.DataNotFoundException;
 import com.Optimart.models.Product;
+import com.Optimart.models.User;
 import com.Optimart.responses.CloudinaryResponse;
-import com.Optimart.responses.User.UserResponse;
 import com.Optimart.services.CloudinaryService;
 import com.Optimart.services.Product.ProductService;
+import com.Optimart.utils.JwtTokenUtil;
 import com.Optimart.utils.LocalizationUtils;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -119,9 +116,8 @@ public class ProductController {
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema(implementation = Product.class)), mediaType = "application/json"))
     @SecuredSwaggerOperation(summary = "User like a product")
     @PostMapping(Endpoint.Product.LIKE)
-    public ResponseEntity<?> likeProduct(@RequestBody ProductDTO productDTO){
-//        return ResponseEntity.ok(productService.likeProduct(productDTO));
-        return  null;
+    public ResponseEntity<?> likeProduct(@RequestBody ReactionProductDTO reactionProductDTO, @RequestHeader("Authorization") String token){
+        return ResponseEntity.ok(productService.likeProduct(reactionProductDTO, token));
     }
 
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema(implementation = Product.class)), mediaType = "application/json"))
