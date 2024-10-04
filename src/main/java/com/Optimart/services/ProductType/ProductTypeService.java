@@ -4,7 +4,9 @@ import com.Optimart.constants.MessageKeys;
 import com.Optimart.dto.ProductType.ProductTypeDTO;
 import com.Optimart.dto.ProductType.ProductTypeMutiDeleteDTO;
 import com.Optimart.dto.ProductType.ProductTypeSearchDTO;
+import com.Optimart.models.Product;
 import com.Optimart.models.ProductType;
+import com.Optimart.repositories.ProductRepository;
 import com.Optimart.repositories.ProductTypeRepository;
 import com.Optimart.responses.APIResponse;
 import com.Optimart.responses.PagingResponse;
@@ -27,6 +29,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ProductTypeService implements IProductTypeService {
     private final ProductTypeRepository productTypeRepository;
+    private final ProductRepository productRepository;
     private final ModelMapper modelMapper;
     private final LocalizationUtils localizationUtils;
 
@@ -79,7 +82,16 @@ public class ProductTypeService implements IProductTypeService {
     public APIResponse<ProductType> editProductType(ProductTypeDTO productTypeDTO, String productTypeId) {
         ProductType productType = productTypeRepository.findById(UUID.fromString(productTypeId)).get();
         modelMapper.map(productTypeDTO, productType);
+        List<Product> productList = productType.getProductList();
+        productList.stream()
+                .map(product -> {
+                    product.setProductType(productType);
+                    return product;
+                })
+                .toList();
+        productRepository.saveAll(productList);
         productTypeRepository.save(productType);
+
         return new APIResponse<>(productType, localizationUtils.getLocalizedMessage(MessageKeys.PRODUCT_TYPE_UPDATE_SUCCESS));
     }
 

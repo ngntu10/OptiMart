@@ -17,6 +17,4 @@ public interface ProductTypeRepository extends JpaRepository<ProductType, UUID>,
     Optional<ProductType> findByName(String name);
     @NotNull Optional<ProductType> findById(@NotNull UUID productTypeId);
     Page<ProductType> findByNameContainingIgnoreCase(String search, Pageable pageable);
-
-//    Page<ProductType> findAll(Specification<ProductType> productTypeSpecification, Pageable pageable);
 }

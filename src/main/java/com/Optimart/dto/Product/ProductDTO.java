@@ -17,7 +17,6 @@ import java.util.List;
 public class ProductDTO {
     private String name;
     private String slug;
-    private String image;
     private Long price;
     private int status;
     private int countInStock;
@@ -25,7 +24,7 @@ public class ProductDTO {
     private int discount;
     private Date discountStartDate;
     private Date discountEndDate;
-    private List<City> cityList;
+    private String location;
     private String type;
     private ProductType productType;
 }

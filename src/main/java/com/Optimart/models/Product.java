@@ -36,7 +36,7 @@ public class Product extends BaseEntity {
     @Column(name = "countInStock",nullable = false)
     private int countInStock;
 
-    @Column(name = "description")
+    @Column(name = "description",  length = 100000)
     private String description;
 
     @Column(name = "discount")
@@ -88,6 +88,10 @@ public class Product extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "productTypeId")
     private ProductType productType;
+
+    @ManyToOne
+    @JoinColumn(name = "cityId")
+    private City city;
 
     @OneToMany(mappedBy = "product")
     private List<Review> reviewList;

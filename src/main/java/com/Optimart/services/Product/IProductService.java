@@ -12,8 +12,10 @@ import java.util.Map;
 
 public interface IProductService {
     APIResponse<Product> createProduct(CreateProductDTO createProductDTO);
+    APIResponse<Product> likeProduct(ProductDTO productDTO);
     PagingResponse<List<Product>> findAllProduct(Map<Object, String> filters);
     PagingResponse<List<Product>> findAllProductPublic(Map<Object, String> filters);
+    PagingResponse<List<Product>> getListProductRelatedTo(Map<Object, String> filters);
     Product getOneProduct(String productId);
     Product getOneProductBySlug(String slug);
     Product getOneProductPublic(String productId, Boolean isViewed);

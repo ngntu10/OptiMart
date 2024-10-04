@@ -6,6 +6,7 @@ import org.springframework.data.jpa.domain.Specification;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 public class ProductSpecification {
     public static Specification<Product> byStatus(String status){
@@ -23,8 +24,11 @@ public class ProductSpecification {
             if(ProductType == null || ProductType.isEmpty()){
                 return criteriaBuilder.conjunction();
             }
-            List<String> productTypeList = Arrays.asList(ProductType.split(" "));
-            return root.get("productType").in(productTypeList);
+            List<UUID> productTypeList = Arrays.stream(ProductType.split(" "))
+                    .map(UUID::fromString)
+                    .toList();
+
+            return root.get("productType").get("id").in(productTypeList);
         };
     }
 

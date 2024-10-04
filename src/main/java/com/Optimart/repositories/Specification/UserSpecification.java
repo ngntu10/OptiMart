@@ -17,7 +17,7 @@ public class UserSpecification {
             List<UUID> roleIdList = Arrays.stream(roleIds.split(" "))
                     .map(UUID::fromString)
                     .collect(Collectors.toList());
-            System.out.println(roleIdList);
+            System.out.println(roleIdList); 
             return root.get("role").get("id").in(roleIdList);
         };
     }

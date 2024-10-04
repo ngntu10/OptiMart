@@ -91,9 +91,8 @@ public class ProductController {
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema(implementation = Product.class)), mediaType = "application/json"))
     @SecuredSwaggerOperation(summary = "Get list related product")
     @GetMapping(Endpoint.Product.RELATED)
-    public ResponseEntity<?> getListProductsRelate(@Parameter Map<String, String> filters){
-
-        return null;
+    public ResponseEntity<?> getListProductsRelate(@RequestParam Map<Object, String> filters){
+        return ResponseEntity.ok(productService.getListProductRelatedTo(filters));
     }
 
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema(implementation = Product.class)), mediaType = "application/json"))
@@ -121,8 +120,8 @@ public class ProductController {
     @SecuredSwaggerOperation(summary = "User like a product")
     @PostMapping(Endpoint.Product.LIKE)
     public ResponseEntity<?> likeProduct(@RequestBody ProductDTO productDTO){
-
-        return null;
+//        return ResponseEntity.ok(productService.likeProduct(productDTO));
+        return  null;
     }
 
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema(implementation = Product.class)), mediaType = "application/json"))

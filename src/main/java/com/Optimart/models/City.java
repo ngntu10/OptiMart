@@ -36,7 +36,8 @@ public class City extends BaseEntity{
     @OneToMany(mappedBy = "city")
     List<User> userList;
 
-    @ManyToMany(mappedBy = "cityList")
+    @JsonIgnore
+    @OneToMany(mappedBy = "city")
     List<Product> productList;
 
 }
