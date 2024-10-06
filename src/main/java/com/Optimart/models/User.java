@@ -1,6 +1,6 @@
 package com.Optimart.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
@@ -122,15 +122,16 @@ public class User extends BaseEntity implements UserDetails {
     private Role role;
 
     @ManyToMany
+//    @JsonIgnore
     @JoinTable(
             name = "user_like_product",
             joinColumns = @JoinColumn(name = "user_id", nullable = false),
             inverseJoinColumns = @JoinColumn(name = "product_id", nullable = false)
     )
-    Set<Product> likeProductList;
-
+    List<Product> likeProductList;
 
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "uniqueviews")
     private Product product;
 

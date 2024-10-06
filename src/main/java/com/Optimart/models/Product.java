@@ -1,7 +1,6 @@
 package com.Optimart.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -65,17 +64,17 @@ public class Product extends BaseEntity {
     @OneToMany(mappedBy = "product")
     private List<User> userList;
 
-    @ManyToMany
-    @JoinTable(
-            name = "locationProduct",
-            joinColumns = @JoinColumn(name = "product_id"),
-            inverseJoinColumns = @JoinColumn(name = "city_id")
-    )
-    private List<City> cityList;
+//    @ManyToMany
+//    @JoinTable(
+//            name = "locationProduct",
+//            joinColumns = @JoinColumn(name = "product_id"),
+//            inverseJoinColumns = @JoinColumn(name = "city_id")
+//    )
+//    private List<City> cityList;
 
-    @JsonIgnore
     @ManyToMany(mappedBy = "likeProductList")
-    private Set<User> userLikedList;
+    @JsonIgnore
+    private List<User> userLikedList;
 
     @ManyToMany(mappedBy = "viewedProductList")
     private Set<User> userViewedList;

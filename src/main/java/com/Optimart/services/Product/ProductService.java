@@ -18,6 +18,7 @@ import com.Optimart.repositories.Specification.ProductSpecification;
 import com.Optimart.responses.APIResponse;
 import com.Optimart.responses.CloudinaryResponse;
 import com.Optimart.responses.PagingResponse;
+import com.Optimart.responses.Product.ProductResponse;
 import com.Optimart.services.CloudinaryService;
 import com.Optimart.utils.FileUploadUtil;
 import com.Optimart.utils.JwtTokenUtil;
@@ -68,12 +69,12 @@ public class ProductService implements IProductService {
         User user = optionalUser.get();
 
         String productId = reactionProductDTO.getProductId();
-        Set<Product> productList = user.getLikeProductList();
+        List<Product> productList = user.getLikeProductList();
         Optional<Product> optionalProduct = productRepository.findById(UUID.fromString(productId));
         Product product = optionalProduct.get();
         productList.add(product);
 
-        Set<User> userList = product.getUserLikedList();
+        List<User> userList = product.getUserLikedList();
         userList.add(user);
         product.setUserLikedList(userList);
         productRepository.save(product);
@@ -82,7 +83,7 @@ public class ProductService implements IProductService {
 
     @Override
     @Transactional(readOnly = true)
-    public PagingResponse<List<Product>> findAllProduct(Map<Object, String> filters) {
+    public PagingResponse<List<ProductResponse>> findAllProduct(Map<Object, String> filters) {
         List<Product> productList;
         Pageable pageable;
         int page = Integer.parseInt(filters.getOrDefault("page", "-1"));
@@ -90,10 +91,10 @@ public class ProductService implements IProductService {
         String order = filters.get("order");
         if (page == -1 && limit == -1 ) {
             productList = productRepository.findAll();
-            productList.stream()
-                    .map(product -> modelMapper.map(product, Product.class))
+            List<ProductResponse> productResponseList = productList.stream()
+                    .map(product -> modelMapper.map(product, ProductResponse.class))
                     .toList();
-            return new PagingResponse<>(productList, localizationUtils.getLocalizedMessage(MessageKeys.PRODUCT_GET_SUCCESS), 1, (long) productList.size());
+            return new PagingResponse<>(productResponseList, localizationUtils.getLocalizedMessage(MessageKeys.PRODUCT_GET_SUCCESS), 1, (long) productList.size());
         } else {
             page = Math.max(Integer.parseInt(filters.getOrDefault("page", "-1")), 1);
         }
@@ -116,15 +117,25 @@ public class ProductService implements IProductService {
     }
 
     @NotNull
-    private PagingResponse<List<Product>> getListPagingResponse(Pageable pageable, Specification<Product> specification) {
+    private PagingResponse<List<ProductResponse>> getListPagingResponse(Pageable pageable, Specification<Product> specification) {
         List<Product> productList;
         Page<Product> productPage = productRepository.findAll(specification, pageable);
         productList = productPage.getContent();
-        return new PagingResponse<>(productList, localizationUtils.getLocalizedMessage(MessageKeys.PRODUCT_GET_SUCCESS), productPage.getTotalPages(), productPage.getTotalElements());
+        List<ProductResponse> productResponseList = productList.stream()
+                .map(product -> {
+                    ProductResponse productResponse = modelMapper.map(product, ProductResponse.class);
+                    Set<UUID> userLikeList = product.getUserLikedList().stream()
+                            .map(User::getId)
+                            .collect(Collectors.toSet());
+                    productResponse.setUserLikedList(userLikeList);
+                    return productResponse;
+                })
+                .toList();
+        return new PagingResponse<>(productResponseList, localizationUtils.getLocalizedMessage(MessageKeys.PRODUCT_GET_SUCCESS), productPage.getTotalPages(), productPage.getTotalElements());
     }
 
     @Override
-    public PagingResponse<List<Product>> findAllProductPublic(Map<Object, String> filters) {
+    public PagingResponse<List<ProductResponse>> findAllProductPublic(Map<Object, String> filters) {
         List<Product> productList;
         Pageable pageable;
         int page = Integer.parseInt(filters.getOrDefault("page", "-1"));
@@ -132,10 +143,10 @@ public class ProductService implements IProductService {
         String order = filters.get("order");
         if (page == -1 && limit == -1 ) {
             productList = productRepository.findAllByStatus(1);
-            productList.stream()
-                    .map(product -> modelMapper.map(product, Product.class))
+            List<ProductResponse> productResponseList = productList.stream()
+                    .map(product -> modelMapper.map(product, ProductResponse.class))
                     .toList();
-            return new PagingResponse<>(productList, localizationUtils.getLocalizedMessage(MessageKeys.PRODUCT_GET_SUCCESS), 1, (long) productList.size());
+            return new PagingResponse<>(productResponseList, localizationUtils.getLocalizedMessage(MessageKeys.PRODUCT_GET_SUCCESS), 1, (long) productList.size());
         } else {
             page = Math.max(Integer.parseInt(filters.getOrDefault("page", "1")), 1);
         }
@@ -147,7 +158,7 @@ public class ProductService implements IProductService {
     }
 
     @Override
-    public PagingResponse<List<Product>> getListProductRelatedTo(Map<Object, String> filters) {
+    public PagingResponse<List<ProductResponse>> getListProductRelatedTo(Map<Object, String> filters) {
         Product product1 = productRepository.findBySlug(filters.get("slug")).get();
         ProductType type = product1.getProductType();
         List<Product> productList;
@@ -157,12 +168,13 @@ public class ProductService implements IProductService {
         String order = filters.get("order");
         if (page == -1 && limit == -1 ) {
             productList = productRepository.findAll();
-            List<Product> products =  productList.stream()
+            List<ProductResponse> products =  productList.stream()
                     .filter(product -> product.getProductType().getName().equals(type.getName())
                             && product.getStatus() == 1)
-                    .map(item -> modelMapper.map(item, Product.class))
+                    .map(item -> modelMapper.map(item, ProductResponse.class))
                     .collect(Collectors.toList());
-            products.remove(product1);
+            ProductResponse productResponseToRemove = modelMapper.map(product1, ProductResponse.class);
+            products.removeIf(product -> product.getId().equals(productResponseToRemove.getId()));
             return new PagingResponse<>(products, localizationUtils.getLocalizedMessage(MessageKeys.PRODUCT_GET_SUCCESS), 1, (long) productList.size());
         } else {
             page = Math.max(Integer.parseInt(filters.getOrDefault("page", "-1")), 1);

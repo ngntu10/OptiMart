@@ -29,6 +29,7 @@ public class City extends BaseEntity{
     @Column(name = "name", nullable = false, unique = true)
     private String name;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "city")
     List<ShippingAddress> shippingAddresses;
 

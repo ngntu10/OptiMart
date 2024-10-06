@@ -1,5 +1,6 @@
 package com.Optimart.models;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -19,10 +20,12 @@ public class Review extends BaseEntity {
     private UUID id;
 
     @ManyToOne
+    @JsonManagedReference
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
     @ManyToOne
+    @JsonManagedReference
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
