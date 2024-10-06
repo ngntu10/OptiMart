@@ -1,9 +1,6 @@
 package com.Optimart.services.Product;
 
-import com.Optimart.dto.Product.CreateProductDTO;
-import com.Optimart.dto.Product.ProductDTO;
-import com.Optimart.dto.Product.ProductMultiDeleteDTO;
-import com.Optimart.dto.Product.ReactionProductDTO;
+import com.Optimart.dto.Product.*;
 import com.Optimart.models.Product;
 import com.Optimart.responses.APIResponse;
 import com.Optimart.responses.PagingResponse;
@@ -19,6 +16,7 @@ public interface IProductService {
     PagingResponse<List<ProductResponse>> findAllProduct(Map<Object, String> filters);
     PagingResponse<List<ProductResponse>> findAllProductPublic(Map<Object, String> filters);
     PagingResponse<List<ProductResponse>> getListProductRelatedTo(Map<Object, String> filters);
+    PagingResponse<List<ProductResponse>> getLikedProducts (Map<Object, String> filters, String token);
     Product getOneProduct(String productId);
     Product getOneProductBySlug(String slug);
     Product getOneProductPublic(String productId, Boolean isViewed);

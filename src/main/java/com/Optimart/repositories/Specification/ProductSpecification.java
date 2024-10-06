@@ -2,6 +2,7 @@ package com.Optimart.repositories.Specification;
 
 import com.Optimart.models.Product;
 import com.Optimart.models.User;
+import jakarta.persistence.criteria.Join;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.Arrays;
@@ -42,6 +43,18 @@ public class ProductSpecification {
                     criteriaBuilder.like(criteriaBuilder.lower(root.get("slug")), "%" + search.toLowerCase() + "%")
             );
         };
+    }
+
+    public static Specification<Product> likedByUser(UUID userId) {
+        return (root, query, builder) -> {
+            Join<User, Product> likedProducts = root.join("userLikedList");
+            return builder.equal(likedProducts.get("id"), userId);
+        };
+    }
+
+    public static Specification<Product> getProductLikedByUser(UUID userId, String search){
+        return Specification.where(likedByUser(userId))
+                .and(searchByKeyword(search));
     }
 
     public static Specification<Product> filterProducts(String ProductType, String statuses, String keyword) {

@@ -130,9 +130,8 @@ public class ProductController {
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema(implementation = Product.class)), mediaType = "application/json"))
     @SecuredSwaggerOperation(summary = "Get list product liked")
     @GetMapping(Endpoint.Product.LIKED_ME)
-    public ResponseEntity<?> getProductLiked(@RequestBody ProductSearchDTO productSearchDTO){
-
-        return null;
+    public ResponseEntity<?> getProductLiked(@RequestParam Map<Object, String> filters,  @RequestHeader("Authorization") String token){
+        return ResponseEntity.ok(productService.getLikedProducts(filters, token));
     }
 
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema(implementation = Product.class)), mediaType = "application/json"))

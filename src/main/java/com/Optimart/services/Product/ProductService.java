@@ -1,10 +1,7 @@
 package com.Optimart.services.Product;
 
 import com.Optimart.constants.MessageKeys;
-import com.Optimart.dto.Product.CreateProductDTO;
-import com.Optimart.dto.Product.ProductDTO;
-import com.Optimart.dto.Product.ProductMultiDeleteDTO;
-import com.Optimart.dto.Product.ReactionProductDTO;
+import com.Optimart.dto.Product.*;
 import com.Optimart.exceptions.DataNotFoundException;
 import com.Optimart.models.City;
 import com.Optimart.models.Product;
@@ -120,10 +117,8 @@ public class ProductService implements IProductService {
                     .map(product -> modelMapper.map(product, ProductResponse.class))
                     .toList();
             return new PagingResponse<>(productResponseList, localizationUtils.getLocalizedMessage(MessageKeys.PRODUCT_GET_SUCCESS), 1, (long) productList.size());
-        } else {
-            page = Math.max(Integer.parseInt(filters.getOrDefault("page", "-1")), 1);
         }
-        page -= 1;
+        page = Math.max(Integer.parseInt(filters.getOrDefault("page", "-1")), 1) - 1;
         pageable = PageRequest.of(page, limit, Sort.by("createdAt").descending());
         pageable = getPageable(pageable, page, limit, order);
         Specification<Product> specification = ProductSpecification.filterProducts(filters.get("productType"), filters.get("status"), filters.get("search"));;
@@ -172,10 +167,8 @@ public class ProductService implements IProductService {
                     .map(product -> modelMapper.map(product, ProductResponse.class))
                     .toList();
             return new PagingResponse<>(productResponseList, localizationUtils.getLocalizedMessage(MessageKeys.PRODUCT_GET_SUCCESS), 1, (long) productList.size());
-        } else {
-            page = Math.max(Integer.parseInt(filters.getOrDefault("page", "1")), 1);
         }
-        page -= 1;
+        page = Math.max(Integer.parseInt(filters.getOrDefault("page", "-1")), 1) - 1;
         pageable = PageRequest.of(page, limit, Sort.by("createdAt").descending());
         pageable = getPageable(pageable, page, limit, order);
         Specification<Product> productSpecification = ProductSpecification.filterProducts(filters.get("productType"), "1", filters.get("search"));
@@ -190,6 +183,7 @@ public class ProductService implements IProductService {
         Pageable pageable;
         int page = Integer.parseInt(filters.getOrDefault("page", "-1"));
         int limit = Integer.parseInt(filters.getOrDefault("limit", "-1"));
+
         String order = filters.get("order");
         if (page == -1 && limit == -1 ) {
             productList = productRepository.findAll();
@@ -198,16 +192,27 @@ public class ProductService implements IProductService {
                             && product.getStatus() == 1)
                     .map(item -> modelMapper.map(item, ProductResponse.class))
                     .collect(Collectors.toList());
+
             ProductResponse productResponseToRemove = modelMapper.map(product1, ProductResponse.class);
             products.removeIf(product -> product.getId().equals(productResponseToRemove.getId()));
             return new PagingResponse<>(products, localizationUtils.getLocalizedMessage(MessageKeys.PRODUCT_GET_SUCCESS), 1, (long) productList.size());
-        } else {
-            page = Math.max(Integer.parseInt(filters.getOrDefault("page", "-1")), 1);
         }
-        page -= 1;
+        page = Math.max(Integer.parseInt(filters.getOrDefault("page", "-1")), 1) - 1;
         pageable = PageRequest.of(page, limit, Sort.by("createdAt").descending());
         pageable = getPageable(pageable, page, limit, order);
         Specification<Product> specification = ProductSpecification.filterProducts(type.getName(), "1", filters.get("search"));;
+        return getListPagingResponse(pageable, specification);
+    }
+
+    @Override
+    public PagingResponse<List<ProductResponse>> getLikedProducts(Map<Object, String> filters, String token) {
+        int page = Integer.parseInt(filters.getOrDefault("page", "-1"));
+        int limit = Integer.parseInt(filters.getOrDefault("limit", "-1"));
+        page = Math.max(Integer.parseInt(filters.getOrDefault("page", "-1")), 1) - 1;
+        User user = getUser(token);
+        List<Product> productList = user.getLikeProductList();
+        Pageable pageable = PageRequest.of(page, limit, Sort.by("createdAt").descending());
+        Specification<Product> specification = ProductSpecification.getProductLikedByUser(user.getId(), filters.get("search"));
         return getListPagingResponse(pageable, specification);
     }
 
