@@ -66,5 +66,7 @@ public class MessageKeys {
     public static final String PRODUCT_IMAGE_UPDATE_SUCCESS = "product.image.update_success";
     public static final String PRODUCT_LIKED = "product.liked_success";
     public static final String PRODUCT_LIKE_FAILED = "product.like_failed";
+    public static final String PRODUCT_UNLIKED = "product.unlike_success";
+    public static final String PRODUCT_UNLIKED_FAILED = "product.unlike_failed";
 
 }

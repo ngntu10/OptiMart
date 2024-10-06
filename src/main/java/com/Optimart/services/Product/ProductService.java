@@ -64,7 +64,15 @@ public class ProductService implements IProductService {
         Product product = productRepository.findById(UUID.fromString(productId)).get();
         List<Product> productList = user.getLikeProductList();
         productList.add(product);
-        userReaction(user, product, productList);
+
+        user.setLikeProductList(productList);
+        userRepository.save(user);
+
+        List<User> userList = product.getUserLikedList();
+        userList.add(user);
+        product.setUserLikedList(userList);
+        product.setTotalLikes(product.getUserLikedList().size());
+        productRepository.save(product);
 
         return new APIResponse<>(true, localizationUtils.getLocalizedMessage(MessageKeys.PRODUCT_LIKED));
     }
@@ -76,18 +84,7 @@ public class ProductService implements IProductService {
         Optional<User> optionalUser = authRepository.findByEmail(email);
         if(optionalUser.isEmpty())
             throw new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.USER_NOT_EXIST));
-        User user = optionalUser.get();
-        return user;
-    }
-    private void userReaction(User user, Product product, List<Product> productList) {
-        user.setLikeProductList(productList);
-        userRepository.save(user);
-
-        List<User> userList = product.getUserLikedList();
-        userList.add(user);
-        product.setUserLikedList(userList);
-        product.setTotalLikes(product.getUserLikedList().size());
-        productRepository.save(product);
+        return optionalUser.get();
     }
 
     @Override
@@ -98,8 +95,15 @@ public class ProductService implements IProductService {
         Product product = productRepository.findById(UUID.fromString(productId)).get();
         List<Product> productList = user.getLikeProductList();
         productList.remove(product);
-        userReaction(user, product, productList);
-        return null;
+        user.setLikeProductList(productList);
+        userRepository.save(user);
+
+        List<User> userList = product.getUserLikedList();
+        userList.remove(user);
+        product.setUserLikedList(userList);
+        product.setTotalLikes(product.getUserLikedList().size());
+        productRepository.save(product);
+        return new APIResponse<>(true, localizationUtils.getLocalizedMessage(MessageKeys.PRODUCT_UNLIKED));
     }
 
     @Override
