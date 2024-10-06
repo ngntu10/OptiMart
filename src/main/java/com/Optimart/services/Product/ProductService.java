@@ -10,10 +10,7 @@ import com.Optimart.models.City;
 import com.Optimart.models.Product;
 import com.Optimart.models.ProductType;
 import com.Optimart.models.User;
-import com.Optimart.repositories.AuthRepository;
-import com.Optimart.repositories.CityLocaleRepository;
-import com.Optimart.repositories.ProductRepository;
-import com.Optimart.repositories.ProductTypeRepository;
+import com.Optimart.repositories.*;
 import com.Optimart.repositories.Specification.ProductSpecification;
 import com.Optimart.responses.APIResponse;
 import com.Optimart.responses.CloudinaryResponse;
@@ -49,6 +46,7 @@ public class ProductService implements IProductService {
     private final CityLocaleRepository cityLocaleRepository;
     private final ProductRepository productRepository;
     private final ProductTypeRepository productTypeRepository;
+    private final UserRepository userRepository;
     private final AuthRepository authRepository;
     @Override
     public APIResponse<Product> createProduct(CreateProductDTO createProductDTO) {
@@ -61,24 +59,47 @@ public class ProductService implements IProductService {
 
     @Override
     public APIResponse<Boolean> likeProduct(ReactionProductDTO reactionProductDTO, String token) {
+        User user = getUser(token);
+        String productId = reactionProductDTO.getProductId();
+        Product product = productRepository.findById(UUID.fromString(productId)).get();
+        List<Product> productList = user.getLikeProductList();
+        productList.add(product);
+        userReaction(user, product, productList);
+
+        return new APIResponse<>(true, localizationUtils.getLocalizedMessage(MessageKeys.PRODUCT_LIKED));
+    }
+
+
+    private User getUser(String token){
         String jwtToken = token.substring(7);
         String email = jwtTokenUtil.extractEmail(jwtToken);
         Optional<User> optionalUser = authRepository.findByEmail(email);
         if(optionalUser.isEmpty())
             throw new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.USER_NOT_EXIST));
         User user = optionalUser.get();
-
-        String productId = reactionProductDTO.getProductId();
-        List<Product> productList = user.getLikeProductList();
-        Optional<Product> optionalProduct = productRepository.findById(UUID.fromString(productId));
-        Product product = optionalProduct.get();
-        productList.add(product);
+        return user;
+    }
+    private void userReaction(User user, Product product, List<Product> productList) {
+        user.setLikeProductList(productList);
+        userRepository.save(user);
 
         List<User> userList = product.getUserLikedList();
         userList.add(user);
         product.setUserLikedList(userList);
+        product.setTotalLikes(product.getUserLikedList().size());
         productRepository.save(product);
-        return new APIResponse<>(true, localizationUtils.getLocalizedMessage(MessageKeys.PRODUCT_LIKED));
+    }
+
+    @Override
+    public APIResponse<Boolean> unlikeProduct(ReactionProductDTO reactionProductDTO, String token) {
+        User user = getUser(token);
+
+        String productId = reactionProductDTO.getProductId();
+        Product product = productRepository.findById(UUID.fromString(productId)).get();
+        List<Product> productList = user.getLikeProductList();
+        productList.remove(product);
+        userReaction(user, product, productList);
+        return null;
     }
 
     @Override

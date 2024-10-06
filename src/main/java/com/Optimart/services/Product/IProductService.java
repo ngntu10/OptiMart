@@ -15,6 +15,7 @@ import java.util.Map;
 public interface IProductService {
     APIResponse<Product> createProduct(CreateProductDTO createProductDTO);
     APIResponse<Boolean> likeProduct(ReactionProductDTO reactionProductDTO, String token);
+    APIResponse<Boolean> unlikeProduct(ReactionProductDTO reactionProductDTO, String token);
     PagingResponse<List<ProductResponse>> findAllProduct(Map<Object, String> filters);
     PagingResponse<List<ProductResponse>> findAllProductPublic(Map<Object, String> filters);
     PagingResponse<List<ProductResponse>> getListProductRelatedTo(Map<Object, String> filters);

@@ -123,9 +123,8 @@ public class ProductController {
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema(implementation = Product.class)), mediaType = "application/json"))
     @SecuredSwaggerOperation(summary = "User unlike a product")
     @PostMapping(Endpoint.Product.UNLIKE)
-    public ResponseEntity<?> unlikeProduct(@RequestBody ProductDTO productDTO){
-
-        return null;
+    public ResponseEntity<?> unlikeProduct(@RequestBody ReactionProductDTO reactionProductDTO, @RequestHeader("Authorization") String token){
+        return ResponseEntity.ok(productService.unlikeProduct(reactionProductDTO, token));
     }
 
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema(implementation = Product.class)), mediaType = "application/json"))
