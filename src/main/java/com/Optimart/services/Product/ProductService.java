@@ -206,13 +206,21 @@ public class ProductService implements IProductService {
 
     @Override
     public PagingResponse<List<ProductResponse>> getLikedProducts(Map<Object, String> filters, String token) {
-        int page = Integer.parseInt(filters.getOrDefault("page", "-1"));
+        int page = Math.max(Integer.parseInt(filters.getOrDefault("page", "-1")), 1) - 1;
         int limit = Integer.parseInt(filters.getOrDefault("limit", "-1"));
-        page = Math.max(Integer.parseInt(filters.getOrDefault("page", "-1")), 1) - 1;
         User user = getUser(token);
-        List<Product> productList = user.getLikeProductList();
         Pageable pageable = PageRequest.of(page, limit, Sort.by("createdAt").descending());
         Specification<Product> specification = ProductSpecification.getProductLikedByUser(user.getId(), filters.get("search"));
+        return getListPagingResponse(pageable, specification);
+    }
+
+    @Override
+    public PagingResponse<List<ProductResponse>> getViewedProducts(Map<Object, String> filters, String token) {
+        int page = Math.max(Integer.parseInt(filters.getOrDefault("page", "-1")), 1) - 1;
+        int limit = Integer.parseInt(filters.getOrDefault("limit", "-1"));
+        User user = getUser(token);
+        Pageable pageable = PageRequest.of(page, limit, Sort.by("createdAt").descending());
+        Specification<Product> specification = ProductSpecification.getProductViewedByUser(user.getId(), filters.get("search"));
         return getListPagingResponse(pageable, specification);
     }
 

@@ -52,8 +52,20 @@ public class ProductSpecification {
         };
     }
 
+    public static Specification<Product> viewedByUser(UUID userId) {
+        return (root, query, builder) -> {
+            Join<User, Product> viewedProducts = root.join("userViewedList");
+            return builder.equal(viewedProducts.get("id"), userId);
+        };
+    }
+
     public static Specification<Product> getProductLikedByUser(UUID userId, String search){
         return Specification.where(likedByUser(userId))
+                .and(searchByKeyword(search));
+    }
+
+    public static Specification<Product> getProductViewedByUser(UUID userId, String search){
+        return Specification.where(viewedByUser(userId))
                 .and(searchByKeyword(search));
     }
 

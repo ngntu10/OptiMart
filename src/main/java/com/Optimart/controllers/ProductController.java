@@ -137,8 +137,7 @@ public class ProductController {
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema(implementation = Product.class)), mediaType = "application/json"))
     @SecuredSwaggerOperation(summary = "Get list product viewed")
     @GetMapping(Endpoint.Product.VIEWED_ME)
-    public ResponseEntity<?> getProductViewed(@RequestBody ProductSearchDTO productSearchDTO){
-
-        return null;
+    public ResponseEntity<?> getProductViewed(@RequestParam Map<Object, String> filters,  @RequestHeader("Authorization") String token){
+        return ResponseEntity.ok(productService.getViewedProducts(filters, token));
     }
 }
