@@ -3,13 +3,11 @@ package com.Optimart.services.Order;
 import com.Optimart.constants.MessageKeys;
 import com.Optimart.dto.Order.CreateOrderDTO;
 import com.Optimart.dto.OrderItem.OrderItemsDTO;
-import com.Optimart.models.DeliveryType;
-import com.Optimart.models.Order;
-import com.Optimart.models.OrderItem;
-import com.Optimart.models.Paymenttype;
+import com.Optimart.models.*;
 import com.Optimart.repositories.DeliveryTypeRepository;
 import com.Optimart.repositories.OrderRepository;
 import com.Optimart.repositories.PaymentTypeRepository;
+import com.Optimart.repositories.UserRepository;
 import com.Optimart.responses.APIResponse;
 import com.Optimart.utils.LocalizationUtils;
 import lombok.RequiredArgsConstructor;
@@ -27,11 +25,14 @@ public class OrderService implements IOrderService{
     private final OrderRepository orderRepository;
     private final PaymentTypeRepository paymentTypeRepository;
     private final DeliveryTypeRepository deliveryTypeRepository;
+    private final UserRepository userRepository;
     private final LocalizationUtils localizationUtils;
     @Override
     public APIResponse<Order> createOrder(CreateOrderDTO createOrderDTO) {
         Order order = modelMapper.map(createOrderDTO, Order.class);
-        List<OrderItem> orderItems = order.getOrderItemList().stream()
+        User user = userRepository.findById(UUID.fromString(createOrderDTO.getUserId())).get();
+        order.setUser(user);
+        List<OrderItem> orderItems = createOrderDTO.getOrderItems().stream()
                 .map(item -> {
                     OrderItem orderItem = modelMapper.map(item, OrderItem.class);
                     return orderItem;

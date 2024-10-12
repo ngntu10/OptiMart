@@ -17,6 +17,6 @@ public class OrderItemsDTO {
     private Long price;
     private int discount;
     @JsonProperty("product")
-    private String productId;
+    private String id;
     private String slug;
 }

@@ -38,11 +38,11 @@ public class OrderItem extends BaseEntity {
 
     @ManyToOne
     @JsonIgnore
-    @JoinColumn(name = "order_id", nullable = false)
+    @JoinColumn(name = "order_id")
     private Order order;
 
     @ManyToOne
     @JsonIgnore
-    @JoinColumn(name = "product_id", nullable = false)
+    @JoinColumn(name = "product_id")
     private Product product;
 }

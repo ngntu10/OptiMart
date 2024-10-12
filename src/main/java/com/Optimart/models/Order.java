@@ -52,10 +52,10 @@ public class Order extends BaseEntity {
     private int isDelivered = 0;
 
     @Column(name = "paidAt")
-    private Date paidAt;
+    private Date paidAt = new Date();
 
     @Column(name = "deliveryAt")
-    private Date deliveryAt;
+    private Date deliveryAt = new Date();
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
