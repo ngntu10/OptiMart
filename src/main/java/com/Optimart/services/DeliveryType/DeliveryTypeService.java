@@ -46,8 +46,8 @@ public class DeliveryTypeService implements IDeliveryTypeService{
     }
 
     @Override
-    public APIResponse<DeliveryType> editDeliveryType(DeliveryTypeDTO deliveryTypeDTO) {
-        DeliveryType deliveryType = deliveryTypeRepository.findByName(deliveryTypeDTO.getName()).get();
+    public APIResponse<DeliveryType> editDeliveryType(DeliveryTypeDTO deliveryTypeDTO, String deliveryTypeId) {
+        DeliveryType deliveryType = deliveryTypeRepository.findById(UUID.fromString(deliveryTypeId)).get();
         mapper.map(deliveryTypeDTO, deliveryType);
         deliveryTypeRepository.save(deliveryType);
         return new APIResponse<>(deliveryType, localizationUtils.getLocalizedMessage(MessageKeys.DELIVERY_TYPE_UPDATE_SUCCESS));

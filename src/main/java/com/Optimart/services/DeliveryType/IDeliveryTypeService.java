@@ -13,7 +13,7 @@ public interface IDeliveryTypeService {
     PagingResponse<List<DeliveryType>> findAll(DeliveryTypeSearchDTO deliveryTypeSearchDTO);
     APIResponse<DeliveryType> createType(DeliveryTypeDTO createDeliveryTypeDTO);
     DeliveryType getDeliveryType(String id);
-    APIResponse<DeliveryType> editDeliveryType(DeliveryTypeDTO deliveryTypeDTO);
+    APIResponse<DeliveryType> editDeliveryType(DeliveryTypeDTO deliveryTypeDTO, String deliveryTypeId);
     APIResponse<Boolean> deleteDeliveryType(String id);
     APIResponse<Boolean> deleteMutilDeliveryType(DeliveryTypeMutilDeleteDTO deliveryTypeMutilDeleteDTO);
 

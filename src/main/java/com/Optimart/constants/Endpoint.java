@@ -63,6 +63,9 @@ public class Endpoint {
         public static final String UNLIKE = "/unlike";
         public static final String LIKED_ME = "/liked/me";
         public static final String VIEWED_ME = "viewed/me";
+    }
 
+    public static class Order{
+        public static final String BASE = API_PREFIX + "/orders";
     }
 }

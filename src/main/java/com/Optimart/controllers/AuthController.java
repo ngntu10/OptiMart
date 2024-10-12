@@ -82,6 +82,7 @@ public class AuthController {
             String email = jwtTokenUtil.extractEmail(token.substring(7));
             User user = authService.findUserByEmail(email);  // Need to refactor code ****
             UserLoginResponse userLoginResponse = mapper.map(user, UserLoginResponse.class);
+            userLoginResponse.setAddresses(user.getUserShippingAddressList());
             return ResponseEntity.ok().body(userLoginResponse);
         } catch (Exception e) { return ResponseEntity.badRequest().body(null);}
     }

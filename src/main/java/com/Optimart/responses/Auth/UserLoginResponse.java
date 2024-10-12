@@ -1,6 +1,8 @@
 package com.Optimart.responses.Auth;
 
 import com.Optimart.models.Role;
+import com.Optimart.models.ShippingAddress;
+import com.Optimart.models.userShippingAddress;
 import lombok.*;
 
 import java.util.List;
@@ -23,4 +25,5 @@ public class UserLoginResponse {
     private String lastName;
     private String imageUrl;
     private String phoneNumber;
+    private List<userShippingAddress> addresses;
 }

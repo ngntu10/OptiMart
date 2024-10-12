@@ -51,8 +51,8 @@ public class DeliveryTypeController {
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = DeliveryType.class), mediaType = "application/json"))
     @SecuredSwaggerOperation(summary = "Update delivery type by id")
     @PutMapping(Endpoint.DeliveryType.ID)
-    public ResponseEntity<APIResponse<DeliveryType>> editDeliveryType(@RequestBody DeliveryTypeDTO deliveryTypeDTO){
-        return ResponseEntity.ok(deliveryTypeService.editDeliveryType(deliveryTypeDTO));
+    public ResponseEntity<APIResponse<DeliveryType>> editDeliveryType(@RequestBody DeliveryTypeDTO deliveryTypeDTO, @PathVariable String deliveryTypeId){
+        return ResponseEntity.ok(deliveryTypeService.editDeliveryType(deliveryTypeDTO, deliveryTypeId));
     }
 
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = String.class), mediaType = "application/json"))

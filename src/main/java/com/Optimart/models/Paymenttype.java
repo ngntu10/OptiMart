@@ -23,10 +23,9 @@ public class Paymenttype extends BaseEntity {
     @Column(name = "name", nullable = false, unique = true)
     private String name;
 
-    @OneToMany(mappedBy = "paymentMethod")
-    List<Order> orders;
+//    @OneToMany(mappedBy = "paymentMethod")
+//    List<Order> orders;
 
-//    @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = false)
     private String type;
 

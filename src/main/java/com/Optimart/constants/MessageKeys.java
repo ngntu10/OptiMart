@@ -69,4 +69,8 @@ public class MessageKeys {
     public static final String PRODUCT_UNLIKED = "product.unlike_success";
     public static final String PRODUCT_UNLIKED_FAILED = "product.unlike_failed";
 
+    // ORDER
+    public static final String ORDER_CREATE_SUCCESS = "order.create_success";
+    public static final String ORDER_GET_SUCCESS = "order.get_success";
+
 }

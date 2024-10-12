@@ -1,5 +1,6 @@
 package com.Optimart.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -17,23 +18,31 @@ public class OrderItem extends BaseEntity {
     @Column(name = "id")
     private UUID id;
 
+    @Column(name = "name", nullable = false)
+    private String name;
+
     @Column(name = "amount", nullable = false)
     private int amount;
 
     @Column(name = "image", nullable = false)
     private String image;
 
-    @Column(name = "discount", nullable = false)
-    private int discount;
-
     @Column(name = "price", nullable = false)
     private Long price;
 
+    @Column(name = "discount", nullable = false)
+    private int discount;
+
+    @Column(name = "slug", nullable = false)
+    private String slug;
+
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "order_id", nullable = false)
     private Order order;
 
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 }

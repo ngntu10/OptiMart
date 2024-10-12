@@ -42,7 +42,7 @@ public class Order extends BaseEntity {
     private Long totalPrice;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id")
     private User user;
 
     @Column(name = "isPaid", nullable = false)
@@ -51,10 +51,10 @@ public class Order extends BaseEntity {
     @Column(name = "isDelivered", nullable = false)
     private int isDelivered = 0;
 
-    @Column(name = "paidAt", nullable = false)
+    @Column(name = "paidAt")
     private Date paidAt;
 
-    @Column(name = "deliveryAt", nullable = false)
+    @Column(name = "deliveryAt")
     private Date deliveryAt;
 
     @Enumerated(EnumType.STRING)
