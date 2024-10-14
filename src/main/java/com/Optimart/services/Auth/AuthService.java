@@ -15,6 +15,7 @@ import com.Optimart.models.userShippingAddress;
 import com.Optimart.repositories.CityLocaleRepository;
 import com.Optimart.repositories.RoleRepository;
 import com.Optimart.repositories.AuthRepository;
+import com.Optimart.repositories.UserShippingAddressRepository;
 import com.Optimart.responses.Auth.UserLoginResponse;
 import com.Optimart.responses.CloudinaryResponse;
 import com.Optimart.services.CloudinaryService;
@@ -45,6 +46,7 @@ public class AuthService implements IAuthService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final CityLocaleRepository cityLocaleRepository;
+    private final UserShippingAddressRepository userShippingAddressRepository;
     private final JwtTokenUtil jwtTokenUtil;
     private final CloudinaryService cloudinaryService;
     private final ModelMapper mapper;
@@ -136,14 +138,20 @@ public class AuthService implements IAuthService {
         mapper.map(changeUserInfo, user);
         List<userShippingAddress> userShippingAddresses = changeUserInfo.getAddresses().stream().map(
                 item -> {
-                    City city = cityLocaleRepository.findById(Long.parseLong(item.getCity())).get();
+                    City city;
+                    if (item.getCityId() != null) {
+                        city = cityLocaleRepository.findById(Long.parseLong(item.getCityId()))
+                                .orElseThrow(() -> new DataNotFoundException("City not found"));
+                    } else city = item.getCity();
                     userShippingAddress userShippingAddress = mapper.map(item, userShippingAddress.class);
                     userShippingAddress.setUser(user);
                     userShippingAddress.setCity(city);
                     return userShippingAddress;
                 }
         ).collect(Collectors.toList());
-        user.setUserShippingAddressList(userShippingAddresses);
+        userShippingAddressRepository.saveAll(userShippingAddresses);
+        List<userShippingAddress> updatedAddresses = user.getUserShippingAddressList();
+        if (updatedAddresses.size() == 1) updatedAddresses.get(0).setIsDefault(1);
         authRepository.save(user);
         UserLoginResponse userLoginResponse = mapper.map(user, UserLoginResponse.class);
         return userLoginResponse;

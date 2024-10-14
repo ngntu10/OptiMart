@@ -22,10 +22,6 @@ public class userShippingAddress extends BaseEntity {
     @Column(name = "address")
     private String address;
 
-    @ManyToOne
-    @JoinColumn(name = "city_id", nullable = false)
-    private City city;
-
     @Column(name = "phoneNumber")
     private String phoneNumber;
 
@@ -45,4 +41,8 @@ public class userShippingAddress extends BaseEntity {
     @JsonIgnore
     @JoinColumn(name = "user_id")
     private User user;
+
+    @ManyToOne
+    @JoinColumn(name = "city_id")
+    private City city;
 }
