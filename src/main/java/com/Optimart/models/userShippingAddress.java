@@ -22,6 +22,10 @@ public class userShippingAddress extends BaseEntity {
     @Column(name = "address")
     private String address;
 
+    @ManyToOne
+    @JoinColumn(name = "city_id", nullable = false)
+    private City city;
+
     @Column(name = "phoneNumber")
     private String phoneNumber;
 

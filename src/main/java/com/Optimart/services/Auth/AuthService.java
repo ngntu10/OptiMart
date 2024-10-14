@@ -8,9 +8,11 @@ import com.Optimart.dto.Auth.UserRegisterDTO;
 import com.Optimart.dto.ShippingAddress.ShippingAddressDTO;
 import com.Optimart.exceptions.DataNotFoundException;
 import com.Optimart.exceptions.InvalidInput;
+import com.Optimart.models.City;
 import com.Optimart.models.Role;
 import com.Optimart.models.User;
 import com.Optimart.models.userShippingAddress;
+import com.Optimart.repositories.CityLocaleRepository;
 import com.Optimart.repositories.RoleRepository;
 import com.Optimart.repositories.AuthRepository;
 import com.Optimart.responses.Auth.UserLoginResponse;
@@ -42,6 +44,7 @@ public class AuthService implements IAuthService {
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
+    private final CityLocaleRepository cityLocaleRepository;
     private final JwtTokenUtil jwtTokenUtil;
     private final CloudinaryService cloudinaryService;
     private final ModelMapper mapper;
@@ -133,10 +136,13 @@ public class AuthService implements IAuthService {
         mapper.map(changeUserInfo, user);
         List<userShippingAddress> userShippingAddresses = changeUserInfo.getAddresses().stream().map(
                 item -> {
-                    userShippingAddress userShippingAddress = mapper.map(item, com.Optimart.models.userShippingAddress.class);
+                    City city = cityLocaleRepository.findById(Long.parseLong(item.getCity())).get();
+                    userShippingAddress userShippingAddress = mapper.map(item, userShippingAddress.class);
+                    userShippingAddress.setUser(user);
+                    userShippingAddress.setCity(city);
                     return userShippingAddress;
                 }
-        ).toList();
+        ).collect(Collectors.toList());
         user.setUserShippingAddressList(userShippingAddresses);
         authRepository.save(user);
         UserLoginResponse userLoginResponse = mapper.map(user, UserLoginResponse.class);

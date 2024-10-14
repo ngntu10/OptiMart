@@ -3,6 +3,7 @@ package com.Optimart.responses.Product;
 import com.Optimart.models.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -28,6 +29,7 @@ public class ProductResponse {
     private int totalLikes;
     private int status;
     private int views;
+    private LocalDateTime createdAt;
 //    private List<String> userList;
     private Set<UUID> userLikedList;
     private Set<UUID> userViewedList;
