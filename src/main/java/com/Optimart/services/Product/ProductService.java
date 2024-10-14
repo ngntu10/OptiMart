@@ -40,10 +40,10 @@ public class ProductService implements IProductService {
     private final CloudinaryService cloudinaryService;
     private final ModelMapper modelMapper;
     private final JwtTokenUtil jwtTokenUtil;
+    private final UserRepository userRepository;
     private final CityLocaleRepository cityLocaleRepository;
     private final ProductRepository productRepository;
     private final ProductTypeRepository productTypeRepository;
-    private final UserRepository userRepository;
     private final AuthRepository authRepository;
     @Override
     public APIResponse<Product> createProduct(CreateProductDTO createProductDTO) {

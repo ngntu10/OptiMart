@@ -25,8 +25,14 @@ public class userShippingAddress extends BaseEntity {
     @Column(name = "phoneNumber")
     private String phoneNumber;
 
-    @Column(name = "fullName")
-    private String fullName;
+    @Column(name = "middleName")
+    private String middleName;
+
+    @Column(name = "firstName")
+    private String firstName;
+
+    @Column(name = "lastName")
+    private String lastName;
 
     @Column(name = "isDefault")
     private int isDefault =0;

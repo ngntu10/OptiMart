@@ -157,4 +157,7 @@ public class User extends BaseEntity implements UserDetails {
 
     @OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST,CascadeType.REMOVE})
     private List<RefreshToken> refreshTokenList;
+
+    @OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST,CascadeType.REMOVE})
+    private List<Order> orderList;
 }

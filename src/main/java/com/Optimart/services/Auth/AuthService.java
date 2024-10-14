@@ -5,10 +5,12 @@ import com.Optimart.constants.Permissions;
 import com.Optimart.dto.Auth.ChangePassword;
 import com.Optimart.dto.Auth.ChangeUserInfo;
 import com.Optimart.dto.Auth.UserRegisterDTO;
+import com.Optimart.dto.ShippingAddress.ShippingAddressDTO;
 import com.Optimart.exceptions.DataNotFoundException;
 import com.Optimart.exceptions.InvalidInput;
 import com.Optimart.models.Role;
 import com.Optimart.models.User;
+import com.Optimart.models.userShippingAddress;
 import com.Optimart.repositories.RoleRepository;
 import com.Optimart.repositories.AuthRepository;
 import com.Optimart.responses.Auth.UserLoginResponse;
@@ -30,6 +32,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -128,6 +131,13 @@ public class AuthService implements IAuthService {
         User user = authRepository.findByEmail(changeUserInfo.getEmail())
                 .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.USER_NOT_EXIST)));
         mapper.map(changeUserInfo, user);
+        List<userShippingAddress> userShippingAddresses = changeUserInfo.getAddresses().stream().map(
+                item -> {
+                    userShippingAddress userShippingAddress = mapper.map(item, com.Optimart.models.userShippingAddress.class);
+                    return userShippingAddress;
+                }
+        ).toList();
+        user.setUserShippingAddressList(userShippingAddresses);
         authRepository.save(user);
         UserLoginResponse userLoginResponse = mapper.map(user, UserLoginResponse.class);
         return userLoginResponse;

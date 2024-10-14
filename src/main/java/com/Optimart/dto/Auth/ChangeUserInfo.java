@@ -1,6 +1,9 @@
 package com.Optimart.dto.Auth;
 
+import com.Optimart.dto.ShippingAddress.ShippingAddressDTO;
 import lombok.*;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -14,4 +17,5 @@ public class ChangeUserInfo {
     private String middleName;
     private String address;
     private String phoneNumber;
+    private List<ShippingAddressDTO> addresses;
 }

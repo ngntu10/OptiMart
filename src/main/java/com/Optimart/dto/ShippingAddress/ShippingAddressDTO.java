@@ -10,8 +10,11 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ShippingAddressDTO {
-    private String fullName;
+    private String firstName;
+    private String lastName;
+    private String middleName;
     private String address;
     private String city;
     private String phoneNumber;
+    private boolean isDefault;
 }
