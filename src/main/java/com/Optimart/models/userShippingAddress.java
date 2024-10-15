@@ -35,7 +35,7 @@ public class userShippingAddress extends BaseEntity {
     private String lastName;
 
     @Column(name = "isDefault")
-    private int isDefault =0;
+    private Boolean isDefault = false;
 
     @ManyToOne
     @JsonIgnore

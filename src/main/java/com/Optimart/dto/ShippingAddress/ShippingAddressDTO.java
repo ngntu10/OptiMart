@@ -16,12 +16,13 @@ import java.util.Map;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ShippingAddressDTO {
+    private String id;
     private String address;
     private String firstName;
     private String lastName;
     private String middleName;
     private String phoneNumber;
-    private boolean isDefault;
+    private Boolean isDefault;
     @JsonIgnore
     private City city;
 
@@ -35,7 +36,7 @@ public class ShippingAddressDTO {
             @JsonProperty("lastName") String lastName,
             @JsonProperty("middleName") String middleName,
             @JsonProperty("phoneNumber") String phoneNumber,
-            @JsonProperty("isDefault") boolean isDefault) {
+            @JsonProperty("isDefault") Boolean isDefault) {
         this.address = address;
         this.firstName = firstName;
         this.lastName = lastName;

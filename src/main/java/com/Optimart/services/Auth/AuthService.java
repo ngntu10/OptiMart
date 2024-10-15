@@ -144,14 +144,15 @@ public class AuthService implements IAuthService {
                                 .orElseThrow(() -> new DataNotFoundException("City not found"));
                     } else city = item.getCity();
                     userShippingAddress userShippingAddress = mapper.map(item, userShippingAddress.class);
+                    userShippingAddress.setIsDefault(item.getIsDefault());
                     userShippingAddress.setUser(user);
                     userShippingAddress.setCity(city);
+                    userShippingAddressRepository.save(userShippingAddress);
                     return userShippingAddress;
                 }
         ).collect(Collectors.toList());
-        userShippingAddressRepository.saveAll(userShippingAddresses);
-        List<userShippingAddress> updatedAddresses = user.getUserShippingAddressList();
-        if (updatedAddresses.size() == 1) updatedAddresses.get(0).setIsDefault(1);
+        if (userShippingAddresses.size() == 1) userShippingAddresses.get(0).setIsDefault(true);
+        user.setUserShippingAddressList(userShippingAddresses);
         authRepository.save(user);
         UserLoginResponse userLoginResponse = mapper.map(user, UserLoginResponse.class);
         return userLoginResponse;
