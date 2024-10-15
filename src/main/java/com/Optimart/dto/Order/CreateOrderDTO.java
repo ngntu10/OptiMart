@@ -2,6 +2,7 @@ package com.Optimart.dto.Order;
 
 import com.Optimart.dto.OrderItem.OrderItemsDTO;
 import com.Optimart.dto.ShippingAddress.ShippingAddressDTO;
+import com.Optimart.models.City;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,7 +19,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class CreateOrderDTO {
   private String address;
-  private String city;
+  private City city;
   private String deliveryMethod;
   private String fullName;
   private Long itemsPrice;

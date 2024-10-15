@@ -30,6 +30,4 @@ public class Paymenttype extends BaseEntity {
     private String type;
 
 
-
-
 }

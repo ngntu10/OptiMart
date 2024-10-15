@@ -1,6 +1,7 @@
 package com.Optimart.models;
 
 import com.Optimart.enums.OrderStatus;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -21,7 +22,7 @@ public class Order extends BaseEntity {
     @Column(name = "id")
     private UUID id;
 
-    @OneToMany(mappedBy = "order")
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderItem> orderItemList;
 
     @ManyToOne
@@ -32,7 +33,7 @@ public class Order extends BaseEntity {
     @JoinColumn(name = "deliveryType_id", nullable = false)
     private DeliveryType deliveryMethod;
 
-    @Column(name = "itemsPrice" , nullable = false)
+    @Column(name = "itemsPrice")
     private Long itemsPrice;
 
     @Column(name = "shippingPrice", nullable = false)
@@ -41,6 +42,7 @@ public class Order extends BaseEntity {
     @Column(name = "totalPrice", nullable = false)
     private Long totalPrice;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
@@ -57,9 +59,8 @@ public class Order extends BaseEntity {
     @Column(name = "deliveryAt")
     private Date deliveryAt = new Date();
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
-    private OrderStatus orderStatus = OrderStatus.WAIT_DELIVERY;
+    @Column(name = "status")
+    private int orderStatus = 0;
 
     @ManyToOne
     @JoinColumn(name = "shippingAddress_id")

@@ -1,5 +1,6 @@
 package com.Optimart.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -32,6 +33,7 @@ public class ShippingAddress extends BaseEntity {
     @JoinColumn(name = "city_id", nullable = false)
     private City city;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "shippingAddress")
     private List<Order> orderList;
 }

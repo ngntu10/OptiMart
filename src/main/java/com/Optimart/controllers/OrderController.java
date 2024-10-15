@@ -5,6 +5,7 @@ import com.Optimart.constants.Endpoint;
 import com.Optimart.dto.Order.CreateOrderDTO;
 import com.Optimart.models.Order;
 import com.Optimart.responses.APIResponse;
+import com.Optimart.responses.Order.OrderResponse;
 import com.Optimart.responses.User.UserResponse;
 import com.Optimart.services.Order.OrderService;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -29,7 +30,7 @@ public class OrderController {
     @ApiResponse(responseCode = "201", description = "CREATED", content = @Content(schema = @Schema(implementation = Object.class), mediaType = "application/json"))
     @SecuredSwaggerOperation(summary = "Create a new order")
     @PostMapping
-    public ResponseEntity<APIResponse<Order>> createOrder(@RequestBody CreateOrderDTO createOrderDTO){
+    public ResponseEntity<APIResponse<OrderResponse>> createOrder(@RequestBody CreateOrderDTO createOrderDTO){
         return ResponseEntity.ok(orderService.createOrder(createOrderDTO));
     }
 
