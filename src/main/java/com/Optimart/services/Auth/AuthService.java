@@ -136,23 +136,26 @@ public class AuthService implements IAuthService {
         User user = authRepository.findByEmail(changeUserInfo.getEmail())
                 .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.USER_NOT_EXIST)));
         mapper.map(changeUserInfo, user);
-        List<userShippingAddress> userShippingAddresses = changeUserInfo.getAddresses().stream().map(
-                item -> {
-                    City city;
-                    if (item.getCityId() != null) {
-                        city = cityLocaleRepository.findById(Long.parseLong(item.getCityId()))
-                                .orElseThrow(() -> new DataNotFoundException("City not found"));
-                    } else city = item.getCity();
-                    userShippingAddress userShippingAddress = mapper.map(item, userShippingAddress.class);
-                    userShippingAddress.setIsDefault(item.getIsDefault());
-                    userShippingAddress.setUser(user);
-                    userShippingAddress.setCity(city);
-                    userShippingAddressRepository.save(userShippingAddress);
-                    return userShippingAddress;
-                }
-        ).collect(Collectors.toList());
-        if (userShippingAddresses.size() == 1) userShippingAddresses.get(0).setIsDefault(true);
-        user.setUserShippingAddressList(userShippingAddresses);
+        if(changeUserInfo.getAddresses() != null){
+
+            List<userShippingAddress> userShippingAddresses = changeUserInfo.getAddresses().stream().map(
+                    item -> {
+                        City city;
+                        if (item.getCityId() != null) {
+                            city = cityLocaleRepository.findById(Long.parseLong(item.getCityId()))
+                                    .orElseThrow(() -> new DataNotFoundException("City not found"));
+                        } else city = item.getCity();
+                        userShippingAddress userShippingAddress = mapper.map(item, userShippingAddress.class);
+                        userShippingAddress.setIsDefault(item.getIsDefault());
+                        userShippingAddress.setUser(user);
+                        userShippingAddress.setCity(city);
+                        userShippingAddressRepository.save(userShippingAddress);
+                        return userShippingAddress;
+                    }
+            ).collect(Collectors.toList());
+            if (userShippingAddresses.size() == 1) userShippingAddresses.get(0).setIsDefault(true);
+            user.setUserShippingAddressList(userShippingAddresses);
+        }
         authRepository.save(user);
         UserLoginResponse userLoginResponse = mapper.map(user, UserLoginResponse.class);
         return userLoginResponse;

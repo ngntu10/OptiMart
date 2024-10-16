@@ -22,7 +22,7 @@ public class Order extends BaseEntity {
     @Column(name = "id")
     private UUID id;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "order",fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<OrderItem> orderItemList;
 
     @ManyToOne

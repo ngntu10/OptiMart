@@ -68,5 +68,7 @@ public class Endpoint {
     public static class Order{
         public static final String BASE = API_PREFIX + "/orders";
         public static final String ME = "/me";
+        public static final String CANCEL = "/me/cancel/{orderId}";
+        public static final String ID = "/{orderId}";
     }
 }

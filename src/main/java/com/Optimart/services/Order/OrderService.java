@@ -38,6 +38,7 @@ public class OrderService implements IOrderService{
     private final AuthRepository authRepository;
     private final ShippingAddressRepository shippingAddressRepository;
     private final OrderItemRepository orderItemRepository;
+    private final ProductRepository productRepository;
     private final JwtTokenUtil jwtTokenUtil;
     private final LocalizationUtils localizationUtils;
     @Override
@@ -60,9 +61,10 @@ public class OrderService implements IOrderService{
                 .map(item -> {
                     OrderItem orderItem = modelMapper.map(item, OrderItem.class);
                     orderItem.setOrder(finalOrder);
+                    UUID productId = productRepository.findBySlug(orderItem.getSlug()).get().getId();
+                    orderItem.setId(productId);
                     return orderItem;
                 }).collect(Collectors.toList());
-        orderItemRepository.saveAll(orderItems);
         order.setOrderItemList(orderItems);
         orderRepository.save(order);
         List<Order> orders = user.getOrderList();
@@ -116,6 +118,14 @@ public class OrderService implements IOrderService{
         Page<Order> orderPage = orderRepository.findAll(pageable);
 //        Specification<Product> specification = ProductSpecification.filterProducts(filters.get("productType"), filters.get("status"), filters.get("search"));
         return new PagingResponse<>(orderPage.getContent(), localizationUtils.getLocalizedMessage(MessageKeys.ORDER_LIST_GET_SUCCESS), orderPage.getTotalPages(), orderPage.getTotalElements());
+    }
+
+    @Override
+    public APIResponse<OrderResponse> cancelOrder(String id) {
+        Order order = orderRepository.findById(UUID.fromString(id)).get();
+        order.setOrderStatus(3);
+        orderRepository.save(order);
+        return new APIResponse<>(new OrderResponse(order.getId()), localizationUtils.getLocalizedMessage(MessageKeys.ORDER_CANCEL_SUCCESS));
     }
 
     private User getUser(String token){

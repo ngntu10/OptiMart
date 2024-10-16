@@ -40,4 +40,11 @@ public class OrderController {
     public ResponseEntity<?> getAllOrderUser(@RequestParam Map<Object, String> filters, @RequestHeader("Authorization") String token){
         return ResponseEntity.ok(orderService.getAllOrderByMe(filters, token));
     }
+
+    @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = Object.class), mediaType = "application/json"))
+    @SecuredSwaggerOperation(summary = "Get all order by user")
+    @PostMapping(Endpoint.Order.CANCEL)
+    public ResponseEntity<?> cancelOrder(@PathVariable String orderId){
+        return ResponseEntity.ok(orderService.cancelOrder(orderId));
+    }
 }
