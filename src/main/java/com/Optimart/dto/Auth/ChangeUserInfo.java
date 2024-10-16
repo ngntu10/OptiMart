@@ -17,5 +17,6 @@ public class ChangeUserInfo {
     private String middleName;
     private String address;
     private String phoneNumber;
+    private String city;
     private List<ShippingAddressDTO> addresses;
 }

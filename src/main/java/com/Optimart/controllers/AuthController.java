@@ -67,6 +67,7 @@ public class AuthController {
             User user = authService.findUserByEmail(userLoginDTO.getMail());
             String refresh_token = refreshToken.getRefreshtoken();
             UserLoginResponse userLoginResponse = mapper.map(user, UserLoginResponse.class);
+            userLoginResponse.setCity(user.getCity());
             return ResponseEntity.ok(LoginResponse.success(localizationUtils.getLocalizedMessage(MessageKeys.LOGIN_SUCCESSFULLY),
                     access_token, refresh_token, userLoginResponse));
         } catch (Exception e) {
@@ -77,7 +78,7 @@ public class AuthController {
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = UserLoginResponse.class), mediaType = "application/json"))
     @SecuredSwaggerOperation(summary = "Get my info user")
     @GetMapping (Endpoint.Auth.ME)
-    public ResponseEntity<UserLoginResponse> getInfoCurrentUser(@Parameter @RequestHeader("Authorization") String token) {
+    public ResponseEntity<UserLoginResponse> getInfoCurrentUser(@RequestHeader("Authorization") String token) {
         try {
             String email = jwtTokenUtil.extractEmail(token.substring(7));
             User user = authService.findUserByEmail(email);  // Need to refactor code ****

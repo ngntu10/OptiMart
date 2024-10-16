@@ -14,4 +14,5 @@ public interface IOrderService {
     PagingResponse<List<Order>> getAllOrderByMe(Map<Object, String> filters, String token);
     PagingResponse<List<Order>> getAllOrder(Map<Object, String> filters);
     APIResponse<OrderResponse> cancelOrder(String id);
+    APIResponse<Order> getOneOrderById(String id);
 }

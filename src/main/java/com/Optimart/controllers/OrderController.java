@@ -6,6 +6,7 @@ import com.Optimart.dto.Order.CreateOrderDTO;
 import com.Optimart.models.Order;
 import com.Optimart.responses.APIResponse;
 import com.Optimart.responses.Order.OrderResponse;
+import com.Optimart.responses.PagingResponse;
 import com.Optimart.responses.User.UserResponse;
 import com.Optimart.services.Order.OrderService;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -17,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RequiredArgsConstructor
@@ -34,17 +36,38 @@ public class OrderController {
         return ResponseEntity.ok(orderService.createOrder(createOrderDTO));
     }
 
-    @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = Object.class), mediaType = "application/json"))
-    @SecuredSwaggerOperation(summary = "Get all order by user")
-    @GetMapping(Endpoint.Order.ME)
-    public ResponseEntity<?> getAllOrderUser(@RequestParam Map<Object, String> filters, @RequestHeader("Authorization") String token){
-        return ResponseEntity.ok(orderService.getAllOrderByMe(filters, token));
+    @ApiResponse(responseCode = "201", description = "CREATED", content = @Content(schema = @Schema(implementation = Object.class), mediaType = "application/json"))
+    @SecuredSwaggerOperation(summary = "Create a new order")
+    @GetMapping
+    public ResponseEntity<?> getAllOrders(@RequestParam Map<Object, String> filters){
+        return ResponseEntity.ok(orderService.getAllOrder(filters));
     }
 
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = Object.class), mediaType = "application/json"))
     @SecuredSwaggerOperation(summary = "Get all order by user")
+    @GetMapping(Endpoint.Order.ME)
+    public ResponseEntity<PagingResponse<List<Order>>> getAllOrderUser(@RequestParam Map<Object, String> filters, @RequestHeader("Authorization") String token){
+        return ResponseEntity.ok(orderService.getAllOrderByMe(filters, token));
+    }
+
+    @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = Object.class), mediaType = "application/json"))
+    @SecuredSwaggerOperation(summary = "Cancel an order")
     @PostMapping(Endpoint.Order.CANCEL)
-    public ResponseEntity<?> cancelOrder(@PathVariable String orderId){
+    public ResponseEntity<APIResponse<OrderResponse>> cancelOrder(@PathVariable String orderId){
         return ResponseEntity.ok(orderService.cancelOrder(orderId));
+    }
+
+    @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = Object.class), mediaType = "application/json"))
+    @SecuredSwaggerOperation(summary = "Get an existing user's order by id")
+    @GetMapping(Endpoint.Order.ID_ME)
+    public ResponseEntity<APIResponse<Order>> getOrderMeById(@PathVariable String orderId){
+        return ResponseEntity.ok(orderService.getOneOrderById(orderId));
+    }
+
+    @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = Object.class), mediaType = "application/json"))
+    @SecuredSwaggerOperation(summary = "Get an existing order by id")
+    @GetMapping(Endpoint.Order.ID)
+    public ResponseEntity<APIResponse<Order>> getOrderById(@PathVariable String orderId){
+        return ResponseEntity.ok(orderService.getOneOrderById(orderId));
     }
 }

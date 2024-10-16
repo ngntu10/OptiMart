@@ -61,8 +61,9 @@ public class OrderService implements IOrderService{
                 .map(item -> {
                     OrderItem orderItem = modelMapper.map(item, OrderItem.class);
                     orderItem.setOrder(finalOrder);
-                    UUID productId = productRepository.findBySlug(orderItem.getSlug()).get().getId();
-                    orderItem.setId(productId);
+                    Product productId = productRepository.findBySlug(orderItem.getSlug()).get();
+                    orderItem.setId(productId.getId());
+//                    orderItem.setCountInStock(productId.getCountInStock());
                     return orderItem;
                 }).collect(Collectors.toList());
         order.setOrderItemList(orderItems);
@@ -73,6 +74,8 @@ public class OrderService implements IOrderService{
         userRepository.save(user);
         return new APIResponse<>(new OrderResponse(order.getId()), localizationUtils.getLocalizedMessage(MessageKeys.ORDER_CREATE_SUCCESS));
     }
+
+
 
     @Override
     public PagingResponse<List<Order>> getAllOrderByMe(Map<Object, String> filters, String token) {
@@ -87,7 +90,7 @@ public class OrderService implements IOrderService{
         page = Math.max(Integer.parseInt(filters.getOrDefault("page", "-1")), 1) - 1;
         Pageable pageable = PageRequest.of(page, limit, Sort.by("createdAt").descending());
         pageable = getPageable(pageable, page, limit, order);
-        Specification<Order> specification = OrderSpecification.filterOrderByUser(filters.get("status"), user.getId());
+        Specification<Order> specification = OrderSpecification.filterOrderByUser(filters.get("status"), user.getId(), filters.get("cityId"));
         Page<Order> orderPage = orderRepository.findAll(specification, pageable);
         return new PagingResponse<>(orderPage.getContent(), localizationUtils.getLocalizedMessage(MessageKeys.ORDER_LIST_GET_SUCCESS), orderPage.getTotalPages(), orderPage.getTotalElements());
     }
@@ -107,6 +110,7 @@ public class OrderService implements IOrderService{
     public PagingResponse<List<Order>> getAllOrder(Map<Object, String> filters ) {
         int page = Integer.parseInt(filters.getOrDefault("page", "-1"));
         int limit = Integer.parseInt(filters.getOrDefault("limit", "-1"));
+        String search = filters.getOrDefault("search", "");
         String order = filters.get("order");
         if (page == -1 && limit == -1 ) {
             List<Order> orderList = orderRepository.findAll();
@@ -115,8 +119,8 @@ public class OrderService implements IOrderService{
         page = Math.max(Integer.parseInt(filters.getOrDefault("page", "-1")), 1) - 1;
         Pageable pageable = PageRequest.of(page, limit, Sort.by("createdAt").descending());
         pageable = getPageable(pageable, page, limit, order);
-        Page<Order> orderPage = orderRepository.findAll(pageable);
-//        Specification<Product> specification = ProductSpecification.filterProducts(filters.get("productType"), filters.get("status"), filters.get("search"));
+        Specification<Order> specification = OrderSpecification.filterOrder(filters.get("status"), filters.get("cityId"), search);
+        Page<Order> orderPage = orderRepository.findAll(specification, pageable);
         return new PagingResponse<>(orderPage.getContent(), localizationUtils.getLocalizedMessage(MessageKeys.ORDER_LIST_GET_SUCCESS), orderPage.getTotalPages(), orderPage.getTotalElements());
     }
 
@@ -126,6 +130,12 @@ public class OrderService implements IOrderService{
         order.setOrderStatus(3);
         orderRepository.save(order);
         return new APIResponse<>(new OrderResponse(order.getId()), localizationUtils.getLocalizedMessage(MessageKeys.ORDER_CANCEL_SUCCESS));
+    }
+
+    @Override
+    public APIResponse<Order> getOneOrderById(String id) {
+        Order order = orderRepository.findById(UUID.fromString(id)).get();
+        return new APIResponse<>(order, MessageKeys.ORDER_GET_SUCCESS);
     }
 
     private User getUser(String token){

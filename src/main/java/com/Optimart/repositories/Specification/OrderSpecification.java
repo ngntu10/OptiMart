@@ -1,6 +1,10 @@
 package com.Optimart.repositories.Specification;
 
+import com.Optimart.models.City;
 import com.Optimart.models.Order;
+import com.Optimart.models.ShippingAddress;
+import com.Optimart.models.User;
+import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -14,7 +18,7 @@ public class OrderSpecification {
             if (status == null || status.isEmpty()) {
                 return criteriaBuilder.conjunction();
             }
-            List<String> statusList = Arrays.asList(status.split("-"));
+            List<String> statusList = Arrays.asList(status.split("\\|"));
             return root.get("orderStatus").in(statusList);
         };
     }
@@ -28,13 +32,61 @@ public class OrderSpecification {
         };
     }
 
+    public static Specification<Order> hasCityId(String cityId) {
+        return (root, query, criteriaBuilder) -> {
+            if (cityId == null || cityId.isEmpty()) {
+                return criteriaBuilder.conjunction();
+            }
+            List<String> cityIdListArray = Arrays.asList(cityId.split("\\|"));
+            Join<Order, ShippingAddress> shippingAddressJoin = root.join("shippingAddress");
+            Join<ShippingAddress, City> cityJoin = shippingAddressJoin.join("city");
+            return cityJoin.get("id").in(cityIdListArray);
+        };
+    }
 
-    public static Specification<Order> filterOrderByUser(String statuses, UUID userId) {
+
+    public static Specification<Order> filterOrderByUser(String statuses, UUID userId, String cityId) {
+        if (statuses == null && userId == null && cityId == null) {
+            return (root, query, criteriaBuilder) -> criteriaBuilder.conjunction();
+        }
         return (root, query, criteriaBuilder) -> {
             root.fetch("orderItemList", JoinType.LEFT);
             query.distinct(true);
             return Specification.where(byStatus(statuses))
                     .and(hasUserId(userId))
+                    .and(hasCityId(cityId))
+                    .toPredicate(root, query, criteriaBuilder);
+        };
+    }
+
+
+    public static Specification<Order> searchByKeyword(String search) {
+        return (root, query, criteriaBuilder) -> {
+            if (search == null || search.isEmpty()) {
+                return criteriaBuilder.conjunction();
+            }
+
+            Join<Order, ShippingAddress> shippingAddressJoin = root.join("shippingAddress");
+            return criteriaBuilder.or(
+                    criteriaBuilder.like(
+                            criteriaBuilder.lower(shippingAddressJoin.get("fullName")),
+                            "%" + search.toLowerCase() + "%"
+                    )
+            );
+        };
+    }
+
+
+    public static Specification<Order> filterOrder(String statuses, String cityId, String search) {
+        if (statuses == null && cityId == null && search == null) {
+            return (root, query, criteriaBuilder) -> criteriaBuilder.conjunction();
+        }
+        return (root, query, criteriaBuilder) -> {
+            root.fetch("orderItemList", JoinType.LEFT);
+            query.distinct(true);
+            return Specification.where(byStatus(statuses))
+                    .and(hasCityId(cityId))
+                    .and(searchByKeyword(search))
                     .toPredicate(root, query, criteriaBuilder);
         };
     }

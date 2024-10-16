@@ -36,6 +36,7 @@ public class OrderItem extends BaseEntity {
     @Column(name = "slug", nullable = false)
     private String slug;
 
+
     @ManyToOne
     @JsonIgnore
     @JoinColumn(name = "order_id")
