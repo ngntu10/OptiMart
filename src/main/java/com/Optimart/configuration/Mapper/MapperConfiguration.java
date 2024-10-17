@@ -25,6 +25,7 @@ public class MapperConfiguration {
         modelMapper.typeMap(Product.class, ProductResponse.class).addMappings(mapper -> {
             mapper.skip(ProductResponse::setUserLikedList);
             mapper.skip(ProductResponse::setUserViewedList);
+            mapper.skip(ProductResponse::setReviewList);
         });
         return modelMapper;
     }

@@ -72,4 +72,11 @@ public class Endpoint {
         public static final String ID_ME = "/me/{orderId}";
         public static final String ID = "/{orderId}";
     }
+
+    public static class Reivew{
+        public static final String BASE = API_PREFIX + "/reviews";
+        public static final String ID = "/{reviewId}";
+        public static final String DELETE_MANY = "/delete-many";
+        public static final String ID_ME = "/me/{reviewId}";
+    }
 }

@@ -3,16 +3,16 @@ package com.Optimart.services.Product;
 import com.Optimart.constants.MessageKeys;
 import com.Optimart.dto.Product.*;
 import com.Optimart.exceptions.DataNotFoundException;
-import com.Optimart.models.City;
-import com.Optimart.models.Product;
-import com.Optimart.models.ProductType;
-import com.Optimart.models.User;
+import com.Optimart.models.*;
 import com.Optimart.repositories.*;
 import com.Optimart.repositories.Specification.ProductSpecification;
 import com.Optimart.responses.APIResponse;
 import com.Optimart.responses.CloudinaryResponse;
 import com.Optimart.responses.PagingResponse;
+import com.Optimart.responses.Product.BaseProductResponse;
 import com.Optimart.responses.Product.ProductResponse;
+import com.Optimart.responses.Review.ReviewResponse;
+import com.Optimart.responses.User.BaseUserResponse;
 import com.Optimart.services.CloudinaryService;
 import com.Optimart.utils.FileUploadUtil;
 import com.Optimart.utils.JwtTokenUtil;
@@ -257,8 +257,17 @@ public class ProductService implements IProductService {
     }
 
     @Override
-    public Product getOneProductBySlug(String slug) {
-        return productRepository.findBySlug(slug).get();
+    public ProductResponse getOneProductBySlug(String slug) {
+        Product product = productRepository.findBySlug(slug).get();
+        List<ReviewResponse> responses = product.getReviewList().stream().map(
+                item -> {
+                    ReviewResponse reviewResponse = ConvertToResponse(item);
+                    return reviewResponse;
+                }
+        ).toList();
+        ProductResponse productResponse = modelMapper.map(product, ProductResponse.class);
+        productResponse.setReviewList(responses);
+        return productResponse;
     }
 
     @Override
@@ -266,6 +275,14 @@ public class ProductService implements IProductService {
         Product product = productRepository.findById(UUID.fromString(productId)).get();
 //        if(isViewed)
         return product;
+    }
+
+    private ReviewResponse ConvertToResponse(Review review){
+        BaseUserResponse baseUserResponse = modelMapper.map(review.getUser(), BaseUserResponse.class);
+        BaseProductResponse baseProductResponse = modelMapper.map(review.getProduct(), BaseProductResponse.class);
+        return ReviewResponse.builder()
+                .star(review.getStar()).content(review.getContent()).id(review.getId())
+                .product(baseProductResponse).user(baseUserResponse).build();
     }
 
 

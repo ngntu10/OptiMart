@@ -27,7 +27,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.Map;
 import java.util.Optional;
 
-@Service
 @RequiredArgsConstructor
 @RestController
 @Tag(name = "Product", description = "Everything about product")

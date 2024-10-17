@@ -19,7 +19,7 @@ public interface IProductService {
     PagingResponse<List<ProductResponse>> getLikedProducts (Map<Object, String> filters, String token);
     PagingResponse<List<ProductResponse>> getViewedProducts (Map<Object, String> filters, String token);
     Product getOneProduct(String productId);
-    Product getOneProductBySlug(String slug);
+    ProductResponse getOneProductBySlug(String slug);
     Product getOneProductPublic(String productId, Boolean isViewed);
     APIResponse<Product> updateProduct(ProductDTO product, String productId);
     APIResponse<Boolean> deleteProduct(String productId);

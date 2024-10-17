@@ -74,5 +74,13 @@ public class MessageKeys {
     public static final String ORDER_GET_SUCCESS = "order.get_success";
     public static final String ORDER_LIST_GET_SUCCESS = "order_list.get_success";
     public static final String ORDER_CANCEL_SUCCESS = "order.cancel_success";
+    public static final String ORDER_DELETE_SUCCESS = "order.delete_success";
+
+    // REVIEW
+    public static final String REVIEW_GET_SUCCESS = "review.get_success";
+    public static final String REVIEW_LIST_GET_SUCCESS = "review_list.get_success";
+    public static final String REVIEW_WRITE_SUCCESS = "review.write_success";
+    public static final String REVIEW_NOT_EXISTED = "review.not_existed";
+    public static final String REVIEW_DELETE_SUCCESS = "review.delete_success";
 
 }

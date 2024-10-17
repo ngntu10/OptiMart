@@ -1,6 +1,7 @@
 package com.Optimart.responses.Product;
 
 import com.Optimart.models.*;
+import com.Optimart.responses.Review.ReviewResponse;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -35,6 +36,6 @@ public class ProductResponse {
     private Set<UUID> userViewedList;
     private ProductType productType;
     private City city;
-    private List<Review> reviewList;
+    private List<ReviewResponse> reviewList;
     private List<Comment> commentList;
 }

@@ -138,6 +138,13 @@ public class OrderService implements IOrderService{
         return new APIResponse<>(order, MessageKeys.ORDER_GET_SUCCESS);
     }
 
+    @Override
+    public APIResponse<Boolean> deleteOrder(String id) {
+        Order order = orderRepository.findById(UUID.fromString(id)).get();
+        orderRepository.delete(order);
+        return new APIResponse<>(true, localizationUtils.getLocalizedMessage(MessageKeys.ORDER_DELETE_SUCCESS));
+    }
+
     private User getUser(String token){
         String jwtToken = token.substring(7);
         String email = jwtTokenUtil.extractEmail(jwtToken);

@@ -70,4 +70,11 @@ public class OrderController {
     public ResponseEntity<APIResponse<Order>> getOrderById(@PathVariable String orderId){
         return ResponseEntity.ok(orderService.getOneOrderById(orderId));
     }
+
+    @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = Object.class), mediaType = "application/json"))
+    @SecuredSwaggerOperation(summary = "Delete an existing order by id")
+    @DeleteMapping(Endpoint.Order.ID)
+    public ResponseEntity<APIResponse<Boolean>> deleteOrderById(@PathVariable String orderId){
+        return ResponseEntity.ok(orderService.deleteOrder(orderId));
+    }
 }
