@@ -121,7 +121,7 @@ public class ProductService implements IProductService {
         page = Math.max(Integer.parseInt(filters.getOrDefault("page", "-1")), 1) - 1;
         pageable = PageRequest.of(page, limit, Sort.by("createdAt").descending());
         pageable = getPageable(pageable, page, limit, order);
-        Specification<Product> specification = ProductSpecification.filterProducts(filters.get("productType"), filters.get("status"), filters.get("search"));;
+        Specification<Product> specification = ProductSpecification.filterProducts(filters.get("productType"), filters.get("status"), filters.get("search"), null, null);
         return getListPagingResponse(pageable, specification);
     }
 
@@ -147,6 +147,8 @@ public class ProductService implements IProductService {
                     Set<UUID> userLikeList = product.getUserLikedList().stream()
                             .map(User::getId)
                             .collect(Collectors.toSet());
+                    List<ReviewResponse> responses = ConvertToResponse(product.getReviewList());
+                    productResponse.setReviewList(responses);
                     productResponse.setUserLikedList(userLikeList);
                     return productResponse;
                 })
@@ -160,6 +162,14 @@ public class ProductService implements IProductService {
         Pageable pageable;
         int page = Integer.parseInt(filters.getOrDefault("page", "-1"));
         int limit = Integer.parseInt(filters.getOrDefault("limit", "-1"));
+        Long cityId = Optional.ofNullable(filters.get("productLocation"))
+                .filter(s -> !s.isEmpty())
+                .map(Long::parseLong)
+                .orElse(null);
+        Double minStar = Optional.ofNullable(filters.get("minStar"))
+                .filter(s -> !s.isEmpty())
+                .map(Double::parseDouble)
+                .orElse(null);
         String order = filters.get("order");
         if (page == -1 && limit == -1 ) {
             productList = productRepository.findAllByStatus(1);
@@ -171,7 +181,7 @@ public class ProductService implements IProductService {
         page = Math.max(Integer.parseInt(filters.getOrDefault("page", "-1")), 1) - 1;
         pageable = PageRequest.of(page, limit, Sort.by("createdAt").descending());
         pageable = getPageable(pageable, page, limit, order);
-        Specification<Product> productSpecification = ProductSpecification.filterProducts(filters.get("productType"), "1", filters.get("search"));
+        Specification<Product> productSpecification = ProductSpecification.filterProducts(filters.get("productType"), "1", filters.get("search"), cityId, minStar);
         return getListPagingResponse(pageable, productSpecification);
     }
 
@@ -200,7 +210,7 @@ public class ProductService implements IProductService {
         page = Math.max(Integer.parseInt(filters.getOrDefault("page", "-1")), 1) - 1;
         pageable = PageRequest.of(page, limit, Sort.by("createdAt").descending());
         pageable = getPageable(pageable, page, limit, order);
-        Specification<Product> specification = ProductSpecification.filterProducts(type.getName(), "1", filters.get("search"));;
+        Specification<Product> specification = ProductSpecification.filterProducts(type.getName(), "1", filters.get("search"), null , null);
         return getListPagingResponse(pageable, specification);
     }
 
@@ -270,6 +280,12 @@ public class ProductService implements IProductService {
         return productResponse;
     }
 
+    private List<ReviewResponse> ConvertToResponse(List<Review> review){
+        return review.stream().map(
+                this::ConvertToResponse
+        ).toList();
+    }
+
     @Override
     public Product getOneProductPublic(String productId, Boolean isViewed) {
         Product product = productRepository.findById(UUID.fromString(productId)).get();
@@ -303,4 +319,5 @@ public class ProductService implements IProductService {
             throw new RuntimeException(ex.getMessage());
         }
     }
+
 }

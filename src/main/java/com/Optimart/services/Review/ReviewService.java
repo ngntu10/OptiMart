@@ -28,10 +28,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -57,6 +54,12 @@ public class ReviewService implements IReviewService{
             throw new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.PRODUCT_NOT_EXISTED));
         review.setProduct(optionalProduct.get());
         reviewRepository.save(review);
+        Product product = optionalProduct.get();
+        List<Review> reviewList = product.getReviewList();
+        reviewList.add(review);
+        product.setReviewList(reviewList);
+        product.setAverageRating(getAvgRatingProduct(reviewList));
+        productRepository.save(product);
         ReviewResponse reviewResponse = ConvertToResponse(review);
         return new APIResponse<>(reviewResponse, localizationUtils.getLocalizedMessage(MessageKeys.REVIEW_WRITE_SUCCESS));
     }
@@ -67,9 +70,16 @@ public class ReviewService implements IReviewService{
         if(optionalReview.isEmpty())
             throw new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.REVIEW_NOT_EXISTED));
         Review review = optionalReview.get();
+        Product product = review.getProduct();
+        List<Review> reviewList = product.getReviewList();
+        reviewList.remove(review);
         modelMapper.map(updateReviewDTO, review);
         review.setId(UUID.fromString(reviewId));
         reviewRepository.save(review);
+        reviewList.add(review);
+        product.setReviewList(reviewList);
+        product.setAverageRating(getAvgRatingProduct(reviewList));
+        productRepository.save(product);
         ReviewResponse reviewResponse = ConvertToResponse(review);
         return new APIResponse<>(reviewResponse, localizationUtils.getLocalizedMessage(MessageKeys.REVIEW_GET_SUCCESS));
     }
@@ -89,6 +99,12 @@ public class ReviewService implements IReviewService{
         if(optionalReview.isEmpty())
             throw new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.REVIEW_NOT_EXISTED));
         Review review = optionalReview.get();
+        Product product = review.getProduct();
+        List<Review> reviewList = product.getReviewList();
+        reviewList.remove(review);
+        product.setReviewList(reviewList);
+        product.setAverageRating(getAvgRatingProduct(reviewList));
+        productRepository.save(product);
         reviewRepository.delete(review);
         return new APIResponse<>(true, localizationUtils.getLocalizedMessage(MessageKeys.REVIEW_DELETE_SUCCESS));
     }
@@ -101,6 +117,14 @@ public class ReviewService implements IReviewService{
         Review review = optionalReview.get();
         User user = review.getUser();
         user.getReviewList().remove(review);
+
+        Product product = review.getProduct();
+        List<Review> reviewList = product.getReviewList();
+        reviewList.remove(review);
+        product.setReviewList(reviewList);
+        product.setAverageRating(getAvgRatingProduct(reviewList));
+        productRepository.save(product);
+
         reviewRepository.delete(review);
         userRepository.save(user);
         return new APIResponse<>(true, localizationUtils.getLocalizedMessage(MessageKeys.REVIEW_DELETE_SUCCESS));
@@ -109,13 +133,24 @@ public class ReviewService implements IReviewService{
     @Override
     public APIResponse<Boolean> deleteMultiReview(DeleteMultiReviewDTO deleteMultiReviewDTO) {
         List<String> reviewIds = deleteMultiReviewDTO.getReviewIds();
-        List<UUID> reviewUUIDs = reviewIds.stream().map(
-                item ->{
-                    UUID uuid = UUID.fromString(item);
-                    return uuid;
-                }
-        ).toList();
-        reviewRepository.deleteAllById(reviewUUIDs);
+        List<UUID> reviewUUIDs = reviewIds.stream()
+                .map(UUID::fromString)
+                .toList();
+        List<Review> reviews = reviewRepository.findAllById(reviewUUIDs);
+
+        Map<Product, List<Review>> productReviewMap = new HashMap<>();
+        for (Review review : reviews) {
+            Product product = review.getProduct();
+            productReviewMap
+                    .computeIfAbsent(product, k -> new ArrayList<>())
+                    .add(review);
+        }
+        productReviewMap.forEach((product, reviewList) -> {
+            reviewList.forEach(product.getReviewList()::remove);
+            product.setAverageRating(getAvgRatingProduct(product.getReviewList()));
+        });
+        productRepository.saveAll(productReviewMap.keySet());
+        reviewRepository.deleteAll(reviews);
         return new APIResponse<>(true, localizationUtils.getLocalizedMessage(MessageKeys.REVIEW_DELETE_SUCCESS));
     }
 
@@ -125,8 +160,10 @@ public class ReviewService implements IReviewService{
         int limit = Integer.parseInt(filters.getOrDefault("limit", "-1"));
         String search = filters.getOrDefault("search", "");
         String order = filters.get("order");
+        String productId = filters.getOrDefault("productId", "");
         if (page == -1 && limit == -1 ) {
-            List<Review> reviews = reviewRepository.findAll();
+            Specification<Review> specification = ReviewSpecification.filterReviewsByProductId(productId);
+            List<Review> reviews = reviewRepository.findAll(specification);
             List<ReviewResponse> reviewResponseList = ConvertToResponse(reviews);
             return new PagingResponse<>(reviewResponseList, localizationUtils.getLocalizedMessage(MessageKeys.REVIEW_LIST_GET_SUCCESS), 1, (long) reviews.size());
         }
@@ -161,21 +198,28 @@ public class ReviewService implements IReviewService{
 
     private List<ReviewResponse> ConvertToResponse(List<Review> review){
         return review.stream().map(
-                item -> {
-                    BaseUserResponse baseUserResponse = modelMapper.map(item.getUser(), BaseUserResponse.class);
-                    BaseProductResponse baseProductResponse = modelMapper.map(item.getProduct(), BaseProductResponse.class);
-                    return ReviewResponse.builder()
-                            .star(item.getStar()).content(item.getContent()).id(item.getId())
-                            .product(baseProductResponse).user(baseUserResponse).build();
-                }
+                this::ConvertToResponse
         ).toList();
     }
 
     private ReviewResponse ConvertToResponse(Review review){
         BaseUserResponse baseUserResponse = modelMapper.map(review.getUser(), BaseUserResponse.class);
         BaseProductResponse baseProductResponse = modelMapper.map(review.getProduct(), BaseProductResponse.class);
-        return ReviewResponse.builder()
-                .star(review.getStar()).content(review.getContent()).id(review.getId())
-                .product(baseProductResponse).user(baseUserResponse).build();
+        ReviewResponse reviewResponse = modelMapper.map(review, ReviewResponse.class);
+        reviewResponse.setUser(baseUserResponse);
+        reviewResponse.setProduct(baseProductResponse);
+        return reviewResponse;
     }
+
+    private double getAvgRatingProduct(List<Review> reviews) {
+        if (reviews == null || reviews.isEmpty()) {
+            return 0;
+        }
+        double totalStars = 0;
+        for (Review review : reviews) {
+            totalStars += review.getStar();
+        }
+        return totalStars / reviews.size();
+    }
+
 }

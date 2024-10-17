@@ -20,6 +20,24 @@ public class ProductSpecification {
         };
     }
 
+    public static Specification<Product> byRating(Double star) {
+        return (root, query, criteriaBuilder) -> {
+            if (star == null) {
+                return criteriaBuilder.conjunction();
+            }
+            return criteriaBuilder.equal(root.get("averageRating"), star);
+        };
+    }
+
+    public static Specification<Product> hasCityId(Long cityId) {
+        return (root, query, criteriaBuilder) -> {
+            if (cityId == null) {
+                return criteriaBuilder.conjunction();
+            }
+            return criteriaBuilder.equal(root.get("city").get("id"), cityId);
+        };
+    }
+
     public static Specification<Product> byProductType(String ProductType){
         return (root, query, criteriaBuilder) -> {
             if(ProductType == null || ProductType.isEmpty()){
@@ -69,9 +87,12 @@ public class ProductSpecification {
                 .and(searchByKeyword(search));
     }
 
-    public static Specification<Product> filterProducts(String ProductType, String statuses, String keyword) {
+    public static Specification<Product> filterProducts(String ProductType, String statuses, String keyword,
+                                                        Long cityId, Double star) {
         return Specification.where(byProductType(ProductType))
                 .and(byStatus(statuses))
-                .and(searchByKeyword(keyword));
+                .and(searchByKeyword(keyword))
+                .and(hasCityId(cityId))
+                .and(byRating(star));
     }
 }

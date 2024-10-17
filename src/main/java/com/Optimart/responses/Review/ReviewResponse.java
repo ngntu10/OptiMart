@@ -4,6 +4,7 @@ import com.Optimart.responses.Product.BaseProductResponse;
 import com.Optimart.responses.User.BaseUserResponse;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Getter
@@ -17,4 +18,6 @@ public class ReviewResponse {
     private double star;
     private BaseProductResponse product;
     private BaseUserResponse user;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

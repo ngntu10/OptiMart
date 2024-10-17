@@ -26,6 +26,7 @@ public class ProductResponse {
     private int discount;
     private Date discountStartDate;
     private Date discountEndDate;
+    private Double averageRating;
     private int sold;
     private int totalLikes;
     private int status;

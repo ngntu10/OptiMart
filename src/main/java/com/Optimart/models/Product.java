@@ -31,6 +31,9 @@ public class Product extends BaseEntity {
     @Column(name = "image")
     private String image;
 
+    @Column(name = "average_rating")
+    private Double averageRating = 0.0;
+
     @Column(name = "price", nullable = false)
     private Long price;
 
