@@ -48,14 +48,16 @@ public class MessageKeys {
     // PRODUCT TYPE
     public static final String PRODUCT_TYPE_CREATE_SUCCESS = "product_type.create_success";
     public static final String PRODUCT_TYPE_UPDATE_SUCCESS = "product_type.update_success";
-    public static final String PRODUCT_TYPE_DELETE_SUCCESS = "product_type.delete_success" ;
-    public static final String PRODUCT_TYPE_GET_SUCCESS = "product_type.get_success" ;
+    public static final String PRODUCT_TYPE_DELETE_SUCCESS = "product_type.delete_success";
+    public static final String PRODUCT_TYPE_GET_SUCCESS = "product_type.get_success";
+    public static final String PRODUCT_TYPE_NOT_FOUND = "product_type.not_found";
 
     // CITY LOCALES
     public static final String CITY_CREATE_SUCCESS = "city.create_success";
     public static final String CITY_UPDATE_SUCCESS = "city.update_success";
     public static final String CITY_DELETE_SUCCESS = "city.delete_success" ;
     public static final String CITY_GET_SUCCESS = "city.get_success" ;
+    public static final String CITY_NOT_FOUND = "city.not_found";
 
     // PRODUCT
     public static final String PRODUCT_CREATE_SUCCESS = "product.create_success";
@@ -82,5 +84,9 @@ public class MessageKeys {
     public static final String REVIEW_WRITE_SUCCESS = "review.write_success";
     public static final String REVIEW_NOT_EXISTED = "review.not_existed";
     public static final String REVIEW_DELETE_SUCCESS = "review.delete_success";
+
+    // PAYMENT
+    public static final String PAY_SUCCESS = "payment.success";
+    public static final String PAY_FAILED = "payment.failed";
 
 }

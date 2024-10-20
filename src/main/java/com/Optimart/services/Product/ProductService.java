@@ -48,7 +48,8 @@ public class ProductService implements IProductService {
     @Override
     public APIResponse<Product> createProduct(CreateProductDTO createProductDTO) {
         Product product = modelMapper.map(createProductDTO, Product.class);
-        ProductType productType = productTypeRepository.findById(UUID.fromString(createProductDTO.getType())).get();
+        ProductType productType = productTypeRepository.findById(UUID.fromString(createProductDTO.getType()))
+                .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.PRODUCT_TYPE_NOT_FOUND)));
         product.setProductType(productType);
         productRepository.save(product);
         return new APIResponse<>(product, localizationUtils.getLocalizedMessage(MessageKeys.PRODUCT_CREATE_SUCCESS));
@@ -58,7 +59,8 @@ public class ProductService implements IProductService {
     public APIResponse<Boolean> likeProduct(ReactionProductDTO reactionProductDTO, String token) {
         User user = getUser(token);
         String productId = reactionProductDTO.getProductId();
-        Product product = productRepository.findById(UUID.fromString(productId)).get();
+        Product product = productRepository.findById(UUID.fromString(productId))
+                .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.PRODUCT_NOT_EXISTED)));;
         List<Product> productList = user.getLikeProductList();
         productList.add(product);
 
@@ -89,7 +91,8 @@ public class ProductService implements IProductService {
         User user = getUser(token);
 
         String productId = reactionProductDTO.getProductId();
-        Product product = productRepository.findById(UUID.fromString(productId)).get();
+        Product product = productRepository.findById(UUID.fromString(productId))
+                .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.PRODUCT_NOT_EXISTED)));
         List<Product> productList = user.getLikeProductList();
         productList.remove(product);
         user.setLikeProductList(productList);
@@ -187,7 +190,8 @@ public class ProductService implements IProductService {
 
     @Override
     public PagingResponse<List<ProductResponse>> getListProductRelatedTo(Map<Object, String> filters) {
-        Product product1 = productRepository.findBySlug(filters.get("slug")).get();
+        Product product1 = productRepository.findBySlug(filters.get("slug"))
+                .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.PRODUCT_NOT_EXISTED)));
         ProductType type = product1.getProductType();
         List<Product> productList;
         Pageable pageable;
@@ -235,14 +239,18 @@ public class ProductService implements IProductService {
 
     @Override
     public APIResponse<Product> updateProduct(ProductDTO product, String productId) {
-        Product product1 = productRepository.findById(UUID.fromString(productId)).get();
-        City city = cityLocaleRepository.findById(Long.parseLong(product.getLocation())).get();
-        ProductType productType = productTypeRepository.findById(UUID.fromString(product.getType())).get();
-        modelMapper.map(product,product1);
+        Product product1 = productRepository.findById(UUID.fromString(productId))
+                .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.PRODUCT_NOT_EXISTED)));
+        City city = cityLocaleRepository.findById(Long.parseLong(product.getLocation()))
+                .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.CITY_NOT_FOUND)));
+        ProductType productType = productTypeRepository.findById(UUID.fromString(product.getType()))
+                .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.PRODUCT_TYPE_NOT_FOUND)));
+        modelMapper.map(product, product1);
         product1.setProductType(productType);
         product1.setCity(city);
         productRepository.save(product1);
         return new APIResponse<>(product1, localizationUtils.getLocalizedMessage(MessageKeys.PRODUCT_UPDATE_SUCCESS));
+
     }
 
     @Override
@@ -262,17 +270,16 @@ public class ProductService implements IProductService {
 
     @Override
     public Product getOneProduct(String productId) {
-        return productRepository.findById(UUID.fromString(productId)).get();
+        return productRepository.findById(UUID.fromString(productId))
+                .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.PRODUCT_NOT_EXISTED)));
     }
 
     @Override
     public ProductResponse getOneProductBySlug(String slug) {
-        Product product = productRepository.findBySlug(slug).get();
+        Product product = productRepository.findBySlug(slug)
+                .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.PRODUCT_NOT_EXISTED)));
         List<ReviewResponse> responses = product.getReviewList().stream().map(
-                item -> {
-                    ReviewResponse reviewResponse = ConvertToResponse(item);
-                    return reviewResponse;
-                }
+                this::ConvertToResponse
         ).toList();
         ProductResponse productResponse = modelMapper.map(product, ProductResponse.class);
         productResponse.setReviewList(responses);
@@ -287,7 +294,8 @@ public class ProductService implements IProductService {
 
     @Override
     public Product getOneProductPublic(String productId, Boolean isViewed) {
-        Product product = productRepository.findById(UUID.fromString(productId)).get();
+        Product product = productRepository.findById(UUID.fromString(productId))
+                .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.PRODUCT_NOT_EXISTED)));;
 //        if(isViewed)
         return product;
     }

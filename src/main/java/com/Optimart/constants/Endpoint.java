@@ -79,4 +79,10 @@ public class Endpoint {
         public static final String DELETE_MANY = "/delete-many";
         public static final String ID_ME = "/me/{reviewId}";
     }
+
+    public static class Payment{
+        public static final String BASE = API_PREFIX + "payment";
+        public static final String VNPAY = "/vnpay";
+        public static final String CALL_BACK = "/vnpay-callback";
+    }
 }
