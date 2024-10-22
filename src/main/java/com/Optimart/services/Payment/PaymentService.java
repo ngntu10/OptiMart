@@ -14,14 +14,19 @@ import java.util.Map;
 public class PaymentService implements IPaymentService{
     private final VNPAYConfig vnPayConfig;
     @Override
-    public VNPAYResponse createVnPayPayment(HttpServletRequest request) {
-        long amount = Integer.parseInt(request.getParameter("amount")) * 100L;
-        String bankCode = request.getParameter("bankCode");
+    public VNPAYResponse createVnPayPayment(Map<String, Object> requestData, HttpServletRequest request) {
+        long amount = ((Number) requestData.get("amount")).longValue() * 100;
+        String orderId = (String) requestData.get("orderId");
+        String language = (String) requestData.get("language");
+        String bankCode = (String) requestData.getOrDefault("bankCode", "");
         Map<String, String> vnpParamsMap = vnPayConfig.getVNPayConfig();
         vnpParamsMap.put("vnp_Amount", String.valueOf(amount));
         if (bankCode != null && !bankCode.isEmpty()) {
             vnpParamsMap.put("vnp_BankCode", bankCode);
         }
+        vnpParamsMap.put("vnp_OrderInfo", orderId);
+        vnpParamsMap.put("vnp_TxnRef", orderId);
+        vnpParamsMap.put("vnp_Locale", language);
         vnpParamsMap.put("vnp_IpAddr", VNPAYUtil.getIpAddress(request));
         //build query url
         String queryUrl = VNPAYUtil.getPaymentURL(vnpParamsMap, true);
@@ -31,6 +36,7 @@ public class PaymentService implements IPaymentService{
         String paymentUrl = vnPayConfig.getVnp_PayUrl() + "?" + queryUrl;
         return VNPAYResponse.builder()
                 .code("ok")
+                .amount(amount)
                 .message("success")
                 .paymentUrl(paymentUrl).build();
     }

@@ -11,4 +11,5 @@ public class VNPAYResponse {
     public String code;
     public String message;
     public String paymentUrl;
+    public long amount;
 }

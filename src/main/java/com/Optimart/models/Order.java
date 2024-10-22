@@ -65,4 +65,10 @@ public class Order extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "shippingAddress_id")
     private ShippingAddress shippingAddress;
+
+//    WAIT_PAYMENT: 0,
+//    WAIT_DELIVERY: 1,
+//    DONE: 2,
+//    CANCEL: 3,
+//    ALL: 4
 }

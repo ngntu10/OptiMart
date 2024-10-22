@@ -137,11 +137,9 @@ public class AuthService implements IAuthService {
                 .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.USER_NOT_EXIST)));
         mapper.map(changeUserInfo, user);
         if(changeUserInfo.getCity() != null){
-            City city1 = cityLocaleRepository.findById(Long.parseLong(changeUserInfo.getCity())).get();
-            user.setCity(city1);
+            user.setCity(changeUserInfo.getCity());
         }
         if(changeUserInfo.getAddresses() != null){
-
             List<userShippingAddress> userShippingAddresses = changeUserInfo.getAddresses().stream().map(
                     item -> {
                         City city;

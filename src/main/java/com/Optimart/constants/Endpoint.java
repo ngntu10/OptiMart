@@ -81,7 +81,7 @@ public class Endpoint {
     }
 
     public static class Payment{
-        public static final String BASE = API_PREFIX + "payment";
+        public static final String BASE = API_PREFIX + "/payment";
         public static final String VNPAY = "/vnpay";
         public static final String CALL_BACK = "/vnpay-callback";
     }

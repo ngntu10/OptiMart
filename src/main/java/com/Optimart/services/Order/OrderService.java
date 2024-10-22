@@ -21,10 +21,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,23 +34,25 @@ public class OrderService implements IOrderService{
     private final UserRepository userRepository;
     private final AuthRepository authRepository;
     private final ShippingAddressRepository shippingAddressRepository;
-    private final OrderItemRepository orderItemRepository;
     private final ProductRepository productRepository;
     private final JwtTokenUtil jwtTokenUtil;
     private final LocalizationUtils localizationUtils;
     @Override
     public APIResponse<OrderResponse> createOrder(CreateOrderDTO createOrderDTO) {
         Order order = modelMapper.map(createOrderDTO, Order.class);
-        User user = userRepository.findById(UUID.fromString(createOrderDTO.getUserId())).get();
+        User user = userRepository.findById(UUID.fromString(createOrderDTO.getUserId()))
+                .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.USER_NOT_EXIST)));
         order.setUser(user);
         ShippingAddress shippingAddress = modelMapper.map(createOrderDTO, ShippingAddress.class);
         shippingAddressRepository.save(shippingAddress);
-        Paymenttype paymenttype = paymentTypeRepository.findById(UUID.fromString(createOrderDTO.getPaymentMethod())).get();
-        DeliveryType deliveryType = deliveryTypeRepository.findById(UUID.fromString(createOrderDTO.getDeliveryMethod())).get();
+        Paymenttype paymenttype = paymentTypeRepository.findById(UUID.fromString(createOrderDTO.getPaymentMethod()))
+                .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.PAYMENT_TYPE_NOT_FOUND)));
+        DeliveryType deliveryType = deliveryTypeRepository.findById(UUID.fromString(createOrderDTO.getDeliveryMethod()))
+                .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.DELIVERY_TYPE_NOT_FOUND)));
         order.setShippingAddress(shippingAddress);
         order.setPaymentMethod(paymenttype);
         order.setDeliveryMethod(deliveryType);
-        order.setOrderStatus(1);
+        order.setOrderStatus(0);
         order.setUser(user);
         order = orderRepository.save(order);
         Order finalOrder = order;
@@ -61,9 +60,9 @@ public class OrderService implements IOrderService{
                 .map(item -> {
                     OrderItem orderItem = modelMapper.map(item, OrderItem.class);
                     orderItem.setOrder(finalOrder);
-                    Product productId = productRepository.findBySlug(orderItem.getSlug()).get();
+                    Product productId = productRepository.findBySlug(orderItem.getSlug())
+                            .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.PRODUCT_NOT_EXISTED)));
                     orderItem.setId(productId.getId());
-//                    orderItem.setCountInStock(productId.getCountInStock());
                     return orderItem;
                 }).collect(Collectors.toList());
         order.setOrderItemList(orderItems);
@@ -126,7 +125,8 @@ public class OrderService implements IOrderService{
 
     @Override
     public APIResponse<OrderResponse> cancelOrder(String id) {
-        Order order = orderRepository.findById(UUID.fromString(id)).get();
+        Order order = orderRepository.findById(UUID.fromString(id))
+                .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.ORDER_NOT_FOUND)));
         order.setOrderStatus(3);
         orderRepository.save(order);
         return new APIResponse<>(new OrderResponse(order.getId()), localizationUtils.getLocalizedMessage(MessageKeys.ORDER_CANCEL_SUCCESS));
@@ -134,13 +134,26 @@ public class OrderService implements IOrderService{
 
     @Override
     public APIResponse<Order> getOneOrderById(String id) {
-        Order order = orderRepository.findById(UUID.fromString(id)).get();
+        Order order = orderRepository.findById(UUID.fromString(id))
+                .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.ORDER_NOT_FOUND)));
         return new APIResponse<>(order, MessageKeys.ORDER_GET_SUCCESS);
+    }
+
+    public void handlePaymentOrderById(String orderId){
+        Order order = orderRepository.findById(UUID.fromString(orderId))
+                .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.ORDER_NOT_FOUND)));
+        order.setOrderStatus(2);
+        order.setIsPaid(1);
+        order.setPaidAt(new Date());
+        order.setIsDelivered(1);
+        order.setDeliveryAt(new Date());
+        orderRepository.save(order);
     }
 
     @Override
     public APIResponse<Boolean> deleteOrder(String id) {
-        Order order = orderRepository.findById(UUID.fromString(id)).get();
+        Order order = orderRepository.findById(UUID.fromString(id))
+                .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.ORDER_NOT_FOUND)));
         orderRepository.delete(order);
         return new APIResponse<>(true, localizationUtils.getLocalizedMessage(MessageKeys.ORDER_DELETE_SUCCESS));
     }

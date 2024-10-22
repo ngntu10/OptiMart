@@ -37,13 +37,15 @@ public class MessageKeys {
     public static final String DELIVERY_TYPE_CREATE_SUCCESS = "delivery_type.create_success";
     public static final String DELIVERY_TYPE_UPDATE_SUCCESS = "delivery_type.update_success";
     public static final String DELIVERY_TYPE_DELETE_SUCCESS = "delivery_type.delete_success" ;
-    public static final String DELIVERY_TYPE_GET_SUCCESS = "delivery_type.get_success" ;
+    public static final String DELIVERY_TYPE_GET_SUCCESS = "delivery_type.get_success";
+    public static final String DELIVERY_TYPE_NOT_FOUND = "delivery_type.not_found";
 
     // PAYMENT TYPE
     public static final String PAYMENT_TYPE_CREATE_SUCCESS = "payment_type.create_success";
     public static final String PAYMENT_TYPE_UPDATE_SUCCESS = "payment_type.update_success";
     public static final String PAYMENT_TYPE_DELETE_SUCCESS = "payment_type.delete_success" ;
-    public static final String PAYMENT_TYPE_GET_SUCCESS = "payment_type.get_success" ;
+    public static final String PAYMENT_TYPE_GET_SUCCESS = "payment_type.get_success";
+    public static final String PAYMENT_TYPE_NOT_FOUND = "payment_type.not_found";
 
     // PRODUCT TYPE
     public static final String PRODUCT_TYPE_CREATE_SUCCESS = "product_type.create_success";
@@ -77,6 +79,7 @@ public class MessageKeys {
     public static final String ORDER_LIST_GET_SUCCESS = "order_list.get_success";
     public static final String ORDER_CANCEL_SUCCESS = "order.cancel_success";
     public static final String ORDER_DELETE_SUCCESS = "order.delete_success";
+    public static final String ORDER_NOT_FOUND = "order.not_found";
 
     // REVIEW
     public static final String REVIEW_GET_SUCCESS = "review.get_success";
