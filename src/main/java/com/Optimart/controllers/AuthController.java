@@ -5,6 +5,7 @@ import com.Optimart.annotations.UnsecuredSwaggerOperation;
 import com.Optimart.constants.MessageKeys;
 import com.Optimart.dto.Auth.*;
 import com.Optimart.constants.Endpoint;
+import com.Optimart.dto.OAuth2.OAuth2DTO;
 import com.Optimart.exceptions.TokenRefreshException;
 import com.Optimart.models.RefreshToken;
 import com.Optimart.models.User;
@@ -15,6 +16,8 @@ import com.Optimart.responses.Auth.TokenRefreshResponse;
 import com.Optimart.responses.Auth.UserLoginResponse;
 import com.Optimart.responses.BaseResponse;
 import com.Optimart.responses.CloudinaryResponse;
+import com.Optimart.responses.GoogleUserInfoResponse;
+import com.Optimart.services.OAuth2.GoogleService;
 import com.Optimart.services.RefreshToken.RefreshTokenService;
 import com.Optimart.services.Auth.AuthService;
 import com.Optimart.utils.JwtTokenUtil;
@@ -24,9 +27,11 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -41,6 +46,7 @@ import java.time.LocalDate;
 public class AuthController {
     private final AuthService authService;
     private final RefreshTokenService refreshTokenService;
+    private final GoogleService googleService;
     private final JwtTokenUtil jwtTokenUtil;
     private final ModelMapper mapper;
     private final LocalizationUtils localizationUtils;
@@ -64,7 +70,7 @@ public class AuthController {
         try {
             String access_token = authService.login(userLoginDTO.getMail(), userLoginDTO.getPassword());
             RefreshToken refreshToken = refreshTokenService.createRefreshToken(userLoginDTO.getMail());
-            User user = authService.findUserByEmail(userLoginDTO.getMail());
+            User user = authService.getUserInfo(userLoginDTO.getMail());
             String refresh_token = refreshToken.getRefreshtoken();
             UserLoginResponse userLoginResponse = mapper.map(user, UserLoginResponse.class);
             userLoginResponse.setCity(user.getCity());
@@ -75,13 +81,43 @@ public class AuthController {
         }
     }
 
+    @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = LoginResponse.class), mediaType = "application/json"))
+    @UnsecuredSwaggerOperation(summary = "Login user by Google")
+    @PostMapping(Endpoint.Auth.LOGIN_GOOGLE)
+    public ResponseEntity<?> loginGoogle(@RequestBody OAuth2DTO oAuth2DTO){
+        try {
+            GoogleUserInfoResponse googleUserInfoResponse = googleService.getUserInfo(oAuth2DTO.getIdToken());
+            String access_token = authService.loginGoogle(oAuth2DTO.getIdToken());
+            RefreshToken refreshToken = refreshTokenService.createRefreshToken(googleUserInfoResponse.getEmail());
+            User user = authService.getUserInfo(googleUserInfoResponse.getEmail());
+            UserLoginResponse userLoginResponse = mapper.map(user, UserLoginResponse.class);
+            userLoginResponse.setCity(user.getCity());
+            return ResponseEntity.ok(LoginResponse.success(localizationUtils.getLocalizedMessage(MessageKeys.LOGIN_SUCCESSFULLY),
+                    access_token, refreshToken.getRefreshtoken(), userLoginResponse));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(LoginResponse.failure(e.getMessage()));
+        }
+    }
+
+    @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = LoginResponse.class), mediaType = "application/json"))
+    @UnsecuredSwaggerOperation(summary = "Register user by Google")
+    @PostMapping(Endpoint.Auth.REGISTER_GOOGLE)
+    public ResponseEntity<?> registerGoogle(@RequestBody OAuth2DTO oAuth2DTO){
+        try {
+            User registerUser = authService.registerGoogle(oAuth2DTO.getIdToken());
+            return ResponseEntity.ok(new RegisterResponse(localizationUtils.getLocalizedMessage(MessageKeys.REGISTER_SUCCESSFULLY), registerUser));
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new RegisterResponse(localizationUtils.getLocalizedMessage(MessageKeys.REGISTER_FAILED, ex.getMessage()), null));
+        }
+    }
+
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = UserLoginResponse.class), mediaType = "application/json"))
     @SecuredSwaggerOperation(summary = "Get my info user")
     @GetMapping (Endpoint.Auth.ME)
     public ResponseEntity<UserLoginResponse> getInfoCurrentUser(@RequestHeader("Authorization") String token) {
         try {
             String email = jwtTokenUtil.extractEmail(token.substring(7));
-            User user = authService.findUserByEmail(email);  // Need to refactor code ****
+            User user = authService.getUserInfo(email);  // Need to refactor code ****
             UserLoginResponse userLoginResponse = mapper.map(user, UserLoginResponse.class);
             userLoginResponse.setAddresses(user.getUserShippingAddressList());
             return ResponseEntity.ok().body(userLoginResponse);
