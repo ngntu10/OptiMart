@@ -1,6 +1,9 @@
 package com.Optimart.constants;
 
 public class MessageKeys {
+    // **** Errors
+    public static final String ERROR = "optimart.error";
+
     // **** Auth
     public static final String REGISTER_SUCCESSFULLY = "auth.register.register_successfully";
     public static final String REGISTER_FAILED = "auth.register.register_failed";
