@@ -9,7 +9,9 @@ import com.Optimart.responses.Auth.UserLoginResponse;
 public interface IAuthService {
     User createUser(UserRegisterDTO userRegisterDTO) throws Exception;
     String login(String email, String password) throws Exception;
-    User findUserByEmail(String email) throws  Exception;
+    User getUserInfo(String email) throws  Exception;
     String changeUserPassword(ChangePassword changePassword, String token) throws Exception;
     UserLoginResponse changeUserInfo(ChangeUserInfo changeUserInfo);
+    User registerGoogle(String token);
+    String loginGoogle(String token) throws Exception;
 }

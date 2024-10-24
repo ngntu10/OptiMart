@@ -1,11 +1,9 @@
 package com.Optimart.services.Auth;
 
 import com.Optimart.constants.MessageKeys;
-import com.Optimart.constants.Permissions;
 import com.Optimart.dto.Auth.ChangePassword;
 import com.Optimart.dto.Auth.ChangeUserInfo;
 import com.Optimart.dto.Auth.UserRegisterDTO;
-import com.Optimart.dto.ShippingAddress.ShippingAddressDTO;
 import com.Optimart.exceptions.DataNotFoundException;
 import com.Optimart.exceptions.InvalidInput;
 import com.Optimart.models.City;
@@ -18,7 +16,9 @@ import com.Optimart.repositories.AuthRepository;
 import com.Optimart.repositories.UserShippingAddressRepository;
 import com.Optimart.responses.Auth.UserLoginResponse;
 import com.Optimart.responses.CloudinaryResponse;
+import com.Optimart.responses.GoogleUserInfoResponse;
 import com.Optimart.services.CloudinaryService;
+import com.Optimart.services.OAuth2.GoogleService;
 import com.Optimart.utils.FileUploadUtil;
 import com.Optimart.utils.JwtTokenUtil;
 import com.Optimart.utils.LocalizationUtils;
@@ -49,6 +49,7 @@ public class AuthService implements IAuthService {
     private final UserShippingAddressRepository userShippingAddressRepository;
     private final JwtTokenUtil jwtTokenUtil;
     private final CloudinaryService cloudinaryService;
+    private final GoogleService googleService;
     private final ModelMapper mapper;
     private final LocalizationUtils localizationUtils;
 
@@ -56,29 +57,22 @@ public class AuthService implements IAuthService {
     @Transactional
     public User createUser(UserRegisterDTO userRegisterDTO) throws Exception {
         String email = userRegisterDTO.getMail();
-        if (authRepository.existsByEmail(email)){
-            throw new DataIntegrityViolationException(localizationUtils.getLocalizedMessage(MessageKeys.USER_ALREADY_EXIST));
-        }
-        Role userRole = roleRepository.findByName("BASIC").get();
-        // CONVERT DTO => ENTITY
+        if (authRepository.existsByEmail(email)) throw new DataIntegrityViolationException(localizationUtils.getLocalizedMessage(MessageKeys.USER_ALREADY_EXIST));
+        Role userRole = roleRepository.findByName("BASIC")
+                .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.ERROR)));
         User newUser = User.builder()
                 .email(userRegisterDTO.getMail())
                 .password(userRegisterDTO.getPassword())
-                .facebookAccountId(userRegisterDTO.getFacebookAccountId())
-                .googleAccountId(userRegisterDTO.getGoogleAccountId())
                 .status(1)
-                .userType(3)
+                .userType(3) // 1: Google, 2: Facebook, 3: email
                 .fullName(userRegisterDTO.getMail())
                 .userName(userRegisterDTO.getMail())
                 .role(userRole)
                 .build();
-
         authRepository.save(newUser);
-        if (userRegisterDTO.getFacebookAccountId() == 0 && userRegisterDTO.getGoogleAccountId() == 0) {
-            String password = userRegisterDTO.getPassword();
-            String encodedPassword = passwordEncoder.encode(password);
-            newUser.setPassword(encodedPassword);
-        }
+        String password = userRegisterDTO.getPassword();
+        String encodedPassword = passwordEncoder.encode(password);
+        newUser.setPassword(encodedPassword);
         return authRepository.save(newUser);
     }
 
@@ -89,14 +83,8 @@ public class AuthService implements IAuthService {
             throw new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.USER_NOT_EXIST));
         }
         User existingUser = user.get();
-
-        // Check password
-        if(existingUser.getFacebookAccountId() == 0 &&
-              existingUser.getGoogleAccountId() == 0 ) {
-            if(!passwordEncoder.matches(password, existingUser.getPassword())){
-                throw new BadCredentialsException(localizationUtils.getLocalizedMessage(MessageKeys.WRONG_INPUT));
-            }
-        }
+        if(!passwordEncoder.matches(password, existingUser.getPassword()))
+            throw new BadCredentialsException(localizationUtils.getLocalizedMessage(MessageKeys.WRONG_INPUT));
         if(existingUser.getStatus() == 0) {
             throw new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.ACCOUNT_LOCKED));
         }
@@ -105,14 +93,14 @@ public class AuthService implements IAuthService {
                 email, password,
                 existingUser.getAuthorities()
         );
-        //authenticate with Java Spring security
         authenticationManager.authenticate(authenticationToken);
         return jwtTokenUtil.generateToken(existingUser);
     }
 
     @Override
-    public User findUserByEmail(String email) throws Exception {
-        return authRepository.findByEmail(email).get();
+    public User getUserInfo(String email) throws Exception {
+        return authRepository.findByEmail(email)
+                .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.USER_NOT_EXIST)));
     }
 
     @Override
@@ -120,7 +108,7 @@ public class AuthService implements IAuthService {
     public String changeUserPassword(ChangePassword changePassword, String token) throws Exception {
         String jwtToken = token.substring(7);
         String email = jwtTokenUtil.extractEmail(jwtToken);
-        User user = this.findUserByEmail(email);
+        User user = this.getUserInfo(email);
         String currentPassword = changePassword.getCurrentPassword();
         String newPassword = changePassword.getNewPassword();
         if(currentPassword.equals(newPassword)) throw new InvalidInput(localizationUtils.getLocalizedMessage(MessageKeys.DIFFERENT_PASSWORD));
@@ -161,6 +149,37 @@ public class AuthService implements IAuthService {
         authRepository.save(user);
         UserLoginResponse userLoginResponse = mapper.map(user, UserLoginResponse.class);
         return userLoginResponse;
+    }
+
+    @Override
+    public User registerGoogle(String token) {
+        GoogleUserInfoResponse googleUserInfoResponse = googleService.getUserInfo(token);
+        String email = googleUserInfoResponse.getEmail();
+        Optional<User> optionalUser = authRepository.findByEmail(email);
+        if(optionalUser.isPresent()) throw new DataIntegrityViolationException(localizationUtils.getLocalizedMessage(MessageKeys.USER_ALREADY_EXIST));
+        Role userRole = roleRepository.findByName("BASIC")
+                .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.ERROR)));;
+        User newUser = User.builder()
+                .role(userRole)
+                .email(email)
+                .googleAccountId(googleUserInfoResponse.getSub())
+                .status(1)
+                .userType(3) // 1: Google, 2: Facebook, 3: email
+                .fullName(googleUserInfoResponse.getName())
+                .userName(googleUserInfoResponse.getName())
+                .imageUrl(googleUserInfoResponse.getPicture())
+                .build();
+        authRepository.save(newUser);
+        return newUser;
+    }
+
+    @Override
+    public String loginGoogle(String token) throws Exception {
+        GoogleUserInfoResponse googleUserInfoResponse = googleService.getUserInfo(token);
+        Optional<User> optionalUser = authRepository.findByGoogleAccountId(googleUserInfoResponse.getSub());
+        if(optionalUser.isEmpty()) throw new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.USER_NOT_EXIST));
+        User user = optionalUser.get();
+        return jwtTokenUtil.generateToken(user);
     }
 
     @Transactional
