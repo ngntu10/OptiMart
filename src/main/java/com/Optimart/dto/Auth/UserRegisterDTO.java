@@ -17,7 +17,6 @@ public class UserRegisterDTO {
     @NotBlank(message = "Mail is required")
     private String mail;
 
-
     @Schema(description = "User password", example = "123456789Tu@")
     @NotBlank(message = "Password can not be blank")
     private String password;
@@ -26,9 +25,4 @@ public class UserRegisterDTO {
     @JsonProperty("retype_password")
     private String retypePassword;
 
-    @JsonProperty("facebook_account_id")
-    private int facebookAccountId;
-
-    @JsonProperty("google_account_id")
-    private int googleAccountId;
 }

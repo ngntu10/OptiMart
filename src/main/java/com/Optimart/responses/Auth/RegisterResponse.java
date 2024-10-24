@@ -10,10 +10,6 @@ import lombok.*;
 @AllArgsConstructor
 @RequiredArgsConstructor
 public class RegisterResponse {
-    @JsonProperty("message")
     private String message;
-
-    @JsonProperty("user")
     private User user;
-
 }

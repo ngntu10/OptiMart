@@ -1,2 +1,8 @@
-package com.Optimart.dto.OAuth2;public class OAuth2Token {
+package com.Optimart.dto.OAuth2;
+
+import lombok.Data;
+
+@Data
+public class OAuth2DTO {
+    private String idToken;
 }
