@@ -1,6 +1,9 @@
 package com.Optimart.constants;
 
 public class MessageKeys {
+    // **** App
+    public static final String EMAIL_SENT = "email.sent";
+
     // **** Errors
     public static final String ERROR = "optimart.error";
 
@@ -20,6 +23,7 @@ public class MessageKeys {
     public static final String REFRESHTOKEN_NOT_EXIST = "error.auth.refreshtoken.not_exist";
     public static final String REFRESHTOKEN_EXPIRED = "error.auth.refreshtoken.expired";
     public static final String ACCESSTOKEN_SUCCESS = "auth.refreshtoken.get_access_token_success";
+    public static final String RESET_TOKEN_EXPIRED = "auth.reset_token.expired";
     public static final String UPDATE_AVATAR_SUCCESS = "auth.avatar.update_success";
 
     // ROLES

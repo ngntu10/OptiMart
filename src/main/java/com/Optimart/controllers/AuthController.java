@@ -18,10 +18,12 @@ import com.Optimart.responses.BaseResponse;
 import com.Optimart.responses.CloudinaryResponse;
 import com.Optimart.responses.OAuth2.FacebookUserInfoResponse;
 import com.Optimart.responses.OAuth2.GoogleUserInfoResponse;
+import com.Optimart.services.EmailService;
 import com.Optimart.services.OAuth2.FacebookService;
 import com.Optimart.services.OAuth2.GoogleService;
 import com.Optimart.services.RefreshToken.RefreshTokenService;
 import com.Optimart.services.Auth.AuthService;
+import com.Optimart.services.TokenGeneratorService;
 import com.Optimart.utils.JwtTokenUtil;
 import com.Optimart.utils.LocalizationUtils;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -37,6 +39,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.swing.text.html.Option;
 import java.time.LocalDate;
 
 @RequiredArgsConstructor
@@ -48,6 +51,8 @@ public class AuthController {
     private final RefreshTokenService refreshTokenService;
     private final GoogleService googleService;
     private final FacebookService facebookService;
+    private final TokenGeneratorService tokenGeneratorService;
+    private final EmailService emailService;
     private final JwtTokenUtil jwtTokenUtil;
     private final ModelMapper mapper;
     private final LocalizationUtils localizationUtils;
@@ -97,6 +102,34 @@ public class AuthController {
                     access_token, refreshToken.getRefreshtoken(), userLoginResponse));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(LoginResponse.failure(e.getMessage()));
+        }
+    }
+
+    @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = Object.class), mediaType = "application/json"))
+    @UnsecuredSwaggerOperation(summary = "User forgot password")
+    @PostMapping(Endpoint.Auth.FORGOT_PASSWORD)
+    public ResponseEntity<?> forgotPassword(@RequestBody ForgotPasswordDTO forgotPasswordDTO){
+        try {
+            String token = tokenGeneratorService.generateResetToken(forgotPasswordDTO.getEmail());
+            emailService.sendResetPasswordEmail(forgotPasswordDTO.getEmail(), token);
+            APIResponse<String> apiResponse = new APIResponse<String>(token, localizationUtils.getLocalizedMessage(MessageKeys.EMAIL_SENT));
+            return ResponseEntity.ok(apiResponse);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = LoginResponse.class), mediaType = "application/json"))
+    @UnsecuredSwaggerOperation(summary = "User reset password")
+    @PostMapping(Endpoint.Auth.RESET_PASSWORD)
+    public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordDTO resetPasswordDTO){
+        try {
+            String message = authService.resetPassword(resetPasswordDTO);
+            APIResponse<Boolean> apiResponse = new APIResponse<Boolean>(true, message);
+            return ResponseEntity.ok(apiResponse);
+        } catch (Exception e) {
+            APIResponse<Boolean> apiResponse = new APIResponse<Boolean>(false, e.getMessage());
+            return ResponseEntity.badRequest().body(apiResponse);
         }
     }
 

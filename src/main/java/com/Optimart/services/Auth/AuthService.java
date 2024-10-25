@@ -3,6 +3,7 @@ package com.Optimart.services.Auth;
 import com.Optimart.constants.MessageKeys;
 import com.Optimart.dto.Auth.ChangePassword;
 import com.Optimart.dto.Auth.ChangeUserInfo;
+import com.Optimart.dto.Auth.ResetPasswordDTO;
 import com.Optimart.dto.Auth.UserRegisterDTO;
 import com.Optimart.exceptions.DataNotFoundException;
 import com.Optimart.exceptions.InvalidInput;
@@ -35,6 +36,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -252,6 +254,17 @@ public class AuthService implements IAuthService {
             User user = optionalUser.get();
             return jwtTokenUtil.generateToken(user);
         }
+    }
+
+     public String resetPassword(ResetPasswordDTO resetPasswordDTO){
+        User user = authRepository.findByResetToken(resetPasswordDTO.getSecretKey())
+                .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.USER_NOT_EXIST)));
+        if(user.getResetTokenExpiration().before(new Date()))
+            throw new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.RESET_TOKEN_EXPIRED));
+        String encodedNewPassword = passwordEncoder.encode(resetPasswordDTO.getNewPassword());
+        user.setPassword(encodedNewPassword);
+        authRepository.save(user);
+        return localizationUtils.getLocalizedMessage(MessageKeys.UPDATE_PASSWORD_SUCCESSFULLY);
     }
 
     @Transactional

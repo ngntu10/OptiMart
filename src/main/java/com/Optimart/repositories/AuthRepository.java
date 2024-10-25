@@ -13,4 +13,5 @@ public interface AuthRepository extends JpaRepository<User, UUID> {
     Optional<User> findByEmail(String email);
     Optional<User> findByGoogleAccountId(String googleAccountId);
     Optional<User> findByFacebookAccountId(String facebookAccountId);
+    Optional<User> findByResetToken(String resetToken);
 }
