@@ -1,11 +1,10 @@
 package com.Optimart.services.OAuth2;
 
-import com.Optimart.responses.GoogleUserInfoResponse;
+import com.Optimart.responses.OAuth2.GoogleUserInfoResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.http.*;
-import org.springframework.beans.factory.annotation.Autowired;
 
 @Service
 @RequiredArgsConstructor

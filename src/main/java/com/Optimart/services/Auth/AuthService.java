@@ -16,8 +16,10 @@ import com.Optimart.repositories.AuthRepository;
 import com.Optimart.repositories.UserShippingAddressRepository;
 import com.Optimart.responses.Auth.UserLoginResponse;
 import com.Optimart.responses.CloudinaryResponse;
-import com.Optimart.responses.GoogleUserInfoResponse;
+import com.Optimart.responses.OAuth2.FacebookUserInfoResponse;
+import com.Optimart.responses.OAuth2.GoogleUserInfoResponse;
 import com.Optimart.services.CloudinaryService;
+import com.Optimart.services.OAuth2.FacebookService;
 import com.Optimart.services.OAuth2.GoogleService;
 import com.Optimart.utils.FileUploadUtil;
 import com.Optimart.utils.JwtTokenUtil;
@@ -50,6 +52,7 @@ public class AuthService implements IAuthService {
     private final JwtTokenUtil jwtTokenUtil;
     private final CloudinaryService cloudinaryService;
     private final GoogleService googleService;
+    private final FacebookService facebookService;
     private final ModelMapper mapper;
     private final LocalizationUtils localizationUtils;
 
@@ -57,7 +60,10 @@ public class AuthService implements IAuthService {
     @Transactional
     public User createUser(UserRegisterDTO userRegisterDTO) throws Exception {
         String email = userRegisterDTO.getMail();
-        if (authRepository.existsByEmail(email)) throw new DataIntegrityViolationException(localizationUtils.getLocalizedMessage(MessageKeys.USER_ALREADY_EXIST));
+        Optional<User> optionalUser = authRepository.findByEmail(email);
+        if(optionalUser.isPresent()){
+            if (optionalUser.get().getGoogleAccountId() != null || optionalUser.get().getFacebookAccountId() != null) throw new DataIntegrityViolationException(localizationUtils.getLocalizedMessage(MessageKeys.USER_ALREADY_EXIST));
+        }
         Role userRole = roleRepository.findByName("BASIC")
                 .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.ERROR)));
         User newUser = User.builder()
@@ -173,6 +179,8 @@ public class AuthService implements IAuthService {
         return newUser;
     }
 
+
+
     @Override
     public String loginGoogle(String token) throws Exception {
         GoogleUserInfoResponse googleUserInfoResponse = googleService.getUserInfo(token);
@@ -189,6 +197,53 @@ public class AuthService implements IAuthService {
                     .fullName(googleUserInfoResponse.getName())
                     .userName(googleUserInfoResponse.getName())
                     .imageUrl(googleUserInfoResponse.getPicture())
+                    .build();
+            authRepository.save(newUser);
+            return jwtTokenUtil.generateToken(newUser);
+        }
+        else {
+            User user = optionalUser.get();
+            return jwtTokenUtil.generateToken(user);
+        }
+    }
+
+    @Override
+    public User registerFacebook(String token) {
+        FacebookUserInfoResponse facebookUserInfoResponse = facebookService.getUserProfile(token);
+        Optional<User> optionalUser = authRepository.findByEmail(facebookUserInfoResponse.getEmail());
+        if(optionalUser.isPresent()) throw new DataIntegrityViolationException(localizationUtils.getLocalizedMessage(MessageKeys.USER_ALREADY_EXIST));
+        Role userRole = roleRepository.findByName("BASIC")
+                .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.ERROR)));;
+        User newUser = User.builder()
+                .role(userRole)
+                .email(facebookUserInfoResponse.getEmail())
+                .facebookAccountId(facebookUserInfoResponse.getId())
+                .status(1)
+                .userType(2) // 1: Google, 2: Facebook, 3: email
+                .fullName(facebookUserInfoResponse.getFirst_name()+facebookUserInfoResponse.getLast_name())
+                .userName(facebookUserInfoResponse.getFirst_name()+facebookUserInfoResponse.getLast_name())
+                .imageUrl(facebookUserInfoResponse.getUrl())
+                .build();
+        authRepository.save(newUser);
+        return newUser;
+    }
+
+    @Override
+    public String loginFacebook(String token) throws Exception {
+        FacebookUserInfoResponse facebookUserInfoResponse = facebookService.getUserProfile(token);
+        Optional<User> optionalUser = authRepository.findByFacebookAccountId(facebookUserInfoResponse.getId());
+        if(optionalUser.isEmpty()){
+            Role userRole = roleRepository.findByName("BASIC")
+                    .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.ERROR)));
+            User newUser = User.builder()
+                    .role(userRole)
+                    .email(facebookUserInfoResponse.getEmail())
+                    .facebookAccountId(facebookUserInfoResponse.getId())
+                    .status(1)
+                    .userType(2) // 1: Google, 2: Facebook, 3: email
+                    .fullName(facebookUserInfoResponse.getFirst_name()+facebookUserInfoResponse.getLast_name())
+                    .userName(facebookUserInfoResponse.getFirst_name()+facebookUserInfoResponse.getLast_name())
+                    .imageUrl(facebookUserInfoResponse.getUrl())
                     .build();
             authRepository.save(newUser);
             return jwtTokenUtil.generateToken(newUser);

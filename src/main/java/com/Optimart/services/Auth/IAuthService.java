@@ -14,4 +14,6 @@ public interface IAuthService {
     UserLoginResponse changeUserInfo(ChangeUserInfo changeUserInfo);
     User registerGoogle(String token);
     String loginGoogle(String token) throws Exception;
+    User registerFacebook(String token);
+    String loginFacebook(String token) throws Exception;
 }

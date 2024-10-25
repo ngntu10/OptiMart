@@ -16,7 +16,9 @@ import com.Optimart.responses.Auth.TokenRefreshResponse;
 import com.Optimart.responses.Auth.UserLoginResponse;
 import com.Optimart.responses.BaseResponse;
 import com.Optimart.responses.CloudinaryResponse;
-import com.Optimart.responses.GoogleUserInfoResponse;
+import com.Optimart.responses.OAuth2.FacebookUserInfoResponse;
+import com.Optimart.responses.OAuth2.GoogleUserInfoResponse;
+import com.Optimart.services.OAuth2.FacebookService;
 import com.Optimart.services.OAuth2.GoogleService;
 import com.Optimart.services.RefreshToken.RefreshTokenService;
 import com.Optimart.services.Auth.AuthService;
@@ -27,11 +29,9 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -47,6 +47,7 @@ public class AuthController {
     private final AuthService authService;
     private final RefreshTokenService refreshTokenService;
     private final GoogleService googleService;
+    private final FacebookService facebookService;
     private final JwtTokenUtil jwtTokenUtil;
     private final ModelMapper mapper;
     private final LocalizationUtils localizationUtils;
@@ -116,7 +117,7 @@ public class AuthController {
     @PostMapping(Endpoint.Auth.REGISTER_FACEBOOK)
     public ResponseEntity<?> registerFacebook(@RequestBody OAuth2DTO oAuth2DTO){
         try {
-            User registerUser = authService.registerGoogle(oAuth2DTO.getIdToken());
+            User registerUser = authService.registerFacebook(oAuth2DTO.getIdToken());
             return ResponseEntity.ok(new RegisterResponse(localizationUtils.getLocalizedMessage(MessageKeys.REGISTER_SUCCESSFULLY), registerUser));
         } catch (Exception ex) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new RegisterResponse(localizationUtils.getLocalizedMessage(MessageKeys.REGISTER_FAILED, ex.getMessage()), null));
@@ -128,10 +129,10 @@ public class AuthController {
     @PostMapping(Endpoint.Auth.LOGIN_FACEBOOK)
     public ResponseEntity<?> loginFacebook(@RequestBody OAuth2DTO oAuth2DTO){
         try {
-            GoogleUserInfoResponse googleUserInfoResponse = googleService.getUserInfo(oAuth2DTO.getIdToken());
-            String access_token = authService.loginGoogle(oAuth2DTO.getIdToken());
-            RefreshToken refreshToken = refreshTokenService.createRefreshToken(googleUserInfoResponse.getEmail());
-            User user = authService.getUserInfo(googleUserInfoResponse.getEmail());
+            FacebookUserInfoResponse facebookUserInfoResponse = facebookService.getUserProfile(oAuth2DTO.getIdToken());
+            String access_token = authService.loginFacebook(oAuth2DTO.getIdToken());
+            RefreshToken refreshToken = refreshTokenService.createRefreshToken(facebookUserInfoResponse.getEmail());
+            User user = authService.getUserInfo(facebookUserInfoResponse.getEmail());
             UserLoginResponse userLoginResponse = mapper.map(user, UserLoginResponse.class);
             userLoginResponse.setCity(user.getCity());
             return ResponseEntity.ok(LoginResponse.success(localizationUtils.getLocalizedMessage(MessageKeys.LOGIN_SUCCESSFULLY),

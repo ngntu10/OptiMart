@@ -1,4 +1,4 @@
-package com.Optimart.responses;
+package com.Optimart.responses.OAuth2;
 
 import lombok.Data;
 
