@@ -40,7 +40,7 @@ public class EmailService {
                 + "If you did not make this request, please ignore this email. "
                 + "Otherwise, you can reset your password using the following link:\n\n"
                 + resetPasswordLink + "\n\n"
-                + "This link will expire in 1 hour. If the link does not work, copy and paste it into your browser.\n\n"
+                + "This link will expire in 15 minutes. If the link does not work, copy and paste it into your browser.\n\n"
                 + "For your security, do not share this email or the password reset link with anyone.\n\n"
                 + "If you need any assistance, please contact our support team at " + supportEmail + ".\n\n"
                 + "Thank you,\n"
