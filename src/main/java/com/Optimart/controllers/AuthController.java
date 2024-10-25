@@ -111,6 +111,36 @@ public class AuthController {
         }
     }
 
+    @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = LoginResponse.class), mediaType = "application/json"))
+    @UnsecuredSwaggerOperation(summary = "Register user by Facebook")
+    @PostMapping(Endpoint.Auth.REGISTER_FACEBOOK)
+    public ResponseEntity<?> registerFacebook(@RequestBody OAuth2DTO oAuth2DTO){
+        try {
+            User registerUser = authService.registerGoogle(oAuth2DTO.getIdToken());
+            return ResponseEntity.ok(new RegisterResponse(localizationUtils.getLocalizedMessage(MessageKeys.REGISTER_SUCCESSFULLY), registerUser));
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new RegisterResponse(localizationUtils.getLocalizedMessage(MessageKeys.REGISTER_FAILED, ex.getMessage()), null));
+        }
+    }
+
+    @ApiResponse(responseCode = "200", description = "OK", content  = @Content(schema = @Schema(implementation = LoginResponse.class), mediaType = "application/json"))
+    @UnsecuredSwaggerOperation(summary = "Login user by Facebook")
+    @PostMapping(Endpoint.Auth.LOGIN_FACEBOOK)
+    public ResponseEntity<?> loginFacebook(@RequestBody OAuth2DTO oAuth2DTO){
+        try {
+            GoogleUserInfoResponse googleUserInfoResponse = googleService.getUserInfo(oAuth2DTO.getIdToken());
+            String access_token = authService.loginGoogle(oAuth2DTO.getIdToken());
+            RefreshToken refreshToken = refreshTokenService.createRefreshToken(googleUserInfoResponse.getEmail());
+            User user = authService.getUserInfo(googleUserInfoResponse.getEmail());
+            UserLoginResponse userLoginResponse = mapper.map(user, UserLoginResponse.class);
+            userLoginResponse.setCity(user.getCity());
+            return ResponseEntity.ok(LoginResponse.success(localizationUtils.getLocalizedMessage(MessageKeys.LOGIN_SUCCESSFULLY),
+                    access_token, refreshToken.getRefreshtoken(), userLoginResponse));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(LoginResponse.failure(e.getMessage()));
+        }
+    }
+
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = UserLoginResponse.class), mediaType = "application/json"))
     @SecuredSwaggerOperation(summary = "Get my info user")
     @GetMapping (Endpoint.Auth.ME)

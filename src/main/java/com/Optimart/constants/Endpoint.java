@@ -8,6 +8,8 @@ public class Endpoint {
         public static final String LOGIN = "/login";
         public static final String LOGIN_GOOGLE = "/login-google";
         public static final String REGISTER_GOOGLE ="/register-google";
+        public static final String LOGIN_FACEBOOK = "/login-facebook";
+        public static final String REGISTER_FACEBOOK ="/register-facebook";
         public static final String ME = "/me";
         public static final String REGISTER = "/register";
         public static final String REFRESH_TOKEN = "/refreshtoken";

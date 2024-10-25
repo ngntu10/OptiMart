@@ -177,9 +177,26 @@ public class AuthService implements IAuthService {
     public String loginGoogle(String token) throws Exception {
         GoogleUserInfoResponse googleUserInfoResponse = googleService.getUserInfo(token);
         Optional<User> optionalUser = authRepository.findByGoogleAccountId(googleUserInfoResponse.getSub());
-        if(optionalUser.isEmpty()) throw new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.USER_NOT_EXIST));
-        User user = optionalUser.get();
-        return jwtTokenUtil.generateToken(user);
+        if(optionalUser.isEmpty()){
+            Role userRole = roleRepository.findByName("BASIC")
+                    .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.ERROR)));;
+            User newUser = User.builder()
+                    .role(userRole)
+                    .email(googleUserInfoResponse.getEmail())
+                    .googleAccountId(googleUserInfoResponse.getSub())
+                    .status(1)
+                    .userType(1) // 1: Google, 2: Facebook, 3: email
+                    .fullName(googleUserInfoResponse.getName())
+                    .userName(googleUserInfoResponse.getName())
+                    .imageUrl(googleUserInfoResponse.getPicture())
+                    .build();
+            authRepository.save(newUser);
+            return jwtTokenUtil.generateToken(newUser);
+        }
+        else {
+            User user = optionalUser.get();
+            return jwtTokenUtil.generateToken(user);
+        }
     }
 
     @Transactional
