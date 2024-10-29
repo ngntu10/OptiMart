@@ -99,4 +99,13 @@ public class MessageKeys {
     public static final String PAY_SUCCESS = "payment.success";
     public static final String PAY_FAILED = "payment.failed";
 
+    // COMMENT
+    public static final String CREATE_COMMENT_SUCCESS = "comment.create_success";
+    public static final String CREATE_COMMENT_FAILED = "comment.create_failed";
+    public static final String GET_LIST_COMMENT_SUCCESS = "comment.get_list_success";
+    public static final String UPDATE_COMMENT_SUCCESS = "comment.update_success";
+    public static final String UPDATE_COMMENT_FAILED = "comment.update_failed";
+    public static final String DELETE_COMMENT_SUCCESS = "comment.delete_success";
+    public static final String DELETE_COMMENT_FAILED = "comment.delete_failed";
+
 }
