@@ -91,4 +91,12 @@ public class Endpoint {
         public static final String VNPAY = "/vnpay";
         public static final String CALL_BACK = "/vnpay-callback";
     }
+
+    public static class Comment{
+        public static final String BASE = API_PREFIX + "/comments";
+        public static final String ID_ME = "/me/{commentId}";
+        public static final String ID = "/{commentId}";
+        public static final String DELETE_MANY = "/delete-many";
+
+    }
 }

@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 public class EmailService {
 
     @Value("${spring.application.name}")
-    private String appName; // Đọc tên ứng dụng từ file cấu hình
+    private String appName;
 
     @Value("${support.email}")
     private String supportEmail;
