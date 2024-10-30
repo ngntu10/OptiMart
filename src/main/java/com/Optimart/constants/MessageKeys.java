@@ -107,5 +107,6 @@ public class MessageKeys {
     public static final String UPDATE_COMMENT_FAILED = "comment.update_failed";
     public static final String DELETE_COMMENT_SUCCESS = "comment.delete_success";
     public static final String DELETE_COMMENT_FAILED = "comment.delete_failed";
-
+    public static final String COMMENT_NOT_FOUND = "comment.not_found";
+    public static final String GET_COMMENT_SUCCESS = "comment.get_success";
 }
