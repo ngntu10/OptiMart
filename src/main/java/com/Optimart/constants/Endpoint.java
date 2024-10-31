@@ -97,6 +97,7 @@ public class Endpoint {
         public static final String PUBLIC = "/public";
         public static final String ID_ME = "/me/{commentId}";
         public static final String ID = "/{commentId}";
+        public static final String REPLY_COMMENT = "/reply";
         public static final String DELETE_MANY = "/delete-many";
 
     }

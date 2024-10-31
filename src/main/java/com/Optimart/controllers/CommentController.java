@@ -6,6 +6,7 @@ import com.Optimart.constants.Endpoint;
 import com.Optimart.constants.MessageKeys;
 import com.Optimart.dto.Comment.AddCommentDTO;
 import com.Optimart.dto.Comment.DeleteMultiCommentDTO;
+import com.Optimart.dto.Comment.ReplyCommentDTO;
 import com.Optimart.dto.Comment.UpdateCommentDTO;
 import com.Optimart.models.Comment;
 import com.Optimart.responses.APIResponse;
@@ -110,7 +111,29 @@ public class CommentController {
     @GetMapping(Endpoint.Comment.PUBLIC)
     public ResponseEntity<?> getAllCommentPublic(@RequestParam Map<Object, String> filters) {
         try {
+            return ResponseEntity.ok(commentService.getAllCommentPublic(filters));
+        } catch (Exception ex) {
+            return ResponseEntity.badRequest().body(new APIResponse<>(null, ex.getMessage()));
+        }
+    }
+
+    @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = Object.class), mediaType = "application/json"))
+    @UnsecuredSwaggerOperation(summary = "Get all comment")
+    @GetMapping
+    public ResponseEntity<?> getAllComment(@RequestParam Map<Object, String> filters) {
+        try {
             return ResponseEntity.ok(commentService.getAllComment(filters));
+        } catch (Exception ex) {
+            return ResponseEntity.badRequest().body(new APIResponse<>(null, ex.getMessage()));
+        }
+    }
+
+    @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = Object.class), mediaType = "application/json"))
+    @SecuredSwaggerOperation(summary = "Reply a comment")
+    @PostMapping(Endpoint.Comment.REPLY_COMMENT)
+    public ResponseEntity<?> replyComment(@RequestBody ReplyCommentDTO replyCommentDTO) {
+        try {
+            return ResponseEntity.ok(commentService.replyComment(replyCommentDTO));
         } catch (Exception ex) {
             return ResponseEntity.badRequest().body(new APIResponse<>(null, ex.getMessage()));
         }

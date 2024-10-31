@@ -101,6 +101,6 @@ public class Product extends BaseEntity {
     @OneToMany(mappedBy = "product")
     private List<Review> reviewList;
 
-    @OneToMany(mappedBy = "product")
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> commentList;
 }

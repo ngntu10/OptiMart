@@ -68,7 +68,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     }
 
 
-    private boolean isByPassToken(@NonNull HttpServletRequest request){
+    private boolean isByPassToken(@NonNull HttpServletRequest request){ //**** Public API
         final List<Pair<String,String>> byPassToken = Arrays.asList(
                 Pair.of(String.format("%s/auth/register", apiPrefix), "POST"),
                 Pair.of(String.format("%s/auth/login", apiPrefix), "POST"),
@@ -84,6 +84,9 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 Pair.of(String.format("%s/products/related", apiPrefix), "GET"),
 
                 Pair.of(String.format("%s/city", apiPrefix), "GET"),
+
+                Pair.of(String.format("%s/reviews", apiPrefix), "GET"),
+                Pair.of(String.format("%s/comments/public", apiPrefix), "GET"),
 
                 Pair.of("/swagger-ui/**", "GET"),
                 Pair.of("/swagger-ui", "GET"),
