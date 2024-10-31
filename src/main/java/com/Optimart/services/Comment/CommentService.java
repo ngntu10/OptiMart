@@ -150,7 +150,8 @@ public class CommentService implements ICommentService{
         page = Math.max(Integer.parseInt(filters.getOrDefault("page", "-1")), 1) - 1;
         Pageable pageable = PageRequest.of(page, limit, Sort.by("createdAt").descending());
         pageable = getPageable(pageable, page, limit, order);
-        Page<Comment> commentPage = commentRepository.findAll(pageable);
+        Specification<Comment> specification = CommentSpecification.filterCommentByKeyWords(filters.get("search"));
+        Page<Comment> commentPage = commentRepository.findAll(specification, pageable);
         List<CommentResponse> commentResponseList = commentPage.getContent().stream().map(
                 this::toCommentResponse
         ).toList();
