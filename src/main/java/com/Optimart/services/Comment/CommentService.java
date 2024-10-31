@@ -86,6 +86,12 @@ public class CommentService implements ICommentService{
     public APIResponse<Boolean> deleteComment(String commentId) {
         Comment comment = commentRepository.findById(UUID.fromString(commentId))
                 .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.COMMENT_NOT_FOUND)));
+        if(comment.getParent() == null){
+            commentRepository.deleteAll(comment.getReplies());
+        } else {
+            Comment parentComment = comment.getParent();
+            parentComment.getReplies().remove(comment);
+        }
         commentRepository.delete(comment);
         return new APIResponse<>(true, localizationUtils.getLocalizedMessage(MessageKeys.DELETE_COMMENT_SUCCESS));
     }
@@ -99,10 +105,7 @@ public class CommentService implements ICommentService{
 
     @Override
     public APIResponse<Boolean> deleteMultiComment(DeleteMultiCommentDTO deleteMultiCommentDTO) {
-        List<String> comments = deleteMultiCommentDTO.getCommentIds();
-        comments.forEach(item -> {
-            commentRepository.deleteById(UUID.fromString(item));
-        });
+        deleteMultiCommentDTO.getCommentIds().forEach(this::deleteComment);
         return new APIResponse<>(true, localizationUtils.getLocalizedMessage(MessageKeys.DELETE_COMMENT_SUCCESS));
     }
 
