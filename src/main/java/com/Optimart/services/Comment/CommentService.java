@@ -12,11 +12,13 @@ import com.Optimart.repositories.CommentRepository;
 import com.Optimart.repositories.ProductRepository;
 import com.Optimart.repositories.UserRepository;
 import com.Optimart.responses.APIResponse;
+import com.Optimart.responses.PagingResponse;
 import com.Optimart.utils.LocalizationUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -73,5 +75,10 @@ public class CommentService implements ICommentService{
             commentRepository.deleteById(UUID.fromString(item));
         });
         return new APIResponse<>(true, localizationUtils.getLocalizedMessage(MessageKeys.DELETE_COMMENT_SUCCESS));
+    }
+
+    @Override
+    public PagingResponse<Comment> getAllComment(Map<Object, String> filters) {
+        return null;
     }
 }
