@@ -99,6 +99,14 @@ public class Endpoint {
         public static final String ID = "/{commentId}";
         public static final String REPLY_COMMENT = "/reply";
         public static final String DELETE_MANY = "/delete-many";
-
+    }
+    public static class Report{
+        public static final String BASE = API_PREFIX + "/report";
+        public static final String PRODUCT_TYPE = "/product-type/count";
+        public static final String USER_TYPE = "/user-type/count";
+        public static final String PRODUCT_STATUS = "/product-status/count";
+        public static final String ORDER_STATUS = "/order-status/count";
+        public static final String ALL_RECORDS = "/all-records/count";
+        public static final String REVENUE_TOTAL = "/revenue-total";
     }
 }

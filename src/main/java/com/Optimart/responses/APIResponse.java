@@ -2,8 +2,7 @@ package com.Optimart.responses;
 
 import lombok.*;
 
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder

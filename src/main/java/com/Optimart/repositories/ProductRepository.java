@@ -15,4 +15,5 @@ import java.util.UUID;
 public interface ProductRepository extends JpaRepository<Product, UUID>, JpaSpecificationExecutor<Product> {
    List<Product> findAllByStatus(int status);
    Optional<Product> findBySlug(String slug);
+   Long countProductByStatus(int status);
 }

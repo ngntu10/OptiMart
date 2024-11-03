@@ -72,10 +72,10 @@ public class User extends BaseEntity implements UserDetails {
     private String deviceToken;
 
     @Column(name = "facebook_account_id")
-    private String facebookAccountId = "";
+    private String facebookAccountId;
 
     @Column(name = "google_account_id")
-    private String googleAccountId = "";
+    private String googleAccountId;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

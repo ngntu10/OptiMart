@@ -100,12 +100,16 @@ public class UserService implements IUserservice {
     @Override
     public APIResponse<UserResponse> editUser(EditUserDTO editUserDTO) {
         User user = userRepository.findByEmail(editUserDTO.getEmail())
-                .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.USER_NOT_EXIST)));;
-        Role role = roleRepository.findByName(editUserDTO.getRole()).get();
-        City city = cityLocaleRepository.findById(Long.parseLong(editUserDTO.getCity())).get();
+                .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.USER_NOT_EXIST)));
+        Role role = roleRepository.findByName(editUserDTO.getRole())
+                .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.ROLE_NOT_FOUND)));
         modelMapper.map(editUserDTO, user);
         user.setRole(role);
+        if(!editUserDTO.getCity().isEmpty()){
+        City city = cityLocaleRepository.findByName(editUserDTO.getCity())
+                .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.CITY_NOT_FOUND)));
         user.setCity(city);
+        }
         userRepository.save(user);
         UserResponse userResponse = modelMapper.map(user, UserResponse.class);
         return new APIResponse<>(userResponse, localizationUtils.getLocalizedMessage(MessageKeys.USER_EDIT_SUCCESS));
@@ -114,7 +118,7 @@ public class UserService implements IUserservice {
     @Override
     public APIResponse<Boolean> deleteUser(String userId) {
         User user = userRepository.findById(UUID.fromString(userId))
-                .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.USER_NOT_EXIST)));;
+                .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.USER_NOT_EXIST)));
         System.out.println(user.getRole().getName());
         if(user.getRole().getName().equals(Role.ADMIN)) return new APIResponse<>(null, localizationUtils.getLocalizedMessage(MessageKeys.NOT_DELETE_ADMIN_USER));
         userRepository.delete(user);

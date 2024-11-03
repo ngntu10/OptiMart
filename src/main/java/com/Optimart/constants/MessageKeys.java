@@ -3,6 +3,7 @@ package com.Optimart.constants;
 public class MessageKeys {
     // **** App
     public static final String EMAIL_SENT = "email.sent";
+    public static final String GET_STATISTICS = "statistics.get_success";
 
     // **** Errors
     public static final String ERROR = "optimart.error";
@@ -31,6 +32,7 @@ public class MessageKeys {
     public static final String EDIT_ROLE_SUCCESS = "role.edit_success";
     public static final String DELETE_ROLE_SUCCESS = "role.delete_success";
     public static final String ROLE_EXISTED = "role.existed";
+    public static final String ROLE_NOT_FOUND = "role.not_found";
 
     // USERS
     public static final String USER_GET_SUCCESS = "users.get_success";
