@@ -195,8 +195,10 @@ public class ProductService implements IProductService {
         ProductType type = product1.getProductType();
         List<Product> productList;
         Pageable pageable;
-        int page = Integer.parseInt(filters.getOrDefault("page", "-1"));
-        int limit = Integer.parseInt(filters.getOrDefault("limit", "-1"));
+//        int page = Integer.parseInt(filters.getOrDefault("page", "-1"));
+//        int limit = Integer.parseInt(filters.getOrDefault("limit", "-1"));
+        int page = 1;
+        int limit = 3;
         String order = filters.get("order");
         if (page == -1 && limit == -1 ) {
             productList = productRepository.findAll();

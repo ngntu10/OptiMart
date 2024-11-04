@@ -6,16 +6,18 @@ import com.Optimart.models.Product;
 import com.Optimart.models.ProductType;
 import com.Optimart.repositories.*;
 import com.Optimart.responses.APIResponse;
-import com.Optimart.responses.StatisticResponse.ModelResponse;
-import com.Optimart.responses.StatisticResponse.ProductStatusResponse;
-import com.Optimart.responses.StatisticResponse.ProductTypeResponse;
-import com.Optimart.responses.StatisticResponse.UserTypeResponse;
+import com.Optimart.responses.StatisticResponse.*;
 import com.Optimart.responses.StatisticsResponse;
 import com.Optimart.utils.LocalizationUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+import java.time.LocalDate;
+import java.time.YearMonth;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -77,6 +79,44 @@ public class ReportService implements IReportService{
                 .review(reviewCount)
                 .build();
         return new APIResponse<>(modelResponse, localizationUtils.getLocalizedMessage(MessageKeys.GET_STATISTICS));
+    }
+
+    @Override
+    public APIResponse<List<RevenueResponse>> getRevenueStatistics() {
+        LocalDate currentDate = LocalDate.now();
+        List<Order> orders = orderRepository.findAll();
+        Map<YearMonth, Long> revenueMap = new LinkedHashMap<>();
+        for (int i = 6; i >= 0; i--) {
+            revenueMap.put(YearMonth.from(currentDate.minusMonths(i)), 0L);
+        }
+        orders.stream()
+                .filter(order -> order.getOrderStatus() == 2 && order.getDeliveryAt() != null)
+                .forEach(order -> {
+                    YearMonth month = YearMonth.from(order.getDeliveryAt().toInstant()
+                            .atZone(ZoneId.systemDefault()).toLocalDate());
+                    revenueMap.computeIfPresent(month, (k, v) -> v + order.getTotalPrice());
+                });
+        List<RevenueResponse> revenueResponses = revenueMap.entrySet().stream()
+                .map(entry -> new RevenueResponse(entry.getValue(), (long) entry.getKey().getMonthValue(), (long) entry.getKey().getYear()))
+                .collect(Collectors.toList());
+        return new APIResponse<>(revenueResponses, localizationUtils.getLocalizedMessage(MessageKeys.GET_STATISTICS));
+    }
+
+    @Override
+    public APIResponse<StatisticsResponse<OrderStatusStats>> getOrderStatusStat() {
+        Long stt0 = orderRepository.countByOrderStatus(0);
+        Long stt1 = orderRepository.countByOrderStatus(1);
+        Long stt2 = orderRepository.countByOrderStatus(2);
+        Long stt3 = orderRepository.countByOrderStatus(3);
+        Long total = orderRepository.count();
+        OrderStatusStats orderStatusStats = OrderStatusStats.builder()
+                .waitDelivery(stt0)
+                .waitPayment(stt1)
+                .doneOrder(stt2)
+                .cancelOrder(stt3)
+                .build();
+        StatisticsResponse<OrderStatusStats> statisticsResponse = new StatisticsResponse<>(orderStatusStats, total);
+        return new APIResponse<>(statisticsResponse, localizationUtils.getLocalizedMessage(MessageKeys.GET_STATISTICS));
     }
 
     @Override

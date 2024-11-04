@@ -11,4 +11,5 @@ import java.util.UUID;
 
 public interface OrderRepository extends JpaRepository<Order, UUID> {
     Page<Order> findAll(Specification<Order> specification, Pageable pageable);
+    Long countByOrderStatus(int status);
 }

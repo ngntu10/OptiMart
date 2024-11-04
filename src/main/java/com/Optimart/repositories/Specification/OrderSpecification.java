@@ -45,12 +45,15 @@ public class OrderSpecification {
     }
 
 
-    public static Specification<Order> filterOrderByUser(String statuses, UUID userId, String cityId) {
+    public static Specification<Order> filterOrderByUser(String statuses, UUID userId, String cityId, boolean fetchOrderItems) {
         if (statuses == null && userId == null && cityId == null) {
             return (root, query, criteriaBuilder) -> criteriaBuilder.conjunction();
         }
         return (root, query, criteriaBuilder) -> {
-            root.fetch("orderItemList", JoinType.LEFT);
+            if (fetchOrderItems) {
+                root.fetch("orderItemList", JoinType.LEFT);
+                query.distinct(true);
+            }
             query.distinct(true);
             return Specification.where(byStatus(statuses))
                     .and(hasUserId(userId))
@@ -82,7 +85,6 @@ public class OrderSpecification {
             return (root, query, criteriaBuilder) -> criteriaBuilder.conjunction();
         }
         return (root, query, criteriaBuilder) -> {
-            root.fetch("orderItemList", JoinType.LEFT);
             query.distinct(true);
             return Specification.where(byStatus(statuses))
                     .and(hasCityId(cityId))

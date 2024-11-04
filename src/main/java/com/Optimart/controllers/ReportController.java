@@ -66,4 +66,26 @@ public class ReportController {
             return ResponseEntity.badRequest().body(new APIResponse<>(null, ex.getMessage()));
         }
     }
+
+    @ApiResponse(responseCode = "200",description = "OK", content = @Content(schema = @Schema(implementation = Object.class), mediaType = "application/json"))
+    @SecuredSwaggerOperation(summary = "Get statistics revenue")
+    @GetMapping(Endpoint.Report.REVENUE_TOTAL)
+    public ResponseEntity<?> countRevenue(){
+        try {
+            return ResponseEntity.ok(reportService.getRevenueStatistics());
+        } catch (Exception ex) {
+            return ResponseEntity.badRequest().body(new APIResponse<>(null, ex.getMessage()));
+        }
+    }
+
+    @ApiResponse(responseCode = "200",description = "OK", content = @Content(schema = @Schema(implementation = Object.class), mediaType = "application/json"))
+    @SecuredSwaggerOperation(summary = "Get statistics order status")
+    @GetMapping(Endpoint.Report.ORDER_STATUS)
+    public ResponseEntity<?> countOrderStatus(){
+        try {
+            return ResponseEntity.ok(reportService.getOrderStatusStat());
+        } catch (Exception ex) {
+            return ResponseEntity.badRequest().body(new APIResponse<>(null, ex.getMessage()));
+        }
+    }
 }

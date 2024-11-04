@@ -89,7 +89,7 @@ public class OrderService implements IOrderService{
         page = Math.max(Integer.parseInt(filters.getOrDefault("page", "-1")), 1) - 1;
         Pageable pageable = PageRequest.of(page, limit, Sort.by("createdAt").descending());
         pageable = getPageable(pageable, page, limit, order);
-        Specification<Order> specification = OrderSpecification.filterOrderByUser(filters.get("status"), user.getId(), filters.get("cityId"));
+        Specification<Order> specification = OrderSpecification.filterOrderByUser(filters.get("status"), user.getId(), filters.get("cityId"), false);
         Page<Order> orderPage = orderRepository.findAll(specification, pageable);
         return new PagingResponse<>(orderPage.getContent(), localizationUtils.getLocalizedMessage(MessageKeys.ORDER_LIST_GET_SUCCESS), orderPage.getTotalPages(), orderPage.getTotalElements());
     }
@@ -142,6 +142,13 @@ public class OrderService implements IOrderService{
     public void handlePaymentOrderById(String orderId){
         Order order = orderRepository.findById(UUID.fromString(orderId))
                 .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.ORDER_NOT_FOUND)));
+        order.getOrderItemList().forEach(orderItem -> {
+            Product product = productRepository.findBySlug(orderItem.getSlug())
+                    .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.PRODUCT_NOT_EXISTED)));
+            int amount = orderItem.getAmount();
+            product.setSold(product.getSold() + amount);
+            productRepository.save(product);
+        });
         order.setOrderStatus(2);
         order.setIsPaid(1);
         order.setPaidAt(new Date());
