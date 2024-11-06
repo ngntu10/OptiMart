@@ -33,3 +33,4 @@ build/
 .vscode/
 node_modules/
 src/main/resources/env.properties
+src/main/resources/firebase-service-account.json

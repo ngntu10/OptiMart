@@ -34,7 +34,9 @@ import java.util.Optional;
 public class ProductController {
     private final LocalizationUtils localizationUtils;
     private final ProductService productService;
-    private final CloudinaryService cloudinaryService;
+
+    @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = Object.class), mediaType = "application/json"))
+    @SecuredSwaggerOperation(summary = "Get list products")
     @GetMapping
     public ResponseEntity<?> getListProducts(@RequestParam Map<Object, String> filters){
         return ResponseEntity.ok(productService.findAllProduct(filters));

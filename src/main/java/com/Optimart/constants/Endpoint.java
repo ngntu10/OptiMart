@@ -109,4 +109,8 @@ public class Endpoint {
         public static final String ALL_RECORDS = "/all-records/count";
         public static final String REVENUE_TOTAL = "/revenue-total";
     }
+
+    public static class Notification{
+        public static final String BASE = API_PREFIX + "/noti";
+    }
 }

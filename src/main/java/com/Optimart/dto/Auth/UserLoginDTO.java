@@ -22,7 +22,5 @@ public class UserLoginDTO {
     @NotBlank(message = "Password can not be blank")
     private String password;
 
-//    @JsonProperty("phone_number")
-//    @NotBlank(message = "Phone number is required")
-//    private String phoneNumber;
+    private String deviceToken;
 }

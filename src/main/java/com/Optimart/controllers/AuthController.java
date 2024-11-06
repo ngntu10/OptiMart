@@ -24,6 +24,7 @@ import com.Optimart.services.OAuth2.GoogleService;
 import com.Optimart.services.RefreshToken.RefreshTokenService;
 import com.Optimart.services.Auth.AuthService;
 import com.Optimart.services.TokenGeneratorService;
+import com.Optimart.services.User.UserService;
 import com.Optimart.utils.JwtTokenUtil;
 import com.Optimart.utils.LocalizationUtils;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -47,6 +48,7 @@ import java.time.LocalDate;
 @RequestMapping(Endpoint.Auth.BASE)
 public class AuthController {
     private final AuthService authService;
+    private final UserService userService;
     private final RefreshTokenService refreshTokenService;
     private final GoogleService googleService;
     private final FacebookService facebookService;
@@ -75,7 +77,7 @@ public class AuthController {
         try {
             String access_token = authService.login(userLoginDTO.getMail(), userLoginDTO.getPassword());
             RefreshToken refreshToken = refreshTokenService.createRefreshToken(userLoginDTO.getMail());
-            User user = authService.getUserInfo(userLoginDTO.getMail());
+            User user = authService.saveDeviceToken(userLoginDTO.getMail(), userLoginDTO.getDeviceToken());
             String refresh_token = refreshToken.getRefreshtoken();
             UserLoginResponse userLoginResponse = mapper.map(user, UserLoginResponse.class);
             userLoginResponse.setCity(user.getCity());
@@ -94,9 +96,7 @@ public class AuthController {
             GoogleUserInfoResponse googleUserInfoResponse = googleService.getUserInfo(oAuth2DTO.getIdToken());
             String access_token = authService.loginGoogle(oAuth2DTO.getIdToken());
             RefreshToken refreshToken = refreshTokenService.createRefreshToken(googleUserInfoResponse.getEmail());
-            User user = authService.getUserInfo(googleUserInfoResponse.getEmail());
-            UserLoginResponse userLoginResponse = mapper.map(user, UserLoginResponse.class);
-            userLoginResponse.setCity(user.getCity());
+            UserLoginResponse userLoginResponse = userService.getUserLoginResponse(googleUserInfoResponse.getEmail());
             return ResponseEntity.ok(LoginResponse.success(localizationUtils.getLocalizedMessage(MessageKeys.LOGIN_SUCCESSFULLY),
                     access_token, refreshToken.getRefreshtoken(), userLoginResponse));
         } catch (Exception e) {
@@ -164,9 +164,7 @@ public class AuthController {
             FacebookUserInfoResponse facebookUserInfoResponse = facebookService.getUserProfile(oAuth2DTO.getIdToken());
             String access_token = authService.loginFacebook(oAuth2DTO.getIdToken());
             RefreshToken refreshToken = refreshTokenService.createRefreshToken(facebookUserInfoResponse.getEmail());
-            User user = authService.getUserInfo(facebookUserInfoResponse.getEmail());
-            UserLoginResponse userLoginResponse = mapper.map(user, UserLoginResponse.class);
-            userLoginResponse.setCity(user.getCity());
+            UserLoginResponse userLoginResponse = userService.getUserLoginResponse(facebookUserInfoResponse.getEmail());
             return ResponseEntity.ok(LoginResponse.success(localizationUtils.getLocalizedMessage(MessageKeys.LOGIN_SUCCESSFULLY),
                     access_token, refreshToken.getRefreshtoken(), userLoginResponse));
         } catch (Exception e) {
@@ -180,9 +178,7 @@ public class AuthController {
     public ResponseEntity<UserLoginResponse> getInfoCurrentUser(@RequestHeader("Authorization") String token) {
         try {
             String email = jwtTokenUtil.extractEmail(token.substring(7));
-            User user = authService.getUserInfo(email);  // Need to refactor code ****
-            UserLoginResponse userLoginResponse = mapper.map(user, UserLoginResponse.class);
-            userLoginResponse.setAddresses(user.getUserShippingAddressList());
+            UserLoginResponse userLoginResponse = userService.getUserLoginResponse(email);
             return ResponseEntity.ok().body(userLoginResponse);
         } catch (Exception e) { return ResponseEntity.badRequest().body(null);}
     }

@@ -11,10 +11,7 @@ import com.Optimart.models.City;
 import com.Optimart.models.Role;
 import com.Optimart.models.User;
 import com.Optimart.models.userShippingAddress;
-import com.Optimart.repositories.CityLocaleRepository;
-import com.Optimart.repositories.RoleRepository;
-import com.Optimart.repositories.AuthRepository;
-import com.Optimart.repositories.UserShippingAddressRepository;
+import com.Optimart.repositories.*;
 import com.Optimart.responses.Auth.UserLoginResponse;
 import com.Optimart.responses.CloudinaryResponse;
 import com.Optimart.responses.OAuth2.FacebookUserInfoResponse;
@@ -46,6 +43,7 @@ import java.util.stream.Collectors;
 public class AuthService implements IAuthService {
 
     private final AuthRepository authRepository;
+    private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
@@ -106,9 +104,12 @@ public class AuthService implements IAuthService {
     }
 
     @Override
-    public User getUserInfo(String email) throws Exception {
-        return authRepository.findByEmail(email)
+    public User saveDeviceToken(String email, String deviceToken) throws Exception {
+        User user = authRepository.findByEmail(email)
                 .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.USER_NOT_EXIST)));
+        user.setDeviceToken(deviceToken);
+        userRepository.save(user);
+        return user;
     }
 
     @Override
@@ -116,7 +117,8 @@ public class AuthService implements IAuthService {
     public String changeUserPassword(ChangePassword changePassword, String token) throws Exception {
         String jwtToken = token.substring(7);
         String email = jwtTokenUtil.extractEmail(jwtToken);
-        User user = this.getUserInfo(email);
+        User user = authRepository.findByEmail(email)
+                .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.USER_NOT_EXIST)));
         String currentPassword = changePassword.getCurrentPassword();
         String newPassword = changePassword.getNewPassword();
         if(currentPassword.equals(newPassword)) throw new InvalidInput(localizationUtils.getLocalizedMessage(MessageKeys.DIFFERENT_PASSWORD));

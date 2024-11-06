@@ -215,7 +215,7 @@ public class ProductService implements IProductService {
         page = Math.max(Integer.parseInt(filters.getOrDefault("page", "-1")), 1) - 1;
         pageable = PageRequest.of(page, limit, Sort.by("createdAt").descending());
         pageable = getPageable(pageable, page, limit, order);
-        Specification<Product> specification = ProductSpecification.filterProducts(type.getName(), "1", filters.get("search"), null , null);
+        Specification<Product> specification = ProductSpecification.filterProducts(type.getId().toString(), "1", filters.get("search"), null , null);
         return getListPagingResponse(pageable, specification);
     }
 

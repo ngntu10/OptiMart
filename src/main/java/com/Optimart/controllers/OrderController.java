@@ -37,7 +37,7 @@ public class OrderController {
     }
 
     @ApiResponse(responseCode = "201", description = "CREATED", content = @Content(schema = @Schema(implementation = Object.class), mediaType = "application/json"))
-    @SecuredSwaggerOperation(summary = "Create a new order")
+    @SecuredSwaggerOperation(summary = "Get all orders")
     @GetMapping
     public ResponseEntity<?> getAllOrders(@RequestParam Map<Object, String> filters){
         return ResponseEntity.ok(orderService.getAllOrder(filters));
