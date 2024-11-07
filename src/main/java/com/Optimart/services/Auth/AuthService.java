@@ -189,7 +189,7 @@ public class AuthService implements IAuthService {
 
 
     @Override
-    public String loginGoogle(String token) throws Exception {
+    public String loginGoogle(String token, String deviceToken) throws Exception {
         GoogleUserInfoResponse googleUserInfoResponse = googleService.getUserInfo(token);
         Optional<User> optionalUser = authRepository.findByGoogleAccountId(googleUserInfoResponse.getSub());
         if(optionalUser.isEmpty()){
@@ -200,6 +200,7 @@ public class AuthService implements IAuthService {
                     .email(googleUserInfoResponse.getEmail())
                     .googleAccountId(googleUserInfoResponse.getSub())
                     .status(1)
+                    .deviceToken(deviceToken)
                     .userType(1) // 1: Google, 2: Facebook, 3: email
                     .fullName(googleUserInfoResponse.getName())
                     .userName(googleUserInfoResponse.getName())
@@ -210,6 +211,8 @@ public class AuthService implements IAuthService {
         }
         else {
             User user = optionalUser.get();
+            user.setDeviceToken(deviceToken);
+            userRepository.save(user);
             return jwtTokenUtil.generateToken(user);
         }
     }
@@ -236,7 +239,7 @@ public class AuthService implements IAuthService {
     }
 
     @Override
-    public String loginFacebook(String token) throws Exception {
+    public String loginFacebook(String token, String deviceToken) throws Exception {
         FacebookUserInfoResponse facebookUserInfoResponse = facebookService.getUserProfile(token);
         Optional<User> optionalUser = authRepository.findByFacebookAccountId(facebookUserInfoResponse.getId());
         if(optionalUser.isEmpty()){
@@ -247,6 +250,7 @@ public class AuthService implements IAuthService {
                     .email(facebookUserInfoResponse.getEmail())
                     .facebookAccountId(facebookUserInfoResponse.getId())
                     .status(1)
+                    .deviceToken(deviceToken)
                     .userType(2) // 1: Google, 2: Facebook, 3: email
                     .fullName(facebookUserInfoResponse.getFirst_name()+facebookUserInfoResponse.getLast_name())
                     .userName(facebookUserInfoResponse.getFirst_name()+facebookUserInfoResponse.getLast_name())
@@ -257,6 +261,8 @@ public class AuthService implements IAuthService {
         }
         else {
             User user = optionalUser.get();
+            user.setDeviceToken(deviceToken);
+            userRepository.save(user);
             return jwtTokenUtil.generateToken(user);
         }
     }

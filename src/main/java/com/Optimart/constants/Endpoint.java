@@ -111,6 +111,9 @@ public class Endpoint {
     }
 
     public static class Notification{
-        public static final String BASE = API_PREFIX + "/noti";
+        public static final String BASE = API_PREFIX + "/notifications";
+        public static final String MARK_READ = "/{notificationId}/read";
+        public static final String DELETE_NOTIFICATION = "/{notificationId}";
+        public static final String  MARK_READ_ALL_NOTIFICATION = "/all/read";
     }
 }

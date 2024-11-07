@@ -12,15 +12,23 @@ import java.io.IOException;
 
 @Configuration
 public class FirebaseCloudConfig {
+
     @Bean
-    FirebaseMessaging firebaseMessaging() throws IOException {
+    public FirebaseMessaging firebaseMessaging() throws IOException {
         GoogleCredentials googleCredentials = GoogleCredentials
                 .fromStream(new ClassPathResource("firebase-service-account.json").getInputStream());
         FirebaseOptions firebaseOptions = FirebaseOptions
                 .builder()
                 .setCredentials(googleCredentials)
                 .build();
-        FirebaseApp app = FirebaseApp.initializeApp(firebaseOptions, "Optimart");
+
+        // Kiểm tra nếu Firebase đã được khởi tạo
+        FirebaseApp app;
+        if (FirebaseApp.getApps().isEmpty()) {
+            app = FirebaseApp.initializeApp(firebaseOptions, "Optimart");
+        } else {
+            app = FirebaseApp.getInstance("Optimart");
+        }
         return FirebaseMessaging.getInstance(app);
     }
 }

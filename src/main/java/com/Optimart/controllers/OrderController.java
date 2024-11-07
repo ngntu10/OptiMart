@@ -9,6 +9,7 @@ import com.Optimart.responses.Order.OrderResponse;
 import com.Optimart.responses.PagingResponse;
 import com.Optimart.responses.User.UserResponse;
 import com.Optimart.services.Order.OrderService;
+import com.google.firebase.messaging.FirebaseMessagingException;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -32,7 +33,7 @@ public class OrderController {
     @ApiResponse(responseCode = "201", description = "CREATED", content = @Content(schema = @Schema(implementation = Object.class), mediaType = "application/json"))
     @SecuredSwaggerOperation(summary = "Create a new order")
     @PostMapping
-    public ResponseEntity<APIResponse<OrderResponse>> createOrder(@RequestBody CreateOrderDTO createOrderDTO){
+    public ResponseEntity<APIResponse<OrderResponse>> createOrder(@RequestBody CreateOrderDTO createOrderDTO) throws FirebaseMessagingException {
         return ResponseEntity.ok(orderService.createOrder(createOrderDTO));
     }
 

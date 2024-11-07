@@ -94,7 +94,7 @@ public class AuthController {
     public ResponseEntity<?> loginGoogle(@RequestBody OAuth2DTO oAuth2DTO){
         try {
             GoogleUserInfoResponse googleUserInfoResponse = googleService.getUserInfo(oAuth2DTO.getIdToken());
-            String access_token = authService.loginGoogle(oAuth2DTO.getIdToken());
+            String access_token = authService.loginGoogle(oAuth2DTO.getIdToken(), oAuth2DTO.getDeviceToken());
             RefreshToken refreshToken = refreshTokenService.createRefreshToken(googleUserInfoResponse.getEmail());
             UserLoginResponse userLoginResponse = userService.getUserLoginResponse(googleUserInfoResponse.getEmail());
             return ResponseEntity.ok(LoginResponse.success(localizationUtils.getLocalizedMessage(MessageKeys.LOGIN_SUCCESSFULLY),
@@ -162,7 +162,7 @@ public class AuthController {
     public ResponseEntity<?> loginFacebook(@RequestBody OAuth2DTO oAuth2DTO){
         try {
             FacebookUserInfoResponse facebookUserInfoResponse = facebookService.getUserProfile(oAuth2DTO.getIdToken());
-            String access_token = authService.loginFacebook(oAuth2DTO.getIdToken());
+            String access_token = authService.loginFacebook(oAuth2DTO.getIdToken(), oAuth2DTO.getDeviceToken());
             RefreshToken refreshToken = refreshTokenService.createRefreshToken(facebookUserInfoResponse.getEmail());
             UserLoginResponse userLoginResponse = userService.getUserLoginResponse(facebookUserInfoResponse.getEmail());
             return ResponseEntity.ok(LoginResponse.success(localizationUtils.getLocalizedMessage(MessageKeys.LOGIN_SUCCESSFULLY),

@@ -13,8 +13,8 @@ public interface IAuthService {
     String changeUserPassword(ChangePassword changePassword, String token) throws Exception;
     UserLoginResponse changeUserInfo(ChangeUserInfo changeUserInfo);
     User registerGoogle(String token);
-    String loginGoogle(String token) throws Exception;
+    String loginGoogle(String token, String deviceToken) throws Exception;
     User registerFacebook(String token);
-    String loginFacebook(String token) throws Exception;
+    String loginFacebook(String token, String deviceToken) throws Exception;
 
 }

@@ -31,7 +31,9 @@ public class Notification extends BaseEntity {
     @Column(name = "isRead", nullable = false)
     private int isRead =0;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    @Column(name = "reference_id")
+    private String referenceId;
+
+    @ManyToMany(mappedBy = "notifications")
+    private List<User> users;
 }

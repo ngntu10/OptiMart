@@ -112,4 +112,13 @@ public class MessageKeys {
     public static final String COMMENT_NOT_FOUND = "comment.not_found";
     public static final String GET_COMMENT_SUCCESS = "comment.get_success";
     public static final String REPLY_COMMENT_SUCCESS = "comment.reply_success";
+
+    // NOTIFICATION
+    public static final String NOTIFICATION_GET_LIST_SUCCESS = "notification.get_list_success";
+    public static final String NOTIFICATION_NOT_FOUND = "notification.not_found";
+    public static final String NOTIFICATION_READ = "notification.read";
+    public static final String NOTIFICATION_GET_LIST_FAILED = "notification.get_list_failed";
+    public static final String NOTIFICATION_DELETE_SUCCESS = "notification.delete_success";
+    public static final String NOTIFICATION_DELETE_FAILED = "notification.delete_failed";
+    public static final String NOTIFICATION_READ_ALL = "notification.read_all_success";
 }

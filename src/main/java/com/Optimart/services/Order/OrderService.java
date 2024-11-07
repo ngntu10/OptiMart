@@ -1,6 +1,7 @@
 package com.Optimart.services.Order;
 
 import com.Optimart.constants.MessageKeys;
+import com.Optimart.dto.FirebaseCloud.Note;
 import com.Optimart.dto.Order.CreateOrderDTO;
 import com.Optimart.exceptions.DataNotFoundException;
 import com.Optimart.models.*;
@@ -9,8 +10,10 @@ import com.Optimart.repositories.Specification.OrderSpecification;
 import com.Optimart.responses.APIResponse;
 import com.Optimart.responses.Order.OrderResponse;
 import com.Optimart.responses.PagingResponse;
+import com.Optimart.services.Firebase.FirebaseMessagingService;
 import com.Optimart.utils.JwtTokenUtil;
 import com.Optimart.utils.LocalizationUtils;
+import com.google.firebase.messaging.FirebaseMessagingException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -35,10 +38,12 @@ public class OrderService implements IOrderService{
     private final AuthRepository authRepository;
     private final ShippingAddressRepository shippingAddressRepository;
     private final ProductRepository productRepository;
+    private final NotificationRepository notificationRepository;
     private final JwtTokenUtil jwtTokenUtil;
     private final LocalizationUtils localizationUtils;
+    private final FirebaseMessagingService firebaseMessagingService;
     @Override
-    public APIResponse<OrderResponse> createOrder(CreateOrderDTO createOrderDTO) {
+    public APIResponse<OrderResponse> createOrder(CreateOrderDTO createOrderDTO) throws FirebaseMessagingException {
         Order order = modelMapper.map(createOrderDTO, Order.class);
         User user = userRepository.findById(UUID.fromString(createOrderDTO.getUserId()))
                 .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.USER_NOT_EXIST)));
@@ -70,7 +75,17 @@ public class OrderService implements IOrderService{
         List<Order> orders = user.getOrderList();
         orders.add(order);
         user.setOrderList(orders);
+        Notification notification = Notification.builder()
+                .context("ORDER")
+                .body("congrat you have create order successfully")
+                .users(Collections.singletonList(user))
+                .referenceId(order.getId().toString())
+                .title("Create order success")
+                .build();
+        notificationRepository.save(notification);
+        user.getNotifications().add(notification);
         userRepository.save(user);
+        firebaseMessagingService.sendNotification(new Note("ORDER", "Create order success", "congrat you have create order successfully"), user.getDeviceToken());
         return new APIResponse<>(new OrderResponse(order.getId()), localizationUtils.getLocalizedMessage(MessageKeys.ORDER_CREATE_SUCCESS));
     }
 
