@@ -1,5 +1,6 @@
 package com.Optimart.services.Order;
 
+import com.Optimart.dto.Order.ChangeOrderStatus;
 import com.Optimart.dto.Order.CreateOrderDTO;
 import com.Optimart.models.Order;
 import com.Optimart.responses.APIResponse;
@@ -14,7 +15,8 @@ public interface IOrderService {
     APIResponse<OrderResponse> createOrder(CreateOrderDTO createOrderDTO) throws FirebaseMessagingException;
     PagingResponse<List<Order>> getAllOrderByMe(Map<Object, String> filters, String token);
     PagingResponse<List<Order>> getAllOrder(Map<Object, String> filters);
-    APIResponse<OrderResponse> cancelOrder(String id);
+    APIResponse<OrderResponse> cancelOrder(String id) throws FirebaseMessagingException;
     APIResponse<Order> getOneOrderById(String id);
     APIResponse<Boolean> deleteOrder(String id);
+    APIResponse<OrderResponse> changeStatusOrder(String orderId, ChangeOrderStatus changeOrderStatus) throws FirebaseMessagingException;
 }

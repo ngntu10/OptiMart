@@ -77,6 +77,7 @@ public class Endpoint {
         public static final String CANCEL = "/me/cancel/{orderId}";
         public static final String ID_ME = "/me/{orderId}";
         public static final String ID = "/{orderId}";
+        public static final String STATUS_ID = "/status/{orderId}";
     }
 
     public static class Reivew{

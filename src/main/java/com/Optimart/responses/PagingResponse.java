@@ -14,4 +14,12 @@ public class PagingResponse<T> {
     String message;
     private int totalPage;
     private Long totalCount;
+    private int totalNew;
+
+    public PagingResponse(T data, String message, int totalPage, Long totalCount) {
+        this.data = data;
+        this.message = message;
+        this.totalPage = totalPage;
+        this.totalCount = totalCount;
+    }
 }

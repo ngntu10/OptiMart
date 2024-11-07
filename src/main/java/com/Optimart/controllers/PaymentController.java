@@ -9,6 +9,7 @@ import com.Optimart.responses.Payment.VNPAYResponse;
 import com.Optimart.services.Order.OrderService;
 import com.Optimart.services.Payment.PaymentService;
 import com.Optimart.utils.LocalizationUtils;
+import com.google.firebase.messaging.FirebaseMessagingException;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -41,7 +42,7 @@ public class PaymentController {
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema(implementation = DeliveryType.class)), mediaType = "application/json"))
     @SecuredSwaggerOperation(summary = "Get status payment vnpay")
     @GetMapping(Endpoint.Payment.CALL_BACK)
-    public ResponseEntity<?> payCallbackHandler(HttpServletRequest request) {
+    public ResponseEntity<?> payCallbackHandler(HttpServletRequest request) throws FirebaseMessagingException {
         String status = request.getParameter("vnp_ResponseCode");
         String orderId = request.getParameter("vnp_OrderInfo");
         long amount = Long.parseLong(request.getParameter("vnp_Amount"));

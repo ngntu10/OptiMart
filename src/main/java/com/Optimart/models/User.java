@@ -128,7 +128,7 @@ public class User extends BaseEntity implements UserDetails {
             joinColumns = @JoinColumn(name = "user_id", nullable = false),
             inverseJoinColumns = @JoinColumn(name = "product_id", nullable = false)
     )
-    List<Product> likeProductList;
+    List<Product> likeProductList = new ArrayList<>();
 
     @ManyToOne
     @JsonIgnore
@@ -141,29 +141,30 @@ public class User extends BaseEntity implements UserDetails {
             joinColumns = @JoinColumn(name = "user_id", nullable = false),
             inverseJoinColumns = @JoinColumn(name = "product_id", nullable = false)
     )
-    Set<Product> viewedProductList;
+    Set<Product> viewedProductList = new HashSet<>();
 
     @OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST,CascadeType.REMOVE})
-    private List<userShippingAddress> userShippingAddressList;
+    private List<userShippingAddress> userShippingAddressList = new ArrayList<>();
 
     @OneToMany(mappedBy = "user")
-    private List<Review> reviewList;
+    private List<Review> reviewList = new ArrayList<>();
 
+    @JsonIgnore
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
             name = "user_notifications",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "notification_id")
     )
-    private List<Notification> notifications;
+    private List<Notification> notifications = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Comment> commentList;
+    private List<Comment> commentList = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST,CascadeType.REMOVE})
-    private List<RefreshToken> refreshTokenList;
+    private List<RefreshToken> refreshTokenList = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST,CascadeType.REMOVE})
-    private List<Order> orderList;
+    private List<Order> orderList = new ArrayList<>();
 
 }

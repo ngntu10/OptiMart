@@ -1,7 +1,9 @@
 package com.Optimart.models;
+        import java.util.ArrayList;
         import java.util.List;
         import java.util.UUID;
 
+        import com.fasterxml.jackson.annotation.JsonIgnore;
         import jakarta.persistence.*;
         import lombok.*;
         import org.hibernate.annotations.Type;
@@ -34,6 +36,7 @@ public class Notification extends BaseEntity {
     @Column(name = "reference_id")
     private String referenceId;
 
+    @JsonIgnore
     @ManyToMany(mappedBy = "notifications")
-    private List<User> users;
+    private List<User> users = new ArrayList<>();
 }

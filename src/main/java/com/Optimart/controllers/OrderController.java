@@ -2,6 +2,7 @@ package com.Optimart.controllers;
 
 import com.Optimart.annotations.SecuredSwaggerOperation;
 import com.Optimart.constants.Endpoint;
+import com.Optimart.dto.Order.ChangeOrderStatus;
 import com.Optimart.dto.Order.CreateOrderDTO;
 import com.Optimart.models.Order;
 import com.Optimart.responses.APIResponse;
@@ -54,8 +55,12 @@ public class OrderController {
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = Object.class), mediaType = "application/json"))
     @SecuredSwaggerOperation(summary = "Cancel an order")
     @PostMapping(Endpoint.Order.CANCEL)
-    public ResponseEntity<APIResponse<OrderResponse>> cancelOrder(@PathVariable String orderId){
-        return ResponseEntity.ok(orderService.cancelOrder(orderId));
+    public ResponseEntity<APIResponse<?>> cancelOrder(@PathVariable String orderId) {
+        try {
+            return ResponseEntity.ok(orderService.cancelOrder(orderId));
+        }catch (Exception ex){
+            return ResponseEntity.badRequest().body(new APIResponse<>(null, ex.getMessage()));
+        }
     }
 
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = Object.class), mediaType = "application/json"))
@@ -77,5 +82,16 @@ public class OrderController {
     @DeleteMapping(Endpoint.Order.ID)
     public ResponseEntity<APIResponse<Boolean>> deleteOrderById(@PathVariable String orderId){
         return ResponseEntity.ok(orderService.deleteOrder(orderId));
+    }
+
+    @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = Object.class), mediaType = "application/json"))
+    @SecuredSwaggerOperation(summary = "Delete an existing order by id")
+    @PostMapping(Endpoint.Order.STATUS_ID)
+    public ResponseEntity<?> changeOrderStatusById(@PathVariable String orderId,@RequestBody ChangeOrderStatus changeOrderStatus){
+        try {
+            return ResponseEntity.ok(orderService.changeStatusOrder(orderId, changeOrderStatus));
+        }catch (Exception ex){
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        }
     }
 }

@@ -84,11 +84,15 @@ public class MessageKeys {
 
     // ORDER
     public static final String ORDER_CREATE_SUCCESS = "order.create_success";
+    public static final String ORDER_CREATE_SUCCESS_ID = "order_id.create_success";
     public static final String ORDER_GET_SUCCESS = "order.get_success";
     public static final String ORDER_LIST_GET_SUCCESS = "order_list.get_success";
     public static final String ORDER_CANCEL_SUCCESS = "order.cancel_success";
     public static final String ORDER_DELETE_SUCCESS = "order.delete_success";
     public static final String ORDER_NOT_FOUND = "order.not_found";
+    public static final String ORDER_CANCEL_SUCCESS_ID = "order_id.cancel_success";
+    public static final String ORDER_CHANGE_STATUS_SUCCESS = "order.change_status_success";
+    public static final String ORDER_CHANGE_STATUS_ID = "order_id.change_status_success";
 
     // REVIEW
     public static final String REVIEW_GET_SUCCESS = "review.get_success";
@@ -100,6 +104,7 @@ public class MessageKeys {
     // PAYMENT
     public static final String PAY_SUCCESS = "payment.success";
     public static final String PAY_FAILED = "payment.failed";
+    public static final String PAYMENT_SUCCESS_ID = "payment.pay_success";
 
     // COMMENT
     public static final String CREATE_COMMENT_SUCCESS = "comment.create_success";

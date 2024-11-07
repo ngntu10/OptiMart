@@ -38,11 +38,13 @@ public class NotificationService implements INotificationService{
         int page = Integer.parseInt(filters.getOrDefault("page", "-1"));
         int limit = Integer.parseInt(filters.getOrDefault("limit", "-1"));
         String order = filters.get("order");
-        String search = filters.get("search");
         if (page == -1 && limit == -1) {
             Specification<Notification> notificationSpecification = NotificationSpecification.filtersNotification(filters.get("userId"), filters.get("search"));
             List<Notification> notifications = notificationRepository.findAll(notificationSpecification, Sort.by(Sort.Direction.DESC, "createdAt"));
-            return new PagingResponse<>(notifications, localizationUtils.getLocalizedMessage(MessageKeys.NOTIFICATION_GET_LIST_SUCCESS), 1, (long) notifications.size());
+            int totalNew = (int) notifications.stream()
+                    .filter(notification -> notification.getIsRead() == 0)
+                    .count();
+            return new PagingResponse<>(notifications, localizationUtils.getLocalizedMessage(MessageKeys.NOTIFICATION_GET_LIST_SUCCESS), 1, (long) notifications.size(), totalNew);
         }
         page = Math.max(Integer.parseInt(filters.getOrDefault("page", "-1")), 1) - 1;
         Pageable pageable = PageRequest.of(page, limit, Sort.by("createdAt").descending());
@@ -65,6 +67,8 @@ public class NotificationService implements INotificationService{
     public APIResponse<Boolean> deleteNotification(String notificationId) {
         Notification notification = notificationRepository.findById(UUID.fromString(notificationId))
                 .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.NOTIFICATION_NOT_FOUND)));
+        List<User> user = notification.getUsers();
+
         notificationRepository.delete(notification);
         return new APIResponse<>(true, localizationUtils.getLocalizedMessage(MessageKeys.NOTIFICATION_DELETE_SUCCESS));
     }
