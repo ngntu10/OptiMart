@@ -134,9 +134,11 @@ public class AuthService implements IAuthService {
         User user = authRepository.findByEmail(changeUserInfo.getEmail())
                 .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.USER_NOT_EXIST)));
         mapper.map(changeUserInfo, user);
-        City city1 = cityLocaleRepository.findById(Long.parseLong(changeUserInfo.getCityId()))
-                .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.CITY_NOT_FOUND)));
-        user.setCity(city1);
+        if (changeUserInfo.getCityId() != null && !changeUserInfo.getCityId().isEmpty()){
+            City city1 = cityLocaleRepository.findById(Long.parseLong(changeUserInfo.getCityId()))
+                    .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.CITY_NOT_FOUND)));
+            user.setCity(city1);
+        }
         if(changeUserInfo.getCity() != null){
             user.setCity(changeUserInfo.getCity());
         }
