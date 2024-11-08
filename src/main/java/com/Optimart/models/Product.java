@@ -79,6 +79,7 @@ public class Product extends BaseEntity {
     @JsonIgnore
     private List<User> userLikedList;
 
+    @JsonIgnore
     @ManyToMany(mappedBy = "viewedProductList")
     private Set<User> userViewedList;
 

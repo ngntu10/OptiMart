@@ -5,6 +5,7 @@ import com.Optimart.models.Product;
 import com.Optimart.responses.APIResponse;
 import com.Optimart.responses.PagingResponse;
 import com.Optimart.responses.Product.ProductResponse;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 import java.util.Map;
@@ -19,7 +20,7 @@ public interface IProductService {
     PagingResponse<List<ProductResponse>> getLikedProducts (Map<Object, String> filters, String token);
     PagingResponse<List<ProductResponse>> getViewedProducts (Map<Object, String> filters, String token);
     Product getOneProduct(String productId);
-    ProductResponse getOneProductBySlug(String slug);
+    ProductResponse getOneProductBySlug(String slug, Map<String, String> params);
     Product getOneProductPublic(String productId, Boolean isViewed);
     APIResponse<Product> updateProduct(ProductDTO product, String productId);
     APIResponse<Boolean> deleteProduct(String productId);

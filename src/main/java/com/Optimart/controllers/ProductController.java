@@ -97,8 +97,9 @@ public class ProductController {
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema(implementation = Product.class)), mediaType = "application/json"))
     @UnsecuredSwaggerOperation(summary = "Get list public slug by id (Status = 1)")
     @GetMapping(Endpoint.Product.PUBLIC_SLUG_ID)
-    public ResponseEntity<?> getPublicSlugProductById(@PathVariable String slugId){
-        return ResponseEntity.ok(productService.getOneProductBySlug(slugId));
+    public ResponseEntity<?> getPublicSlugProductById(@PathVariable String slugId,
+                                                      @RequestParam Map<String, String> params){
+        return ResponseEntity.ok(productService.getOneProductBySlug(slugId, params));
     }
 
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema(implementation = Product.class)), mediaType = "application/json"))

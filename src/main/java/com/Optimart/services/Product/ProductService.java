@@ -49,9 +49,12 @@ public class ProductService implements IProductService {
     @Transactional
     public APIResponse<Product> createProduct(CreateProductDTO createProductDTO) {
         Product product = modelMapper.map(createProductDTO, Product.class);
+        City city = cityLocaleRepository.findById(Long.parseLong(createProductDTO.getLocation()))
+                .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.CITY_NOT_FOUND)));
         ProductType productType = productTypeRepository.findById(UUID.fromString(createProductDTO.getType()))
                 .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.PRODUCT_TYPE_NOT_FOUND)));
         product.setProductType(productType);
+        product.setCity(city);
         productRepository.save(product);
         return new APIResponse<>(product, localizationUtils.getLocalizedMessage(MessageKeys.PRODUCT_CREATE_SUCCESS));
     }
@@ -282,12 +285,23 @@ public class ProductService implements IProductService {
     }
 
     @Override
-    public ProductResponse getOneProductBySlug(String slug) {
+    public ProductResponse getOneProductBySlug(String slug,  Map<String, String> params) {
+        Boolean isViewed = Boolean.valueOf(params.get("isViewed"));
+        String userId = params.get("userId");
         Product product = productRepository.findBySlug(slug)
                 .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.PRODUCT_NOT_EXISTED)));
         List<ReviewResponse> responses = product.getReviewList().stream().map(
                 this::ConvertToResponse
         ).toList();
+        if(isViewed) product.setViews(product.getViews()+1);
+        if(userId != null){
+            User user = userRepository.findById(UUID.fromString(userId))
+                    .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.USER_NOT_EXIST)));
+            user.getViewedProductList().add(product);
+            userRepository.save(user);
+            product.getUserViewedList().add(user);
+            productRepository.save(product);
+        }
         ProductResponse productResponse = modelMapper.map(product, ProductResponse.class);
         productResponse.setReviewList(responses);
         return productResponse;
@@ -303,7 +317,6 @@ public class ProductService implements IProductService {
     public Product getOneProductPublic(String productId, Boolean isViewed) {
         Product product = productRepository.findById(UUID.fromString(productId))
                 .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.PRODUCT_NOT_EXISTED)));;
-//        if(isViewed)
         return product;
     }
 

@@ -18,7 +18,7 @@ public class CreateProductDTO {
     private int price;
     private int discount;
     private String description;
-    private String city;
+    private String location;
     private int countInStock;
     private int status;
     private String image;
