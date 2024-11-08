@@ -12,6 +12,7 @@ import com.Optimart.repositories.Specification.UserSpecification;
 import com.Optimart.responses.APIResponse;
 import com.Optimart.responses.PagingResponse;
 import com.Optimart.utils.LocalizationUtils;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -32,6 +33,7 @@ public class DeliveryTypeService implements IDeliveryTypeService{
     private final LocalizationUtils localizationUtils;
 
     @Override
+    @Transactional
     public APIResponse<DeliveryType> createType(DeliveryTypeDTO createDeliveryTypeDTO) {
         DeliveryType deliveryType = new DeliveryType();
         deliveryType.setName(createDeliveryTypeDTO.getName());
@@ -46,6 +48,7 @@ public class DeliveryTypeService implements IDeliveryTypeService{
     }
 
     @Override
+    @Transactional
     public APIResponse<DeliveryType> editDeliveryType(DeliveryTypeDTO deliveryTypeDTO, String deliveryTypeId) {
         DeliveryType deliveryType = deliveryTypeRepository.findById(UUID.fromString(deliveryTypeId)).get();
         mapper.map(deliveryTypeDTO, deliveryType);
@@ -54,6 +57,7 @@ public class DeliveryTypeService implements IDeliveryTypeService{
     }
 
     @Override
+    @Transactional
     public APIResponse<Boolean> deleteDeliveryType(String id) {
         DeliveryType deliveryType = deliveryTypeRepository.findById(UUID.fromString(id)).get();
         deliveryTypeRepository.delete(deliveryType);
@@ -61,6 +65,7 @@ public class DeliveryTypeService implements IDeliveryTypeService{
     }
 
     @Override
+    @Transactional
     public APIResponse<Boolean> deleteMutilDeliveryType(DeliveryTypeMutilDeleteDTO deliveryTypeMutilDeleteDTO) {
         List<String> deliveryTypeIds = deliveryTypeMutilDeleteDTO.getDeliveryTypeIds();
         deliveryTypeIds.forEach(item -> {

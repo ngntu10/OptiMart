@@ -85,7 +85,7 @@ public class OrderController {
     }
 
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = Object.class), mediaType = "application/json"))
-    @SecuredSwaggerOperation(summary = "Delete an existing order by id")
+    @SecuredSwaggerOperation(summary = "Update order status")
     @PostMapping(Endpoint.Order.STATUS_ID)
     public ResponseEntity<?> changeOrderStatusById(@PathVariable String orderId,@RequestBody ChangeOrderStatus changeOrderStatus){
         try {

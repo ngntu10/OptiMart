@@ -1,4 +1,4 @@
-package com.Optimart.services;
+package com.Optimart.services.Token;
 
 import java.security.SecureRandom;
 import java.time.Instant;

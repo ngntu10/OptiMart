@@ -29,6 +29,7 @@ public class RefreshTokenService implements IRefreshTokenService {
     }
 
     @Override
+    @Transactional
     public RefreshToken createRefreshToken(String userEmail) {
         try {
             User user = authRepository.findByEmail(userEmail)

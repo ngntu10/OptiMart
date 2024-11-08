@@ -9,6 +9,7 @@ import com.Optimart.repositories.PaymentTypeRepository;
 import com.Optimart.responses.APIResponse;
 import com.Optimart.responses.PagingResponse;
 import com.Optimart.utils.LocalizationUtils;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -43,6 +44,7 @@ public class PaymentTypeService implements IPaymentTypeService {
     }
 
     @Override
+    @Transactional
     public APIResponse<Paymenttype> createType(PaymentTypeDTO paymentTypeDTO) {
         Paymenttype paymentType = new Paymenttype();
         paymentType.setName(paymentTypeDTO.getName());
@@ -57,6 +59,7 @@ public class PaymentTypeService implements IPaymentTypeService {
     }
 
     @Override
+    @Transactional
     public APIResponse<Paymenttype> editPaymentType(PaymentTypeDTO paymentTypeDTO, String paymentTypeId) {
         Paymenttype paymenttype = paymentTypeRepository.findById(UUID.fromString(paymentTypeId)).get();
         paymenttype.setName(paymentTypeDTO.getName());
@@ -66,6 +69,7 @@ public class PaymentTypeService implements IPaymentTypeService {
     }
 
     @Override
+    @Transactional
     public APIResponse<Boolean> deletePaymentType(String id) {
         Paymenttype paymenttype = paymentTypeRepository.findById(UUID.fromString(id)).get();
         paymentTypeRepository.delete(paymenttype);
@@ -73,6 +77,7 @@ public class PaymentTypeService implements IPaymentTypeService {
     }
 
     @Override
+    @Transactional
     public APIResponse<Boolean> deleteMutilPaymentType(PaymentTypeMutiDeleteDTO paymentTypeMutiDeleteDTO) {
         List<String> paymentTypeIds = paymentTypeMutiDeleteDTO.getPaymentTypeIds();
         paymentTypeIds.forEach(item -> {

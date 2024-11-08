@@ -5,13 +5,9 @@ import com.Optimart.annotations.UnsecuredSwaggerOperation;
 import com.Optimart.constants.Endpoint;
 import com.Optimart.constants.MessageKeys;
 import com.Optimart.dto.Product.*;
-import com.Optimart.exceptions.DataNotFoundException;
 import com.Optimart.models.Product;
-import com.Optimart.models.User;
 import com.Optimart.responses.CloudinaryResponse;
-import com.Optimart.services.CloudinaryService;
 import com.Optimart.services.Product.ProductService;
-import com.Optimart.utils.JwtTokenUtil;
 import com.Optimart.utils.LocalizationUtils;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -20,12 +16,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Map;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @RestController

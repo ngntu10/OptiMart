@@ -16,6 +16,7 @@ import com.Optimart.services.Firebase.FirebaseMessagingService;
 import com.Optimart.utils.JwtTokenUtil;
 import com.Optimart.utils.LocalizationUtils;
 import com.google.firebase.messaging.FirebaseMessagingException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -45,6 +46,7 @@ public class OrderService implements IOrderService{
     private final LocalizationUtils localizationUtils;
     private final FirebaseMessagingService firebaseMessagingService;
     @Override
+    @Transactional
     public APIResponse<OrderResponse> createOrder(CreateOrderDTO createOrderDTO) throws FirebaseMessagingException {
         Order order = modelMapper.map(createOrderDTO, Order.class);
         User user = userRepository.findById(UUID.fromString(createOrderDTO.getUserId()))
@@ -142,6 +144,7 @@ public class OrderService implements IOrderService{
     }
 
     @Override
+    @Transactional
     public APIResponse<OrderResponse> cancelOrder(String id) throws FirebaseMessagingException {
         Order order = orderRepository.findById(UUID.fromString(id))
                 .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.ORDER_NOT_FOUND)));
@@ -172,6 +175,7 @@ public class OrderService implements IOrderService{
         return new APIResponse<>(order, MessageKeys.ORDER_GET_SUCCESS);
     }
 
+    @Transactional
     public void handlePaymentOrderById(String orderId) throws FirebaseMessagingException {
         Order order = orderRepository.findById(UUID.fromString(orderId))
                 .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.ORDER_NOT_FOUND)));
@@ -207,6 +211,7 @@ public class OrderService implements IOrderService{
     }
 
     @Override
+    @Transactional
     public APIResponse<Boolean> deleteOrder(String id) {
         Order order = orderRepository.findById(UUID.fromString(id))
                 .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.ORDER_NOT_FOUND)));
@@ -215,6 +220,7 @@ public class OrderService implements IOrderService{
     }
 
     @Override
+    @Transactional
     public APIResponse<OrderResponse> changeStatusOrder(String orderId, ChangeOrderStatus changeOrderStatus) throws FirebaseMessagingException {
         Order order = orderRepository.findById(UUID.fromString(orderId))
                 .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.ORDER_NOT_FOUND)));
@@ -229,7 +235,7 @@ public class OrderService implements IOrderService{
                 .body(String.format("Đơn hàng với id %s đã được cập nhật trạng thái, click để xem chi tiết", order.getId().toString()))
                 .users(Collections.singletonList(user))
                 .referenceId(order.getId().toString())
-                .title("Thanh toán thành công")
+                .title("Cập nhận đơn hàng")
                 .build();
 
         user.getNotifications().add(notification);

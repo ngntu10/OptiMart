@@ -1,4 +1,4 @@
-package com.Optimart.services;
+package com.Optimart.services.SendEmail;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -9,6 +9,7 @@ import com.Optimart.repositories.CityLocaleRepository;
 import com.Optimart.responses.APIResponse;
 import com.Optimart.responses.PagingResponse;
 import com.Optimart.utils.LocalizationUtils;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -50,6 +51,7 @@ public class CityLocaleService implements ICityLocaleService{
         return new PagingResponse<>(cityPage.getContent(), localizationUtils.getLocalizedMessage(MessageKeys.CITY_GET_SUCCESS), cityPage.getTotalPages(), cityPage.getTotalElements());
     }
 
+    @Transactional
     @Override
     public APIResponse<City> createType(CityLocaleDTO createCityDTO) {
         City city = new City();
@@ -64,6 +66,7 @@ public class CityLocaleService implements ICityLocaleService{
     }
 
     @Override
+    @Transactional
     public APIResponse<City> editCity(CityLocaleDTO cityTypeDTO, String cityId) {
         City city = cityLocaleRepository.findById(Long.parseLong(cityId)).get();
         mapper.map(cityTypeDTO, city);
@@ -72,6 +75,7 @@ public class CityLocaleService implements ICityLocaleService{
     }
 
     @Override
+    @Transactional
     public APIResponse<Boolean> deleteCity(String id) {
         City city = cityLocaleRepository.findById(Long.parseLong(id)).get();
         cityLocaleRepository.delete(city);
@@ -79,6 +83,7 @@ public class CityLocaleService implements ICityLocaleService{
     }
 
     @Override
+    @Transactional
     public APIResponse<Boolean> deleteMultiCity(CityMutilDeleteDTO cityMutilDeleteDTO) {
         List<String> cityIds = cityMutilDeleteDTO.getCityIds();
         cityIds.forEach(item -> {

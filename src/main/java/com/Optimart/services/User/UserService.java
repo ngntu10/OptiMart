@@ -27,6 +27,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
@@ -84,6 +85,7 @@ public class UserService implements IUserservice {
     }
 
     @Override
+    @Transactional
     public APIResponse<User> createNewUser(CreateUserDTO createUserDTO) {
         if (userRepository.existsByEmail(createUserDTO.getEmail()))
             return new APIResponse<>(null, localizationUtils.getLocalizedMessage(MessageKeys.USER_ALREADY_EXIST));
@@ -99,6 +101,7 @@ public class UserService implements IUserservice {
     }
 
     @Override
+    @Transactional
     public APIResponse<UserResponse> editUser(EditUserDTO editUserDTO) {
         User user = userRepository.findByEmail(editUserDTO.getEmail())
                 .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.USER_NOT_EXIST)));
@@ -117,6 +120,7 @@ public class UserService implements IUserservice {
     }
 
     @Override
+    @Transactional
     public APIResponse<Boolean> deleteUser(String userId) {
         User user = userRepository.findById(UUID.fromString(userId))
                 .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.USER_NOT_EXIST)));
@@ -127,6 +131,7 @@ public class UserService implements IUserservice {
     }
 
     @Override
+    @Transactional
     public APIResponse<Boolean> deleteMutilUser(UserMutilDeleteDTO userMutilDeleteDTO) {
         List<String> userList = userMutilDeleteDTO.getUserIds();
         userList.forEach(item -> {

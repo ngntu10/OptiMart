@@ -13,7 +13,7 @@ import com.Optimart.responses.Product.BaseProductResponse;
 import com.Optimart.responses.Product.ProductResponse;
 import com.Optimart.responses.Review.ReviewResponse;
 import com.Optimart.responses.User.BaseUserResponse;
-import com.Optimart.services.CloudinaryService;
+import com.Optimart.services.Cloudinary.CloudinaryService;
 import com.Optimart.utils.FileUploadUtil;
 import com.Optimart.utils.JwtTokenUtil;
 import com.Optimart.utils.LocalizationUtils;
@@ -46,6 +46,7 @@ public class ProductService implements IProductService {
     private final ProductTypeRepository productTypeRepository;
     private final AuthRepository authRepository;
     @Override
+    @Transactional
     public APIResponse<Product> createProduct(CreateProductDTO createProductDTO) {
         Product product = modelMapper.map(createProductDTO, Product.class);
         ProductType productType = productTypeRepository.findById(UUID.fromString(createProductDTO.getType()))
@@ -56,6 +57,7 @@ public class ProductService implements IProductService {
     }
 
     @Override
+    @Transactional
     public APIResponse<Boolean> likeProduct(ReactionProductDTO reactionProductDTO, String token) {
         User user = getUser(token);
         String productId = reactionProductDTO.getProductId();
@@ -87,6 +89,7 @@ public class ProductService implements IProductService {
     }
 
     @Override
+    @Transactional
     public APIResponse<Boolean> unlikeProduct(ReactionProductDTO reactionProductDTO, String token) {
         User user = getUser(token);
 
@@ -107,7 +110,6 @@ public class ProductService implements IProductService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public PagingResponse<List<ProductResponse>> findAllProduct(Map<Object, String> filters) {
         List<Product> productList;
         Pageable pageable;
@@ -240,6 +242,7 @@ public class ProductService implements IProductService {
     }
 
     @Override
+    @Transactional
     public APIResponse<Product> updateProduct(ProductDTO product, String productId) {
         Product product1 = productRepository.findById(UUID.fromString(productId))
                 .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.PRODUCT_NOT_EXISTED)));
@@ -256,12 +259,14 @@ public class ProductService implements IProductService {
     }
 
     @Override
+    @Transactional
     public APIResponse<Boolean> deleteProduct(String productId) {
         productRepository.deleteById(UUID.fromString(productId));
         return new APIResponse<>(true, localizationUtils.getLocalizedMessage(MessageKeys.PRODUCT_DELETE_SUCCESS));
     }
 
     @Override
+    @Transactional
     public APIResponse<Boolean> deleteMultiProduct(ProductMultiDeleteDTO productMultiDeleteDTO) {
         List<String> productListIds = productMultiDeleteDTO.getProductIds();
         productListIds.forEach(item -> {

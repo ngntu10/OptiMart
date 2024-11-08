@@ -66,6 +66,7 @@ public class RoleService implements IRoleService{
     }
 
     @Override
+    @Transactional
     public APIResponse<Role> editRole(String id, String name) {
         Role role = roleRepository.findById(UUID.fromString(id)).get();
         role.setName(name);
@@ -74,6 +75,7 @@ public class RoleService implements IRoleService{
     }
 
     @Override
+    @Transactional
     public APIResponse<?> deleteRole(String id) {
         Role role = roleRepository.findById(UUID.fromString(id)).get();
         roleRepository.delete(role);
@@ -81,6 +83,7 @@ public class RoleService implements IRoleService{
     }
 
     @Override
+    @Transactional
     public APIResponse<?> deleteMany(List<String> roleList) {
         return null;
     }

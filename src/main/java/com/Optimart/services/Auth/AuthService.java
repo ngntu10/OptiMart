@@ -16,7 +16,7 @@ import com.Optimart.responses.Auth.UserLoginResponse;
 import com.Optimart.responses.CloudinaryResponse;
 import com.Optimart.responses.OAuth2.FacebookUserInfoResponse;
 import com.Optimart.responses.OAuth2.GoogleUserInfoResponse;
-import com.Optimart.services.CloudinaryService;
+import com.Optimart.services.Cloudinary.CloudinaryService;
 import com.Optimart.services.OAuth2.FacebookService;
 import com.Optimart.services.OAuth2.GoogleService;
 import com.Optimart.utils.FileUploadUtil;
@@ -83,6 +83,7 @@ public class AuthService implements IAuthService {
     }
 
     @Override
+    @Transactional
     public String login(String email, String password) throws Exception {
         Optional<User> user = authRepository.findByEmail(email);
         if(user.isEmpty()){
@@ -104,6 +105,7 @@ public class AuthService implements IAuthService {
     }
 
     @Override
+    @Transactional
     public User saveDeviceToken(String email, String deviceToken) throws Exception {
         User user = authRepository.findByEmail(email)
                 .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.USER_NOT_EXIST)));
@@ -130,6 +132,7 @@ public class AuthService implements IAuthService {
     }
 
     @Override
+    @Transactional
     public UserLoginResponse changeUserInfo(ChangeUserInfo changeUserInfo) {
         User user = authRepository.findByEmail(changeUserInfo.getEmail())
                 .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.USER_NOT_EXIST)));
@@ -167,6 +170,7 @@ public class AuthService implements IAuthService {
     }
 
     @Override
+    @Transactional
     public User registerGoogle(String token) {
         GoogleUserInfoResponse googleUserInfoResponse = googleService.getUserInfo(token);
         String email = googleUserInfoResponse.getEmail();
@@ -191,6 +195,7 @@ public class AuthService implements IAuthService {
 
 
     @Override
+    @Transactional
     public String loginGoogle(String token, String deviceToken) throws Exception {
         GoogleUserInfoResponse googleUserInfoResponse = googleService.getUserInfo(token);
         Optional<User> optionalUser = authRepository.findByGoogleAccountId(googleUserInfoResponse.getSub());
@@ -220,6 +225,7 @@ public class AuthService implements IAuthService {
     }
 
     @Override
+    @Transactional
     public User registerFacebook(String token) {
         FacebookUserInfoResponse facebookUserInfoResponse = facebookService.getUserProfile(token);
         Optional<User> optionalUser = authRepository.findByEmail(facebookUserInfoResponse.getEmail());
@@ -241,6 +247,7 @@ public class AuthService implements IAuthService {
     }
 
     @Override
+    @Transactional
     public String loginFacebook(String token, String deviceToken) throws Exception {
         FacebookUserInfoResponse facebookUserInfoResponse = facebookService.getUserProfile(token);
         Optional<User> optionalUser = authRepository.findByFacebookAccountId(facebookUserInfoResponse.getId());
@@ -269,6 +276,8 @@ public class AuthService implements IAuthService {
         }
     }
 
+
+    @Transactional
      public String resetPassword(ResetPasswordDTO resetPasswordDTO){
         User user = authRepository.findByResetToken(resetPasswordDTO.getSecretKey())
                 .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.USER_NOT_EXIST)));

@@ -1,4 +1,4 @@
-package com.Optimart.services;
+package com.Optimart.services.Cloudinary;
 
 import com.Optimart.exceptions.FileUploadException;
 import com.Optimart.responses.CloudinaryResponse;

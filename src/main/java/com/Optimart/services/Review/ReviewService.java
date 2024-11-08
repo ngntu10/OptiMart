@@ -26,6 +26,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.util.*;
@@ -42,6 +43,7 @@ public class ReviewService implements IReviewService{
     private final ProductRepository productRepository;
     private final OrderItemRepository orderItemRepository;
     @Override
+    @Transactional
     public APIResponse<ReviewResponse> writeNewReview(WriteReviewDTO writeReviewDTO) {
         Review review = modelMapper.map(writeReviewDTO, Review.class);
         Optional<User> optionalUser = userRepository.findById(UUID.fromString(writeReviewDTO.getUserId()));
@@ -65,6 +67,7 @@ public class ReviewService implements IReviewService{
     }
 
     @Override
+    @Transactional
     public APIResponse<ReviewResponse> updateReview(UpdateReviewDTO updateReviewDTO, String reviewId) {
         Optional<Review> optionalReview = reviewRepository.findById(UUID.fromString(reviewId));
         if(optionalReview.isEmpty())
@@ -94,6 +97,7 @@ public class ReviewService implements IReviewService{
     }
 
     @Override
+    @Transactional
     public APIResponse<Boolean> deleteOneReview(String reviewId) {
         Optional<Review> optionalReview = reviewRepository.findById(UUID.fromString(reviewId));
         if(optionalReview.isEmpty())
@@ -110,6 +114,7 @@ public class ReviewService implements IReviewService{
     }
 
     @Override
+    @Transactional
     public APIResponse<Boolean> deleteOneReviewByMe(String reviewId) {
         Optional<Review> optionalReview = reviewRepository.findById(UUID.fromString(reviewId));
         if(optionalReview.isEmpty())
@@ -131,6 +136,7 @@ public class ReviewService implements IReviewService{
     }
 
     @Override
+    @Transactional
     public APIResponse<Boolean> deleteMultiReview(DeleteMultiReviewDTO deleteMultiReviewDTO) {
         List<String> reviewIds = deleteMultiReviewDTO.getReviewIds();
         List<UUID> reviewUUIDs = reviewIds.stream()

@@ -7,10 +7,12 @@ import com.Optimart.models.User;
 import com.Optimart.repositories.AuthRepository;
 import com.Optimart.repositories.NotificationRepository;
 import com.Optimart.repositories.Specification.NotificationSpecification;
+import com.Optimart.repositories.UserRepository;
 import com.Optimart.responses.APIResponse;
 import com.Optimart.responses.PagingResponse;
 import com.Optimart.utils.JwtTokenUtil;
 import com.Optimart.utils.LocalizationUtils;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -29,9 +31,10 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class NotificationService implements INotificationService{
     private final NotificationRepository notificationRepository;
+    private final AuthRepository authRepository;
+    private final UserRepository userRepository;
     private final LocalizationUtils localizationUtils;
     private final JwtTokenUtil jwtTokenUtil;
-    private final AuthRepository authRepository;
 
     @Override
     public PagingResponse<List<Notification>> getNotifications(Map<Object, String> filters) {
@@ -51,10 +54,14 @@ public class NotificationService implements INotificationService{
         pageable = getPageable(pageable, page, limit, order);
         Specification<Notification> notificationSpecification = NotificationSpecification.filtersNotification(filters.get("userId"), filters.get("search"));
         Page<Notification> notifications = notificationRepository.findAll(notificationSpecification, pageable);
-        return new PagingResponse<>(notifications.getContent(), localizationUtils.getLocalizedMessage(MessageKeys.NOTIFICATION_GET_LIST_SUCCESS), notifications.getTotalPages(), notifications.getTotalElements());
+        int totalNew = (int) notifications.getContent().stream()
+                .filter(notification -> notification.getIsRead() == 0)
+                .count();
+        return new PagingResponse<>(notifications.getContent(), localizationUtils.getLocalizedMessage(MessageKeys.NOTIFICATION_GET_LIST_SUCCESS), notifications.getTotalPages(), notifications.getTotalElements(), totalNew);
     }
 
     @Override
+    @Transactional
     public APIResponse<Notification> markReadNotification(String notificationId) {
         Notification notification = notificationRepository.findById(UUID.fromString(notificationId))
                 .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.NOTIFICATION_NOT_FOUND)));
@@ -64,16 +71,21 @@ public class NotificationService implements INotificationService{
     }
 
     @Override
+    @Transactional
     public APIResponse<Boolean> deleteNotification(String notificationId) {
         Notification notification = notificationRepository.findById(UUID.fromString(notificationId))
                 .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.NOTIFICATION_NOT_FOUND)));
-        List<User> user = notification.getUsers();
-
+        for (User user : notification.getUsers()) {
+            user.getNotifications().remove(notification);
+        }
+        userRepository.saveAll(notification.getUsers());
+        notification.getUsers().clear();
         notificationRepository.delete(notification);
         return new APIResponse<>(true, localizationUtils.getLocalizedMessage(MessageKeys.NOTIFICATION_DELETE_SUCCESS));
     }
 
     @Override
+    @Transactional
     public APIResponse<Boolean> readAllNotification(String token) {
         User user = getUser(token);
         List<Notification> notificationList = user.getNotifications();

@@ -20,6 +20,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
@@ -67,6 +68,7 @@ public class ProductTypeService implements IProductTypeService {
     }
 
     @Override
+    @Transactional
     public APIResponse<ProductType> createType(ProductTypeDTO productTypeDTO) {
         ProductType productType = modelMapper.map(productTypeDTO, ProductType.class);
         productTypeRepository.save(productType);
@@ -79,6 +81,7 @@ public class ProductTypeService implements IProductTypeService {
     }
 
     @Override
+    @Transactional
     public APIResponse<ProductType> editProductType(ProductTypeDTO productTypeDTO, String productTypeId) {
         ProductType productType = productTypeRepository.findById(UUID.fromString(productTypeId)).get();
         modelMapper.map(productTypeDTO, productType);
@@ -96,12 +99,14 @@ public class ProductTypeService implements IProductTypeService {
     }
 
     @Override
+    @Transactional
     public APIResponse<Boolean> deleteProductType(String productTypeId) {
         productTypeRepository.deleteById(UUID.fromString(productTypeId));
         return new APIResponse<>(true, localizationUtils.getLocalizedMessage(MessageKeys.PRODUCT_TYPE_DELETE_SUCCESS));
     }
 
     @Override
+    @Transactional
     public APIResponse<Boolean> deleteMultiProductType(ProductTypeMutiDeleteDTO productTypeMutiDeleteDTO) {
         List<String> productTypeIds = productTypeMutiDeleteDTO.getProductTypeIds();
         productTypeIds.forEach(item -> {

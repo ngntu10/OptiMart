@@ -19,6 +19,7 @@ import com.Optimart.responses.APIResponse;
 import com.Optimart.responses.CommentResponse;
 import com.Optimart.responses.PagingResponse;
 import com.Optimart.utils.LocalizationUtils;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -43,6 +44,7 @@ public class CommentService implements ICommentService{
     private final LocalizationUtils localizationUtils;
 
     @Override
+    @Transactional
     public Comment createComment(AddCommentDTO addCommentDTO) {
         User user = userRepository.findById(UUID.fromString(addCommentDTO.getUser()))
                 .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.USER_NOT_EXIST)));
@@ -58,6 +60,7 @@ public class CommentService implements ICommentService{
     }
 
     @Override
+    @Transactional
     public APIResponse<Comment> replyComment(ReplyCommentDTO replyCommentDTO) {
         User user = userRepository.findById(UUID.fromString(replyCommentDTO.getUser()))
                 .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.USER_NOT_EXIST)));
@@ -74,6 +77,7 @@ public class CommentService implements ICommentService{
     }
 
     @Override
+    @Transactional
     public Comment updateComment(UpdateCommentDTO updateCommentDTO, String commentId) {
         Comment comment = commentRepository.findById(UUID.fromString(commentId))
                 .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.COMMENT_NOT_FOUND)));
@@ -83,6 +87,7 @@ public class CommentService implements ICommentService{
     }
 
     @Override
+    @Transactional
     public APIResponse<Boolean> deleteComment(String commentId) {
         Comment comment = commentRepository.findById(UUID.fromString(commentId))
                 .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.COMMENT_NOT_FOUND)));
@@ -97,6 +102,7 @@ public class CommentService implements ICommentService{
     }
 
     @Override
+    @Transactional
     public APIResponse<Comment> getOneComment(String commentId) {
         Comment comment = commentRepository.findById(UUID.fromString(commentId))
                 .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.COMMENT_NOT_FOUND)));
@@ -104,6 +110,7 @@ public class CommentService implements ICommentService{
     }
 
     @Override
+    @Transactional
     public APIResponse<Boolean> deleteMultiComment(DeleteMultiCommentDTO deleteMultiCommentDTO) {
         deleteMultiCommentDTO.getCommentIds().forEach(this::deleteComment);
         return new APIResponse<>(true, localizationUtils.getLocalizedMessage(MessageKeys.DELETE_COMMENT_SUCCESS));
