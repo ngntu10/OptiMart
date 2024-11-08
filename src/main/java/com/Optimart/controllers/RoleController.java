@@ -3,6 +3,7 @@ package com.Optimart.controllers;
 import com.Optimart.annotations.SecuredSwaggerOperation;
 import com.Optimart.constants.Endpoint;
 import com.Optimart.dto.Role.CreateRole;
+import com.Optimart.dto.Role.UpdateRoleDTO;
 import com.Optimart.models.Role;
 import com.Optimart.responses.APIResponse;
 import com.Optimart.responses.Role.RoleResponse;
@@ -52,8 +53,8 @@ public class RoleController {
 
     @SecuredSwaggerOperation(summary = "Update name for an existing role by ID")
     @PutMapping(Endpoint.Role.ID)
-    public ResponseEntity<?> editRole(@PathVariable String roleId, @RequestBody CreateRole role){
-        return ResponseEntity.ok().body(roleService.editRole(roleId, role.getName()));
+    public ResponseEntity<?> editRole(@PathVariable String roleId, @RequestBody UpdateRoleDTO updateRoleDTO){
+        return ResponseEntity.ok().body(roleService.editRole(roleId, updateRoleDTO));
     }
 
 //    @SecuredSwaggerOperation(summary = "Update list permissions for an existing role by ID")

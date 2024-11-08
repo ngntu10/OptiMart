@@ -1,6 +1,8 @@
 package com.Optimart.services.Role;
 
 import com.Optimart.constants.MessageKeys;
+import com.Optimart.dto.Role.UpdateRoleDTO;
+import com.Optimart.exceptions.DataNotFoundException;
 import com.Optimart.models.Role;
 import com.Optimart.repositories.RoleRepository;
 import com.Optimart.responses.APIResponse;
@@ -62,14 +64,17 @@ public class RoleService implements IRoleService{
 
     @Override
     public Role getOne(String RoleId) {
-        return roleRepository.findById(UUID.fromString(RoleId)).get();
+        return roleRepository.findById(UUID.fromString(RoleId))
+                .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.ROLE_NOT_FOUND)));
     }
 
     @Override
     @Transactional
-    public APIResponse<Role> editRole(String id, String name) {
-        Role role = roleRepository.findById(UUID.fromString(id)).get();
-        role.setName(name);
+    public APIResponse<Role> editRole(String id, UpdateRoleDTO updateRoleDTO) {
+        Role role = roleRepository.findById(UUID.fromString(id))
+                .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.ROLE_NOT_FOUND)));;
+        role.setName(updateRoleDTO.getName());
+        role.setPermissions(updateRoleDTO.getPermissions());
         roleRepository.save(role);
         return new APIResponse<>(role,localizationUtils.getLocalizedMessage(MessageKeys.EDIT_ROLE_SUCCESS));
     }
@@ -77,7 +82,8 @@ public class RoleService implements IRoleService{
     @Override
     @Transactional
     public APIResponse<?> deleteRole(String id) {
-        Role role = roleRepository.findById(UUID.fromString(id)).get();
+        Role role = roleRepository.findById(UUID.fromString(id))
+                .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.ROLE_NOT_FOUND)));;
         roleRepository.delete(role);
         return new APIResponse<>(true,localizationUtils.getLocalizedMessage(MessageKeys.DELETE_ROLE_SUCCESS));
     }
