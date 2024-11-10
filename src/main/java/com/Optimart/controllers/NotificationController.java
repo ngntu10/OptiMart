@@ -46,15 +46,23 @@ public class NotificationController {
     @PostMapping
     public ResponseEntity<?> sendNotification(@RequestBody Note note,
                                            @RequestParam String token) throws FirebaseMessagingException {
-        return ResponseEntity.ok(firebaseMessagingService.sendNotification(note, token));
+        try {
+            return ResponseEntity.ok(firebaseMessagingService.sendNotification(note, token));
+        } catch (Exception ex){
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        }
     }
 
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema(implementation = Object.class)), mediaType = "application/json"))
     @SecuredSwaggerOperation(summary = "Get list all notification with filters")
     @GetMapping
     public ResponseEntity<?> getAllNotification(@RequestParam Map<Object, String> filters){
-        PagingResponse<List<Notification>> items = notificationService.getNotifications(filters);
-        return ResponseEntity.ok(items);
+        try {
+            PagingResponse<List<Notification>> items = notificationService.getNotifications(filters);
+            return ResponseEntity.ok(items);
+        } catch(Exception ex){
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        }
     }
 
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema(implementation = Object.class)), mediaType = "application/json"))

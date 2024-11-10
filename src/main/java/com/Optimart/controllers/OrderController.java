@@ -34,8 +34,12 @@ public class OrderController {
     @ApiResponse(responseCode = "201", description = "CREATED", content = @Content(schema = @Schema(implementation = Object.class), mediaType = "application/json"))
     @SecuredSwaggerOperation(summary = "Create a new order")
     @PostMapping
-    public ResponseEntity<APIResponse<OrderResponse>> createOrder(@RequestBody CreateOrderDTO createOrderDTO) throws FirebaseMessagingException {
-        return ResponseEntity.ok(orderService.createOrder(createOrderDTO));
+    public ResponseEntity<?> createOrder(@RequestBody CreateOrderDTO createOrderDTO) throws FirebaseMessagingException {
+        try{
+            return ResponseEntity.ok(orderService.createOrder(createOrderDTO));
+        } catch(Exception ex){
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        }
     }
 
     @ApiResponse(responseCode = "201", description = "CREATED", content = @Content(schema = @Schema(implementation = Object.class), mediaType = "application/json"))

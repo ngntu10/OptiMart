@@ -106,7 +106,7 @@ public class AuthService implements IAuthService {
 
     @Override
     @Transactional
-    public User saveDeviceToken(String email, String deviceToken) throws Exception {
+    public User saveDeviceToken(String email, String deviceToken) {
         User user = authRepository.findByEmail(email)
                 .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.USER_NOT_EXIST)));
         user.setDeviceToken(deviceToken);
