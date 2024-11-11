@@ -34,3 +34,4 @@ build/
 node_modules/
 src/main/resources/env.yml
 src/main/resources/firebase-service-account.json
+src/main/resources/logs/application.log
