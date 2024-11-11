@@ -20,6 +20,11 @@ spring:
     url: ${DB_URL}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
+  data:
+    redis:
+#      use-redis-cache: false
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
   ### Swagger-ui
   doc:
     show-actuator: true
