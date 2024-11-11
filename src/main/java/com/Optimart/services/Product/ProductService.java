@@ -14,9 +14,11 @@ import com.Optimart.responses.Product.ProductResponse;
 import com.Optimart.responses.Review.ReviewResponse;
 import com.Optimart.responses.User.BaseUserResponse;
 import com.Optimart.services.Cloudinary.CloudinaryService;
+import com.Optimart.services.Redis.Product.ProductRedisService;
 import com.Optimart.utils.FileUploadUtil;
 import com.Optimart.utils.JwtTokenUtil;
 import com.Optimart.utils.LocalizationUtils;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
@@ -38,6 +40,7 @@ import java.util.stream.Collectors;
 public class ProductService implements IProductService {
     private final LocalizationUtils localizationUtils;
     private final CloudinaryService cloudinaryService;
+    private final ProductRedisService productRedisService;
     private final ModelMapper modelMapper;
     private final JwtTokenUtil jwtTokenUtil;
     private final UserRepository userRepository;
@@ -113,7 +116,7 @@ public class ProductService implements IProductService {
     }
 
     @Override
-    public PagingResponse<List<ProductResponse>> findAllProduct(Map<Object, String> filters) {
+    public PagingResponse<List<ProductResponse>> findAllProduct(Map<Object, String> filters) throws JsonProcessingException {
         List<Product> productList;
         Pageable pageable;
         int page = Integer.parseInt(filters.getOrDefault("page", "-1"));
@@ -124,6 +127,7 @@ public class ProductService implements IProductService {
             List<ProductResponse> productResponseList = productList.stream()
                     .map(product -> modelMapper.map(product, ProductResponse.class))
                     .toList();
+            productRedisService.saveAllProducts(productResponseList, filters);
             return new PagingResponse<>(productResponseList, localizationUtils.getLocalizedMessage(MessageKeys.PRODUCT_GET_SUCCESS), 1, (long) productList.size());
         }
         page = Math.max(Integer.parseInt(filters.getOrDefault("page", "-1")), 1) - 1;

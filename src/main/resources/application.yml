@@ -23,8 +23,8 @@ spring:
   data:
     redis:
 #      use-redis-cache: false
-      host: ${REDIS_HOST:localhost}
-      port: ${REDIS_PORT:6379}
+      host: localhost
+      port: 6379
   ### Swagger-ui
   doc:
     show-actuator: true

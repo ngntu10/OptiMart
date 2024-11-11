@@ -2,12 +2,16 @@ package com.Optimart.controllers;
 
 import com.Optimart.annotations.SecuredSwaggerOperation;
 import com.Optimart.annotations.UnsecuredSwaggerOperation;
+import com.Optimart.configuration.Redis.RedisConfig;
 import com.Optimart.constants.Endpoint;
 import com.Optimart.constants.MessageKeys;
 import com.Optimart.dto.Product.*;
 import com.Optimart.models.Product;
 import com.Optimart.responses.CloudinaryResponse;
+import com.Optimart.responses.PagingResponse;
+import com.Optimart.responses.Product.ProductResponse;
 import com.Optimart.services.Product.ProductService;
+import com.Optimart.services.Redis.Product.ProductRedisService;
 import com.Optimart.utils.LocalizationUtils;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -15,10 +19,13 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.Map;
 
 @RequiredArgsConstructor
@@ -26,14 +33,31 @@ import java.util.Map;
 @Tag(name = "Product", description = "Everything about product")
 @RequestMapping(Endpoint.Product.BASE)
 public class ProductController {
+    private static final Logger logger = LoggerFactory.getLogger(ProductController.class);
     private final LocalizationUtils localizationUtils;
     private final ProductService productService;
+    private final ProductRedisService productRedisService;
 
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = Object.class), mediaType = "application/json"))
     @SecuredSwaggerOperation(summary = "Get list products")
     @GetMapping
     public ResponseEntity<?> getListProducts(@RequestParam Map<Object, String> filters){
-        return ResponseEntity.ok(productService.findAllProduct(filters));
+        try{
+            List<ProductResponse> productResponses = productRedisService
+                    .getAllProducts(filters);
+            if (productResponses!=null && !productResponses.isEmpty()) {
+                PagingResponse<List<ProductResponse>> listPagingResponse = new PagingResponse<>(productResponses,
+                        localizationUtils.getLocalizedMessage(MessageKeys.PRODUCT_GET_SUCCESS),
+                        1, (long) productResponses.size());
+                return ResponseEntity.ok(listPagingResponse);
+            }
+            PagingResponse<List<ProductResponse>> pagingResponse = productService.findAllProduct(filters);
+            productRedisService.saveAllProducts(pagingResponse.getData(), filters);
+            return ResponseEntity.ok(pagingResponse);
+        } catch (Exception ex) {
+            logger.error(ex.getMessage());
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        }
     }
 
     @ApiResponse(responseCode = "201", description = "CREATED", content = @Content(schema = @Schema(implementation = Object.class), mediaType = "application/json"))
