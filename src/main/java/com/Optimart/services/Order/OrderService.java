@@ -15,10 +15,13 @@ import com.Optimart.responses.PagingResponse;
 import com.Optimart.services.Firebase.FirebaseMessagingService;
 import com.Optimart.utils.JwtTokenUtil;
 import com.Optimart.utils.LocalizationUtils;
+import com.google.firebase.FirebaseException;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -33,6 +36,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class OrderService implements IOrderService{
+    private static final Logger logger = LoggerFactory.getLogger(OrderService.class);
     private final ModelMapper modelMapper;
     private final OrderRepository orderRepository;
     private final PaymentTypeRepository paymentTypeRepository;
@@ -47,7 +51,7 @@ public class OrderService implements IOrderService{
     private final FirebaseMessagingService firebaseMessagingService;
     @Override
     @Transactional
-    public APIResponse<OrderResponse> createOrder(CreateOrderDTO createOrderDTO) throws FirebaseMessagingException {
+    public APIResponse<OrderResponse> createOrder(CreateOrderDTO createOrderDTO) {
         Order order = modelMapper.map(createOrderDTO, Order.class);
         User user = userRepository.findById(UUID.fromString(createOrderDTO.getUserId()))
                 .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.USER_NOT_EXIST)));
@@ -89,11 +93,13 @@ public class OrderService implements IOrderService{
 
         user.getNotifications().add(notification);
         userRepository.save(user);
-
-        firebaseMessagingService.sendNotification(new Note(Context.ORDER, localizationUtils.getLocalizedMessage(MessageKeys.ORDER_CREATE_SUCCESS), localizationUtils.getLocalizedMessage(MessageKeys.ORDER_CREATE_SUCCESS_ID, order.getId().toString())), user.getDeviceToken());
+        try{
+            firebaseMessagingService.sendNotification(new Note(Context.ORDER, localizationUtils.getLocalizedMessage(MessageKeys.ORDER_CREATE_SUCCESS), localizationUtils.getLocalizedMessage(MessageKeys.ORDER_CREATE_SUCCESS_ID, order.getId().toString())), user.getDeviceToken());
+        } catch (FirebaseMessagingException e) {
+            logger.error(e.getMessage());
+        }
         return new APIResponse<>(new OrderResponse(order.getId()), localizationUtils.getLocalizedMessage(MessageKeys.ORDER_CREATE_SUCCESS));
     }
-
 
 
     @Override

@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   app:
-    image: ngntu10/optimart-api:v3.0.0
+    image: ngntu10/optimart-api:v4.0
     container_name: spring-app
     ports:
       - "8085:8080"

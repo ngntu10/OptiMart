@@ -110,7 +110,7 @@ public class UserService implements IUserservice {
         modelMapper.map(editUserDTO, user);
         user.setRole(role);
         if(!editUserDTO.getCity().isEmpty()){
-        City city = cityLocaleRepository.findByName(editUserDTO.getCity())
+        City city = cityLocaleRepository.findById(Long.parseLong(editUserDTO.getCity()))
                 .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.CITY_NOT_FOUND)));
         user.setCity(city);
         }
