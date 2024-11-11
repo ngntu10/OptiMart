@@ -1,0 +1,99 @@
+api:
+  prefix: /api/v1
+support:
+  email: phamnguyentu04@gmail.com
+spring:
+  application:
+    name: OptiMart
+  config:
+    import: "classpath:env.yml"
+  ### Database
+  jpa:
+    hibernate:
+      ddl-auto: ${DB_DDL_AUTO}
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  ### Swagger-ui
+  doc:
+    show-actuator: true
+  ### Spring servlet
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+  security:
+    oauth2:
+      client:
+        registration:
+          ### GOOGLE CLOUD OAUTH 2.0
+          google:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_SECRET}
+            scope:
+              - email
+              - profile
+          ### META CLOUD OAUTH 2.0
+          facebook:
+            client-id: ${FACEBOOK_CLIENT_ID}
+            client-secret: ${FACEBOOK_SECRET}
+            scope:
+              - email
+              - profile
+  ### SPRING MAIL
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${SPRING_MAIL_USERNAME}
+    password: ${SPRING_MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+    default-encoding: UTF-8
+### JWT
+jwt:
+  expiration: ${JWT_EXPIRATION}
+  secretKey: ${JWT_SECRET_KEY}
+  jwtRefreshExpiration: ${JWT_REFRESH_EXPIRATION}
+### RESET TOKEN (Sec)
+time:
+  expire:
+    password: ${RESET_PASSWORD_TOKEN_EXPIRED}
+### Cloudinary
+cloudinary:
+  cloud_name: ${CLOUDINARY_CLOUD_NAME}
+  api_key: ${CLOUDINARY_API_KEY}
+  api_secret: ${CLOUDINARY_API_SECRET}
+springdoc:
+  show-actuator: true
+### VNPAY
+payment:
+  vnPay:
+    url: ${PAY_URL}
+    returnUrl: ${RETURN_URL}
+    tmnCode: ${TMN_CODE}
+    secretKey: ${SECRET_KEY}
+    command: ${COMMAND}
+    orderType: ${ORDER_TYPE}
+    version: ${VERSION}
+### FIREBASE CLOUD MESSAGING
+type: ${TYPE}
+project_id: ${PROJECT_ID}
+private_key_id: ${PRIVATE_KEY_ID}
+private_key: ${PRIVATE_KEY}
+client_email: ${CLIENT_EMAIL}
+client_id: ${CLIENT_ID}
+auth_uri: ${CLIENT_EMAIL}
+token_uri: ${TOKEN_URI}
+auth_provider_x509_cert_url: ${AUTH_PROVIDER_X509_CENT_URL}
+client_x509_cert_url: ${CLIENT_X509_CERT_URL}
+universe_domain: ${UNIVERSE_DOMAIN}
