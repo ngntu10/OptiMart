@@ -1,8 +1,8 @@
-version: '3.8'
+version: '3.7'
 
 services:
   app:
-    image: ngntu10/optimart-api:v4.0
+    image: ngntu10/optimart-api:latest
     container_name: spring-app
     ports:
       - "8085:8080"
@@ -10,8 +10,11 @@ services:
       DB_URL: jdbc:postgresql://db:5432/optimart
       DB_USERNAME: ngntu10
       DB_PASSWORD: nguyentu1005
+      REDIS_HOST: redis-optimart
+      REDIS_PORT: 6379
     depends_on:
       - db
+      - redis
     networks:
       - optimart-network
 
@@ -28,9 +31,23 @@ services:
       - "5432:5432"
     networks:
       - optimart-network
+
+  redis:
+    image: redis:latest
+    container_name: redis-optimart
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - optimart-network
+
 volumes:
   postgres-data: {}
+  redis-data: {}
 
 networks:
   optimart-network:
     driver: bridge
+    name: optimart-network

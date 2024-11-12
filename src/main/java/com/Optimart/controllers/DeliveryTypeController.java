@@ -16,6 +16,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -34,6 +35,7 @@ public class DeliveryTypeController {
         return ResponseEntity.ok(deliveryTypeService.findAll(deliveryTypeSearchDTO));
     }
 
+    @PreAuthorize("hasAuthority('SETTING.DELIVERY_TYPE.CREATE') OR hasAuthority('ADMIN.GRANTED')")
     @ApiResponse(responseCode = "201", description = "CREATED", content = @Content(schema = @Schema(implementation = DeliveryType.class), mediaType = "application/json"))
     @SecuredSwaggerOperation(summary = "Create a new delivery type")
     @PostMapping
@@ -48,6 +50,7 @@ public class DeliveryTypeController {
         return ResponseEntity.ok(deliveryTypeService.getDeliveryType(deliveryTypeId));
     }
 
+    @PreAuthorize("hasAuthority('SETTING.DELIVERY_TYPE.UPDATE') OR hasAuthority('ADMIN.GRANTED')")
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = DeliveryType.class), mediaType = "application/json"))
     @SecuredSwaggerOperation(summary = "Update delivery type by id")
     @PutMapping(Endpoint.DeliveryType.ID)
@@ -55,6 +58,7 @@ public class DeliveryTypeController {
         return ResponseEntity.ok(deliveryTypeService.editDeliveryType(deliveryTypeDTO, deliveryTypeId));
     }
 
+    @PreAuthorize("hasAuthority('SETTING.DELIVERY_TYPE.DELETE') OR hasAuthority('ADMIN.GRANTED')")
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = String.class), mediaType = "application/json"))
     @SecuredSwaggerOperation(summary = "Delete a delivery type by id")
     @DeleteMapping(Endpoint.DeliveryType.ID)
@@ -62,6 +66,7 @@ public class DeliveryTypeController {
         return ResponseEntity.ok(deliveryTypeService.deleteDeliveryType(deliveryTypeId));
     }
 
+    @PreAuthorize("hasAuthority('SETTING.DELIVERY_TYPE.DELETE') OR hasAuthority('ADMIN.GRANTED')")
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = String.class), mediaType = "application/json"))
     @SecuredSwaggerOperation(summary = "Delete multiple delivery type by id")
     @DeleteMapping(Endpoint.DeliveryType.DELETE_MANY)

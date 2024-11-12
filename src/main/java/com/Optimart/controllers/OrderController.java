@@ -18,6 +18,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -42,6 +43,7 @@ public class OrderController {
         }
     }
 
+    @PreAuthorize("hasAuthority('MANAGE_ORDER.ORDER.VIEW') OR hasAuthority('ADMIN.GRANTED')")
     @ApiResponse(responseCode = "201", description = "CREATED", content = @Content(schema = @Schema(implementation = Object.class), mediaType = "application/json"))
     @SecuredSwaggerOperation(summary = "Get all orders")
     @GetMapping
@@ -81,6 +83,8 @@ public class OrderController {
         return ResponseEntity.ok(orderService.getOneOrderById(orderId));
     }
 
+
+    @PreAuthorize("hasAuthority('MANAGE_ORDER.ORDER.DELETE') OR hasAuthority('ADMIN.GRANTED')")
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = Object.class), mediaType = "application/json"))
     @SecuredSwaggerOperation(summary = "Delete an existing order by id")
     @DeleteMapping(Endpoint.Order.ID)
@@ -88,6 +92,7 @@ public class OrderController {
         return ResponseEntity.ok(orderService.deleteOrder(orderId));
     }
 
+    @PreAuthorize("hasAuthority('MANAGE_ORDER.ORDER.UPDATE') OR hasAuthority('ADMIN.GRANTED')")
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = Object.class), mediaType = "application/json"))
     @SecuredSwaggerOperation(summary = "Update order status")
     @PostMapping(Endpoint.Order.STATUS_ID)

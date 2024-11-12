@@ -16,6 +16,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -34,6 +35,7 @@ public class CityLocaleController {
         return ResponseEntity.ok(cityLocaleService.findAll(cityLocaleSearchDTO));
     }
 
+    @PreAuthorize("hasAuthority('CITY.CREATE') OR hasAuthority('ADMIN.GRANTED')")
     @ApiResponse(responseCode = "201", description = "CREATED", content = @Content(schema = @Schema(implementation = City.class), mediaType = "application/json"))
     @SecuredSwaggerOperation(summary = "Create a new city")
     @PostMapping
@@ -48,6 +50,7 @@ public class CityLocaleController {
         return ResponseEntity.ok(cityLocaleService.getCity(cityId));
     }
 
+    @PreAuthorize("hasAuthority('CITY.UPDATE') OR hasAuthority('ADMIN.GRANTED')")
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = City.class), mediaType = "application/json"))
     @SecuredSwaggerOperation(summary = "Update city name by id")
     @PutMapping(Endpoint.CityLocale.ID)
@@ -55,6 +58,7 @@ public class CityLocaleController {
         return ResponseEntity.ok(cityLocaleService.editCity(cityLocaleDTO, cityId));
     }
 
+    @PreAuthorize("hasAuthority('CITY.DELETE') OR hasAuthority('ADMIN.GRANTED')")
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = String.class), mediaType = "application/json"))
     @SecuredSwaggerOperation(summary = "Delete a city by id")
     @DeleteMapping(Endpoint.CityLocale.ID)
@@ -62,6 +66,7 @@ public class CityLocaleController {
         return ResponseEntity.ok(cityLocaleService.deleteCity(cityId));
     }
 
+    @PreAuthorize("hasAuthority('CITY.DELETE') OR hasAuthority('ADMIN.GRANTED')")
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = String.class), mediaType = "application/json"))
     @SecuredSwaggerOperation(summary = "Delete multiple city by id")
     @DeleteMapping(Endpoint.CityLocale.DELETE_MANY)

@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -38,6 +39,7 @@ public class ProductController {
     private final ProductService productService;
     private final ProductRedisService productRedisService;
 
+    @PreAuthorize("hasAuthority('MANAGE_PRODUCT.PRODUCT.VIEW') OR hasAuthority('ADMIN.GRANTED')")
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = Object.class), mediaType = "application/json"))
     @SecuredSwaggerOperation(summary = "Get list products")
     @GetMapping
@@ -49,6 +51,7 @@ public class ProductController {
                 PagingResponse<List<ProductResponse>> listPagingResponse = new PagingResponse<>(productResponses,
                         localizationUtils.getLocalizedMessage(MessageKeys.PRODUCT_GET_SUCCESS),
                         1, (long) productResponses.size());
+                logger.info(localizationUtils.getLocalizedMessage(MessageKeys.PRODUCT_GET_SUCCESS)  + " redis");
                 return ResponseEntity.ok(listPagingResponse);
             }
             PagingResponse<List<ProductResponse>> pagingResponse = productService.findAllProduct(filters);
@@ -60,6 +63,7 @@ public class ProductController {
         }
     }
 
+    @PreAuthorize("hasAuthority('MANAGE_PRODUCT.PRODUCT.CREATE') OR hasAuthority('ADMIN.GRANTED')")
     @ApiResponse(responseCode = "201", description = "CREATED", content = @Content(schema = @Schema(implementation = Object.class), mediaType = "application/json"))
     @SecuredSwaggerOperation(summary = "Create a new product")
     @PostMapping
@@ -74,6 +78,7 @@ public class ProductController {
         return ResponseEntity.ok(productService.getOneProduct(productId));
     }
 
+    @PreAuthorize("hasAuthority('MANAGE_PRODUCT.PRODUCT.UPDATE') OR hasAuthority('ADMIN.GRANTED')")
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = Product.class), mediaType = "application/json"))
     @SecuredSwaggerOperation(summary = "Update an existing product")
     @PutMapping(Endpoint.Product.ID)
@@ -81,6 +86,7 @@ public class ProductController {
         return ResponseEntity.ok(productService.updateProduct(product, productId));
     }
 
+    @PreAuthorize("hasAuthority('MANAGE_PRODUCT.PRODUCT.UPDATE') OR hasAuthority('ADMIN.GRANTED')")
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = CloudinaryResponse.class), mediaType = "application/json"))
     @SecuredSwaggerOperation(summary = "Update Product image")
     @PostMapping(Endpoint.Product.CHANGE_IMAGE)
@@ -90,6 +96,7 @@ public class ProductController {
         return ResponseEntity.ok(new CloudinaryResponse(response.getPublicId(), response.getUrl(), localizationUtils.getLocalizedMessage(MessageKeys.PRODUCT_IMAGE_UPDATE_SUCCESS)));
     }
 
+    @PreAuthorize("hasAuthority('MANAGE_PRODUCT.PRODUCT.DELETE') OR hasAuthority('ADMIN.GRANTED')")
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = Object.class), mediaType = "application/json"))
     @SecuredSwaggerOperation(summary = "Delete a product by id")
     @DeleteMapping(Endpoint.Product.ID)
@@ -126,6 +133,7 @@ public class ProductController {
         return ResponseEntity.ok(productService.getOneProductBySlug(slugId, params));
     }
 
+    @PreAuthorize("hasAuthority('MANAGE_PRODUCT.PRODUCT.DELETE') OR hasAuthority('ADMIN.GRANTED')")
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema(implementation = Product.class)), mediaType = "application/json"))
     @SecuredSwaggerOperation(summary = "Delete multi product")
     @DeleteMapping(Endpoint.Product.DELETE_MANY)

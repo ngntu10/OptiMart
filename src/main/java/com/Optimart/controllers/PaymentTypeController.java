@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -35,6 +36,7 @@ public class PaymentTypeController {
         return ResponseEntity.ok(paymentTypeService.findAll(paymentTypeSearchDTO));
     }
 
+    @PreAuthorize("hasAuthority('SETTING.PAYMENT_TYPE.CREATE') OR hasAuthority('ADMIN.GRANTED')")
     @ApiResponse(responseCode = "201", description = "CREATED", content = @Content(schema = @Schema(implementation = Paymenttype.class), mediaType = "application/json"))
     @SecuredSwaggerOperation(summary = "Create a new payment type")
     @PostMapping
@@ -50,6 +52,7 @@ public class PaymentTypeController {
         return ResponseEntity.ok(paymentTypeService.getPaymentType(paymentTypeId));
     }
 
+    @PreAuthorize("hasAuthority('SETTING.PAYMENT_TYPE.UPDATE') OR hasAuthority('ADMIN.GRANTED')")
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = Paymenttype.class), mediaType = "application/json"))
     @SecuredSwaggerOperation(summary = "Update payment type by id")
     @PutMapping(Endpoint.PaymentType.ID)
@@ -57,6 +60,7 @@ public class PaymentTypeController {
         return ResponseEntity.ok(paymentTypeService.editPaymentType(paymentTypeDTO, paymentTypeId));
     }
 
+    @PreAuthorize("hasAuthority('SETTING.PAYMENT_TYPE.DELETE') OR hasAuthority('ADMIN.GRANTED')")
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = String.class), mediaType = "application/json"))
     @SecuredSwaggerOperation(summary = "Delete a payment type by id")
     @DeleteMapping(Endpoint.PaymentType.ID)
@@ -64,6 +68,7 @@ public class PaymentTypeController {
         return ResponseEntity.ok(paymentTypeService.deletePaymentType(paymentTypeId));
     }
 
+    @PreAuthorize("hasAuthority('SETTING.PAYMENT_TYPE.DELETE') OR hasAuthority('ADMIN.GRANTED')")
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = String.class), mediaType = "application/json"))
     @SecuredSwaggerOperation(summary = "Delete multiple payment type by id")
     @DeleteMapping(Endpoint.PaymentType.DELETE_MANY)

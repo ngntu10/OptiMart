@@ -109,10 +109,14 @@ public class UserService implements IUserservice {
                 .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.ROLE_NOT_FOUND)));
         modelMapper.map(editUserDTO, user);
         user.setRole(role);
-        if(!editUserDTO.getCity().isEmpty()){
-        City city = cityLocaleRepository.findById(Long.parseLong(editUserDTO.getCity()))
+        if(!editUserDTO.getCity().isEmpty() && editUserDTO.getCity().length() >=3){
+        City city = cityLocaleRepository.findByName(editUserDTO.getCity())
                 .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.CITY_NOT_FOUND)));
         user.setCity(city);
+        }else {
+            City city = cityLocaleRepository.findById(Long.parseLong(editUserDTO.getCity()))
+                    .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.CITY_NOT_FOUND)));
+            user.setCity(city);
         }
         userRepository.save(user);
         UserResponse userResponse = modelMapper.map(user, UserResponse.class);

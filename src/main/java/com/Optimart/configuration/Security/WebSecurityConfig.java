@@ -1,6 +1,7 @@
     package com.Optimart.configuration.Security;
 
     import com.Optimart.filters.JwtTokenFilter;
+    import jakarta.servlet.http.HttpServletResponse;
     import lombok.RequiredArgsConstructor;
     import org.springframework.beans.factory.annotation.Value;
     import org.springframework.context.annotation.Bean;
@@ -56,7 +57,6 @@
                                         String.format("%s/auth/login", apiPrefix),
                                         String.format("%s/auth/refreshtoken", apiPrefix),
                                         String.format("%s/auth/me", apiPrefix),
-                                        String.format("%s/auth/logout", apiPrefix),
                                         String.format("%s/auth/avatar", apiPrefix),
                                         String.format("%s/auth/change-password", apiPrefix),
                                         String.format("%s/auth/update-info", apiPrefix),
@@ -72,6 +72,17 @@
                                 .anyRequest().authenticated();
                         //.anyRequest().permitAll();
                     });
+            http
+                    .logout(logout -> logout
+                            .logoutUrl(String.format("%s/auth/logout", apiPrefix))
+                            .invalidateHttpSession(true)
+                            .clearAuthentication(true)
+                            .permitAll()
+                            .logoutSuccessHandler((request, response, authentication) -> {
+                                response.setStatus(HttpServletResponse.SC_OK);
+                            })
+                    );
+
             http.cors(new Customizer<CorsConfigurer<HttpSecurity>>() {
                 @Override
                 public void customize(CorsConfigurer<HttpSecurity> httpSecurityCorsConfigurer) {

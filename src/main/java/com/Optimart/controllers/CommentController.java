@@ -18,6 +18,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -51,6 +52,7 @@ public class CommentController {
         }
     }
 
+    @PreAuthorize("hasAuthority('MANAGE_PRODUCT.COMMENT.UPDATE') OR hasAuthority('ADMIN.GRANTED')")
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = Object.class), mediaType = "application/json"))
     @SecuredSwaggerOperation(summary = "Admin update an existing comment")
     @PutMapping(Endpoint.Comment.ID)
@@ -73,6 +75,7 @@ public class CommentController {
         }
     }
 
+    @PreAuthorize("hasAuthority('MANAGE_PRODUCT.COMMENT.DELETE') OR hasAuthority('ADMIN.GRANTED')")
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = Object.class), mediaType = "application/json"))
     @SecuredSwaggerOperation(summary = "Admin delete an existing comment")
     @DeleteMapping (Endpoint.Comment.ID)
@@ -84,6 +87,7 @@ public class CommentController {
         }
     }
 
+    @PreAuthorize("hasAuthority('MANAGE_PRODUCT.COMMENT.DELETE') OR hasAuthority('ADMIN.GRANTED')")
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = Object.class), mediaType = "application/json"))
     @SecuredSwaggerOperation(summary = "Delete multiple comment")
     @DeleteMapping (Endpoint.Comment.DELETE_MANY)

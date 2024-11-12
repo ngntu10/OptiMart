@@ -19,6 +19,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
@@ -27,10 +28,11 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping(Endpoint.User.BASE)
 public class UserController {
     public final UserService userService;
+
+    @PreAuthorize("hasAuthority('SYSTEM.USER.VIEW') OR hasAuthority('ADMIN.GRANTED')")
     @SecuredSwaggerOperation(summary = "Get all user")
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema(implementation = Paymenttype.class)), mediaType = "application/json"))
     @GetMapping
-//    @PreAuthorize("hasAnyAuthority('ROLE_SYSTEM.USER.VIEW')")
     public ResponseEntity<PagingResponse<?>> getAllUser(@ModelAttribute UserSearchDTO userSearchDTO) {
          return ResponseEntity.ok(userService.getUsers(userSearchDTO));
     }
@@ -38,17 +40,19 @@ public class UserController {
     @SecuredSwaggerOperation(summary = "Get details for an existing user")
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = UserResponse.class), mediaType = "application/json"))
     @GetMapping(Endpoint.User.ID)
-//    @PreAuthorize("hasAuthority('ROLE_SYSTEM.USER.VIEW')")
     public ResponseEntity<UserResponse> getOneUser(@PathVariable String userId){
         return ResponseEntity.ok(userService.getOneUser(userId));
     }
 
+    @PreAuthorize("hasAuthority('SYSTEM.USER.CREATE') OR hasAuthority('ADMIN.GRANTED')")
     @SecuredSwaggerOperation(summary = "Create a new user")
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = Object.class), mediaType = "application/json"))
     @PostMapping
     public ResponseEntity<APIResponse<User>> createUser(@RequestBody CreateUserDTO createUserDTO){
         return ResponseEntity.ok(userService.createNewUser(createUserDTO));
     }
+
+
     @SecuredSwaggerOperation(summary = "Update an existing user")
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = Object.class), mediaType = "application/json"))
     @PutMapping(Endpoint.User.ID)
@@ -56,6 +60,7 @@ public class UserController {
         return ResponseEntity.ok(userService.editUser(user));
     }
 
+    @PreAuthorize("hasAuthority('SYSTEM.USER.DELETE') OR hasAuthority('ADMIN.GRANTED')")
     @SecuredSwaggerOperation(summary = "Delete an existing user")
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = Object.class), mediaType = "application/json"))
     @DeleteMapping(Endpoint.User.ID)
@@ -63,7 +68,8 @@ public class UserController {
         return ResponseEntity.ok(userService.deleteUser(userId));
     }
 
-    @SecuredSwaggerOperation(summary = "Delete an existing user")
+    @PreAuthorize("hasAuthority('SYSTEM.USER.DELETE') OR hasAuthority('ADMIN.GRANTED')")
+    @SecuredSwaggerOperation(summary = "Delete multi user")
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = Object.class), mediaType = "application/json"))
     @DeleteMapping(Endpoint.User.DELETE_MANY)
     public ResponseEntity<APIResponse<Boolean>> deleteMutiUser(@RequestBody UserMutilDeleteDTO userMutilDeleteDTO){

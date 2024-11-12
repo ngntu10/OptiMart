@@ -18,6 +18,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,6 +41,7 @@ public class ReviewController {
         return ResponseEntity.ok(reviewService.writeNewReview(writeReviewDTO));
     }
 
+    @PreAuthorize("hasAuthority('MANAGE_ORDER.REVIEW.UPDATE') OR hasAuthority('ADMIN.GRANTED')")
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = Product.class), mediaType = "application/json"))
     @SecuredSwaggerOperation(summary = "Update a review")
     @PutMapping(Endpoint.Reivew.ID)
@@ -68,6 +70,7 @@ public class ReviewController {
         return ResponseEntity.ok(reviewService.getAllReview(filters));
     }
 
+    @PreAuthorize("hasAuthority('MANAGE_ORDER.REVIEW.DELETE') OR hasAuthority('ADMIN.GRANTED')")
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = Product.class), mediaType = "application/json"))
     @SecuredSwaggerOperation(summary = "Delete a existing review by id")
     @DeleteMapping(Endpoint.Reivew.ID)
@@ -82,6 +85,7 @@ public class ReviewController {
         return ResponseEntity.ok(reviewService.deleteOneReview(reviewId));
     }
 
+    @PreAuthorize("hasAuthority('MANAGE_ORDER.REVIEW.DELETE') OR hasAuthority('ADMIN.GRANTED')")
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = Product.class), mediaType = "application/json"))
     @SecuredSwaggerOperation(summary = "Delete multiple review")
     @DeleteMapping(Endpoint.Reivew.DELETE_MANY)
