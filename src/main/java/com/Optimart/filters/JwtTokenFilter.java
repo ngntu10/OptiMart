@@ -1,6 +1,9 @@
 package com.Optimart.filters;
 
+import com.Optimart.models.RefreshToken;
 import com.Optimart.models.User;
+import com.Optimart.repositories.RefreshTokenRepository;
+import com.Optimart.services.RefreshToken.RefreshTokenService;
 import com.Optimart.utils.JwtTokenUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -20,6 +23,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -27,6 +31,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
     private final JwtTokenUtil jwtTokenUtil;
     private final UserDetailsService userDetailsService;
+    private final RefreshTokenRepository refreshTokenRepository;
     @Value("${api.prefix}")
     private String apiPrefix;
     @Override
@@ -47,6 +52,11 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             }
 
             final String token = authHeader.substring(7);
+            Optional<RefreshToken> refreshToken = refreshTokenRepository.findByRefreshtoken(token);
+            if(refreshToken.isEmpty()) {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "NOT UNAUTHORIZED");
+                return;
+            }
             final String email = jwtTokenUtil.extractEmail(token);
             if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 User userDetail = (User) userDetailsService.loadUserByUsername(email);

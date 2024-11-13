@@ -1,6 +1,8 @@
     package com.Optimart.configuration.Security;
 
     import com.Optimart.filters.JwtTokenFilter;
+    import com.Optimart.services.RefreshToken.RefreshTokenService;
+    import com.Optimart.utils.LocalizationUtils;
     import jakarta.servlet.http.HttpServletResponse;
     import lombok.RequiredArgsConstructor;
     import org.springframework.beans.factory.annotation.Value;
@@ -30,6 +32,8 @@
     @RequiredArgsConstructor
     public class WebSecurityConfig {
         private final JwtTokenFilter jwtTokenFilter;
+        private final RefreshTokenService refreshTokenService;
+        private final LocalizationUtils localizationUtils;
         @Value("${api.prefix}")
         private String apiPrefix;
         @Bean
@@ -78,9 +82,7 @@
                             .invalidateHttpSession(true)
                             .clearAuthentication(true)
                             .permitAll()
-                            .logoutSuccessHandler((request, response, authentication) -> {
-                                response.setStatus(HttpServletResponse.SC_OK);
-                            })
+                            .logoutSuccessHandler(new CustomLogoutSuccessHandler(localizationUtils, refreshTokenService))
                     );
 
             http.cors(new Customizer<CorsConfigurer<HttpSecurity>>() {

@@ -88,6 +88,13 @@ public class AuthController {
         }
     }
 
+//    @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = Object.class), mediaType = "application/json"))
+//    @SecuredSwaggerOperation(summary = "Logout User")
+//    @PostMapping(Endpoint.Auth.LOGOUT)
+//    public ResponseEntity<?> logout(@RequestHeader("Authorization") String refreshToken) {
+//        return ResponseEntity.ok(refreshTokenService.removeTokenFromUser(refreshToken));
+//    }
+
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = LoginResponse.class), mediaType = "application/json"))
     @UnsecuredSwaggerOperation(summary = "Login user by Google")
     @PostMapping(Endpoint.Auth.LOGIN_GOOGLE)

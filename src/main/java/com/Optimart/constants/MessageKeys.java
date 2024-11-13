@@ -8,11 +8,18 @@ public class MessageKeys {
     // **** Errors
     public static final String ERROR = "optimart.error";
 
+    // **** Refresh Token
+    public static final String REFRESH_TOKEN_NOT_FOUND = "refresh_token.not_found";
+    public static final String SIGN_IN_AGAIN = "sign_in_again";
+    public static final String CREATE_REFRESH_TOKEN_FAILED = "refresh_token.create_failed";
+    public static final String DELETE_REFRESH_TOKEN_SUCCESS = "refresh_token.delete_success";
+
     // **** Auth
     public static final String REGISTER_SUCCESSFULLY = "auth.register.register_successfully";
     public static final String REGISTER_FAILED = "auth.register.register_failed";
     public static final String LOGIN_SUCCESSFULLY = "auth.login.login_successfully";
     public static final String LOGIN_FAILED = "auth.login.login_failed";
+    public static final String LOGOUT_SUCCESS = "auth.logout.logout_success";
     public static final String USER_ALREADY_EXIST = "error.auth.register.user_already_exists";
     public static final String USER_NOT_EXIST = "error.auth.login.user_not_exists";
     public static final String WRONG_INPUT = "error.auth.login.wrong_email_or_password";

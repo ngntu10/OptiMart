@@ -23,7 +23,7 @@ spring:
   data:
     redis:
 #      use-redis-cache: false
-      host: localhost
+      host: redis-optimart
       port: 6379
   ### Swagger-ui
   doc:
