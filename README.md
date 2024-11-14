@@ -55,7 +55,7 @@ OptiMart provides a comprehensive set of features to empower both admins and use
 
 Follow these steps to set up and run the backend:
 
-
+### Method 1: Clone the Repository and Run Locally
 
 ```bash
    git clone https://github.com/ngntu10/OptiMart.git
@@ -80,10 +80,28 @@ Follow these steps to set up and run the backend:
 
 #### 4. Run the application:
 
+
+
 ```bash
   # Using Maven
   mvn spring-boot:run
+```
 
+### Method 2: Run the Application Using Docker Compose
+```bash
+   git clone https://github.com/ngntu10/OptiMart.git
+```
+
+#### 1. Navigate to the project directory:
+
+```bash
+  cd Optimart
+```
+
+#### 2. Build and start the containers using Docker Compose:
+
+```bash
+  docker-compose -f docker-compose.yml up --build
 ```
 
 [//]: # ()
