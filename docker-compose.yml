@@ -12,6 +12,7 @@ services:
       DB_PASSWORD: nguyentu1005
       REDIS_HOST: redis-optimart
       REDIS_PORT: 6379
+      TZ: Asia/Ho_Chi_Minh
     depends_on:
       - db
       - redis
