@@ -1,177 +1,116 @@
-# OptiMart
 
-## Requirements
+![Optimart](https://socialify.git.ci/ngntu10/Optimart/image?description=1&font=Bitter&forks=1&issues=1&language=1&logo=https%3A%2F%2Fi.ibb.co%2FyYDzpBG%2Fngntu1.jpg&name=1&owner=1&pattern=Floating%20Cogs&stargazers=1&theme=Dark)
+# 🛍️ Optimart
 
-For building and running the application you need:
+Backend system provides restful API for web.
 
-- [Node 20 & Npm 10](https://nodejs.org/en/download)
-- [JDK 17](https://www.oracle.com/java/technologies/downloads/#java21)
-- [Maven 3](https://maven.apache.org)
+[//]: # ([![CircleCI]&#40;https://circleci.com/gh/piomin/sample-spring-microservices-new.svg?style=svg&#41;]&#40;https://sonarcloud.io/project/issues?resolved=false&id=hoangtien2k3_ecommerce-microservices&#41;)
 
-[//]: # ()
-[//]: # (## Run the application locally)
 
-[//]: # ()
-[//]: # (Install the dependencies:)
+[![SonarCloud](https://sonarcloud.io/images/project_badges/sonarcloud-black.svg)](https://sonarcloud.io/project/configuration?id=ngntu10_OptiMart)
 
-[//]: # ()
-[//]: # (``` bash)
+## Introduction
 
-[//]: # (npm install)
 
-[//]: # (npm run prepare)
+Welcome to `OptiMart`. This project features a Spring Boot backend combined with a Next.js frontend to deliver a fast, scalable e-commerce platform. The backend handles all business logic and data management, while the frontend ensures a seamless, responsive user experience.
 
-[//]: # (```)
+## Prerequisites
 
-[//]: # ()
-[//]: # (Make sure to connect to your databse by defining the env file `env.properties` located in `/src/main/resources/`. For example:)
+Before you begin, ensure you have met the following requirements:
 
-[//]: # ()
-[//]: # (``` properties)
+- Java Development Kit `(JDK) 17` or higher installed.
+- Build tool (e.g., `Maven`) installed.
+- Database system (e.g.,`PostgreSQL`) set up and configured.
+- Hibernate, JPA
+- Docker with docker-compose build
+- Restfull API
+- PostMan Testing API and Client.
+- Send message and receiver using firebase cloud-messaging.
+- Using Redis for data caching
 
-[//]: # (# /src/main/resources/env.properties)
+## OptiMart Features
 
-[//]: # (DB_DDL_AUTO=update)
 
-[//]: # (DB_URL=jdbc:postgresql://localhost:5432/postgres)
+**Permission-based access control system**: Users can be granted specific permissions to perform certain actions, and users with administrative privileges (admins) can precisely assign or restrict access to specific features for other users.
 
-[//]: # (DB_USERNAME=your_username)
+### Admin Features
 
-[//]: # (DB_PASSWORD=your_password)
+- **View Financial & Product Statistics**: Admins can access detailed reports on revenue, expenses, and product performance, with the ability to filter by product category or type.
+- **Manage Order Statuses**: Admins can view and update the status of all orders, including processing, shipped, completed, or canceled.
+- **Edit Reviews & Comments**: Admins have the authority to modify or delete user-generated reviews and comments on products to maintain content quality.
+- **Modify User Info & Roles**: Admins can edit user details (e.g., contact information) and change user roles and permissions, such as promoting a user to admin or restricting access to certain features.
 
-[//]: # (```)
+### User Features
 
-[//]: # ()
-[//]: # (Run the server:)
+- **Make Purchases & Payments**: Users can browse and buy products with multiple payment methods, including credit cards, bank transfers, and digital wallets.
+- **Comment & Review Products**: Users can leave reviews and ratings on products they’ve purchased, helping other customers make informed decisions.
+- **Follow & Like Products**: Users can follow products or product categories to receive updates on new arrivals or promotions and can like products to save them for future reference.
+- **View & Edit Order History**: Users can view past orders, track order statuses, and update order details, such as shipping addresses or payment methods.
 
-[//]: # ()
-[//]: # (``` bash)
+## Conclusion
 
-[//]: # (mvn spring-boot:run)
+OptiMart provides a comprehensive set of features to empower both admins and users, ensuring a flexible and scalable platform for managing e-commerce activities. The permission-based system ensures precise control over who can access and modify different parts of the platform, while the user features offer a seamless shopping experience.
 
-[//]: # (```)
+## Getting Started
 
-[//]: # ()
-[//]: # (Use a browser to navigate to [http://localhost:8080/swagger-ui/index.html]&#40;http://localhost:8080/api/v1/swagger-ui/index.html&#41;.)
+Follow these steps to set up and run the backend:
 
-[//]: # ()
-[//]: # (## Run tests)
 
-[//]: # ()
-[//]: # (``` bash)
 
-[//]: # (mvn test)
-
-[//]: # (```)
-
-[//]: # ()
-[//]: # (## Other commands)
-
-[//]: # ()
-[//]: # (### Format code)
-
-[//]: # ()
-[//]: # (``` bash)
-
-[//]: # (mvn fmt:format)
-
-[//]: # (```)
-
-[//]: # (## How to name a branch?)
-
-[//]: # ()
-[//]: # (Branch name pattern:)
-
-[//]: # ()
-[//]: # ()
-[//]: # (```text)
-
-[//]: # (type/description-in-kebab-case)
-
-[//]: # ()
-[//]: # (type/issue-#{issue_number})
-
-[//]: # ()
-[//]: # (```)
-
-[//]: # ()
-[//]: # (Examples:)
-
-[//]: # ()
-[//]: # (```text)
-
-[//]: # (feature/issue-#99)
-
-[//]: # (```)
-
-[//]: # ()
-[//]: # (```text)
-
-[//]: # (hotfix/quick-fix-for-an-emergency)
-
-[//]: # (```)
-
-[//]: # ()
-[//]: # (Common types according to [simplified convention for naming branches]&#40;https://dev.to/varbsan/a-simplified-convention-for-naming-branches-and-commits-in-git-il4&#41;)
-
-[//]: # (- feature: adding, refactoring or removing a feature)
-
-[//]: # (- bugfix: fixing a bug)
-
-[//]: # (- hotfix: changing code with a temporary solution and/or without following the usual process &#40;usually because of an emergency&#41;)
-
-[//]: # (- test: experimenting outside of an issue/ticket)
-
-[//]: # ()
-
-## How to name a commit message?
-
-**Commitlint** checks if your commit messages meet the [conventional commit format](https://conventionalcommits.org).
-
-Commit message pattern:
-
-```sh
-type(scope?): subject  #scope is optional; multiple scopes are supported (current delimiter options: "/", "\" and ",")
+```bash
+   git clone https://github.com/ngntu10/OptiMart.git
 ```
 
-Examples:
+#### 1. Navigate to the project directory:
+
+```bash
+  cd Optimart
+```
+
+#### 2. Build the project:
+
+```bash
+  # Using Maven
+  mvn clean install
+```
+
+#### 3. Configure the environments:
+
+- Update `application.properties` or `application.yml` with your environments details.
+
+#### 4. Run the application:
+
+```bash
+  # Using Maven
+  mvn spring-boot:run
+
+```
+
+[//]: # ()
+[//]: # (## Demo)
+
+[//]: # (![1715441188385]&#40;https://github.com/user-attachments/assets/ea07616a-5404-4ccd-bab0-b472b67a061a&#41;)
+
+## API Documentation
+
+Document the API endpoints and their functionalities. You can use tools like `Swagger` for
+automated `API documentation`.
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=ngntu10/Optimart&type=Date)](https://star-history.com/#ngntu10/Optimart&Date)
+
+
+## Contributing
+
+If you would like to contribute to the development of this project, please follow our contribution guidelines.
+
+![Alt](https://repobeats.axiom.co/api/embed/fd7fd76dafe452bdb7c2bc12856bd45c277ee732.svg "Repobeats analytics image")
+## License
+
+This project is licensed under the [`Apache License`](LICENSE).
 
 ```text
-chore: run tests on travis ci
+Apache License
+Copyright (c) 2024 Pham Nguyen Tu
 ```
-
-```text
-fix(server): send cors headers
-```
-
-```text
-feat(blog): add comment section
-```
-
-Common types according to [commitlint-config-conventional (based on the Angular convention)](https://github.com/conventional-changelog/commitlint/tree/master/@commitlint/config-conventional#type-enum) can be:
-
-- build
-- chore
-- ci
-- docs
-- feat
-- fix
-- perf
-- refactor
-- revert
-- style
-- test
-
-[//]: # (## References)
-
-[//]: # ()
-[//]: # (Read these references if needed:)
-
-[//]: # ()
-[//]: # (- [Open api swagger]&#40;https://springdoc.org/&#41;)
-
-[//]: # (- [Lombok]&#40;https://codippa.com/lombok/&#41;)
-
-[//]: # (- [JPA/Hibernate entity relationships]&#40;https://www.baeldung.com/jpa-hibernate-associations&#41;)
-
-[//]: # (- [Hibernate type mappings]&#40;https://vladmihalcea.com/a-beginners-guide-to-hibernate-types/&#41;)

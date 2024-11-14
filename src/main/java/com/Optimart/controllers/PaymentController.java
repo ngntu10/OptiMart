@@ -45,7 +45,7 @@ public class PaymentController {
     public ResponseEntity<?> payCallbackHandler(HttpServletRequest request) throws FirebaseMessagingException {
         String status = request.getParameter("vnp_ResponseCode");
         String orderId = request.getParameter("vnp_OrderInfo");
-        long amount = Long.parseLong(request.getParameter("vnp_Amount"));
+        long amount = Long.parseLong(request.getParameter("vnp_Amount"))/100;
         if (status.equals("00")) {
             orderService.handlePaymentOrderById(orderId);
             APIResponse<VNPAYResponse> response = new APIResponse<>(new VNPAYResponse(status, localizationUtils.getLocalizedMessage(MessageKeys.PAY_SUCCESS), "", amount), "Success");
